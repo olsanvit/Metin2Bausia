@@ -1,0 +1,79 @@
+@page "/reports"
+@inject IDbService Db
+
+<PageTitle>Agent reporty — Metin2Bausia</PageTitle>
+
+<h2>Agent run reporty</h2>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else if (!_runs.Any())
+{
+    <div class="alert alert-info">Zatím žádné agent runy.</div>
+}
+else
+{
+    <table class="table table-sm table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Agent</th>
+                <th>Readiness</th>
+                <th>Status</th>
+                <th>Spuštěn</th>
+                <th>Trvání</th>
+                <th>Items</th>
+                <th>Mobs</th>
+                <th>Obr.</th>
+                <th>Highlights</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var run in _runs)
+            {
+                <tr>
+                    <td>@run.AgentName</td>
+                    <td><span class="badge @(run.ReadinessStatus == "ready" ? "bg-success" : "bg-secondary")">@run.ReadinessStatus</span></td>
+                    <td><span class="badge @(run.RunStatus == "completed" ? "bg-success" : "bg-danger")">@run.RunStatus</span></td>
+                    <td>@run.RunRunAt?.ToString("dd.MM.yy HH:mm")</td>
+                    <td>@Duration(run)</td>
+                    <td>@run.ItemsNew</td>
+                    <td>@run.MobsNew</td>
+                    <td>@run.ImagesDownloaded</td>
+                    <td><small class="text-muted">@TruncateHighlights(run.Highlights)</small></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool _loading = true;
+    private List<AgentRunReport> _runs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _runs = (await Db.QueryAsync<AgentRunReport>(
+                "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 50")).ToList();
+        }
+        catch { }
+        finally { _loading = false; }
+    }
+
+    private static string Duration(AgentRunReport run)
+    {
+        if (run.RunRunAt == null || run.RunFinishedAt == null) return "-";
+        var span = run.RunFinishedAt.Value - run.RunRunAt.Value;
+        return span.TotalMinutes >= 1 ? $"{(int)span.TotalMinutes}m" : $"{(int)span.TotalSeconds}s";
+    }
+
+    private static string TruncateHighlights(string? highlights)
+    {
+        if (string.IsNullOrEmpty(highlights)) return "";
+        return highlights.Length > 80 ? highlights[..80] + "…" : highlights;
+    }
+}

@@ -1,0 +1,128 @@
+@page "/mobs"
+@inject IDbService Db
+
+<PageTitle>Mobové ke schválení — Metin2Bausia</PageTitle>
+
+<h2>Mobové čekající na schválení</h2>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else if (!_mobs.Any())
+{
+    <div class="alert alert-info">Žádní mobové ke schválení.</div>
+}
+else
+{
+    <p class="text-muted">Celkem: @_mobs.Count mobů</p>
+    <table class="table table-hover table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Vnum</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Rank</th>
+                <th>Zdroj</th>
+                <th>Confidence</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var mob in _mobs)
+            {
+                <tr>
+                    <td><code>@mob.Vnum</code></td>
+                    <td><strong>@mob.Name</strong>@if (mob.LocaleName != null) { <small class="text-muted"> (@mob.LocaleName)</small> }</td>
+                    <td>@mob.Level</td>
+                    <td>@RankLabel(mob.Rank)</td>
+                    <td>@mob.SourceName</td>
+                    <td>
+                        <span class="badge @(mob.ConfidenceScore >= 80 ? "bg-success" : mob.ConfidenceScore >= 50 ? "bg-warning text-dark" : "bg-danger")">
+                            @mob.ConfidenceScore
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-success me-1" disabled="@(_processing != null)"
+                                @onclick="() => ApproveAsync(mob)">✓</button>
+                        <button class="btn btn-sm btn-danger" disabled="@(_processing != null)"
+                                @onclick="() => RejectAsync(mob)">✗</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (_message != null)
+{
+    <div class="alert @(_isError ? "alert-danger" : "alert-success") mt-2">@_message</div>
+}
+
+@code {
+    private bool _loading = true;
+    private List<PendingMob> _mobs = new();
+    private Guid? _processing;
+    private string? _message;
+    private bool _isError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _mobs = (await Db.QueryAsync<PendingMob>(
+                "SELECT \"Guid\", \"Vnum\", \"Name\", \"LocaleName\", \"Level\", \"Rank\", \"ContentStatus\", \"SourceName\", \"CreatedAt\", \"ConfidenceScore\" " +
+                "FROM \"Mobs\" WHERE \"ContentStatus\" = 'pending' AND \"IsDeleted\" = false " +
+                "ORDER BY \"ConfidenceScore\" DESC NULLS LAST, \"CreatedAt\" DESC LIMIT 200")).ToList();
+        }
+        catch (Exception ex) { _message = $"Chyba DB: {ex.Message}"; _isError = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task ApproveAsync(PendingMob mob)
+    {
+        _processing = mob.Guid;
+        try
+        {
+            await Db.ExecuteAsync(
+                "UPDATE \"Mobs\" SET \"ContentStatus\" = 'approved', \"ApprovalAt\" = NOW(), \"ApprovalBy\" = 'admin', \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
+                new { mob.Guid });
+            await Db.ExecuteAsync(
+                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"Action\", \"Operator\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Mobs', @Guid, 'approved', 'admin', NOW())",
+                new { mob.Guid });
+            _message = $"✓ Mob '{mob.Name}' (Vnum {mob.Vnum}) schválen.";
+            _isError = false;
+            _mobs.Remove(mob);
+        }
+        catch (Exception ex) { _message = $"Chyba: {ex.Message}"; _isError = true; }
+        finally { _processing = null; }
+    }
+
+    private async Task RejectAsync(PendingMob mob)
+    {
+        _processing = mob.Guid;
+        try
+        {
+            await Db.ExecuteAsync(
+                "UPDATE \"Mobs\" SET \"ContentStatus\" = 'rejected', \"RejectedAt\" = NOW(), \"RejectedReason\" = 'manual_reject', \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
+                new { mob.Guid });
+            _message = $"✗ Mob '{mob.Name}' zamítnut.";
+            _isError = false;
+            _mobs.Remove(mob);
+        }
+        catch (Exception ex) { _message = $"Chyba: {ex.Message}"; _isError = true; }
+        finally { _processing = null; }
+    }
+
+    private static string RankLabel(int? rank) => rank switch
+    {
+        0 => "Pawn",
+        1 => "S-Pawn",
+        2 => "Knight",
+        3 => "S-Knight",
+        4 => "Boss",
+        5 => "King",
+        _ => "?"
+    };
+}

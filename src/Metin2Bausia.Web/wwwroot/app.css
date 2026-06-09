@@ -1,0 +1,53 @@
+/* Metin2Bausia Admin CSS */
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.page {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background: #1a1a2e;
+    padding: 1rem 0;
+    flex-shrink: 0;
+}
+
+.sidebar .nav-link {
+    color: #ccc;
+    padding: 0.5rem 1rem;
+    display: block;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+}
+
+main {
+    flex: 1;
+    overflow: auto;
+}
+
+.top-row {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+}
+
+.content {
+    padding: 1.5rem;
+}
+
+code {
+    font-size: 0.85em;
+    background: #f4f4f4;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}

@@ -1,0 +1,77 @@
+@page "/review"
+@inject IDbService Db
+
+<PageTitle>Ruční review — Metin2Bausia</PageTitle>
+
+<h2>Fronta pro ruční review</h2>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else if (!_items.Any())
+{
+    <div class="alert alert-success">Fronta je prázdná. Žádné konflikty k řešení.</div>
+}
+else
+{
+    <p class="text-muted">Celkem neresolved: @_items.Count</p>
+    <table class="table table-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Entita</th>
+                <th>Důvod</th>
+                <th>Zdroj A</th>
+                <th>Zdroj B</th>
+                <th>Vytvořen</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _items)
+            {
+                <tr>
+                    <td><code>@item.EntityTable</code></td>
+                    <td><span class="badge bg-warning text-dark">@item.Reason</span></td>
+                    <td><small>@item.SourceA</small></td>
+                    <td><small>@item.SourceB</small></td>
+                    <td>@item.CreatedAt.ToString("dd.MM.yy")</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ResolveAsync(item)">
+                            Vyřešeno
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private bool _loading = true;
+    private List<ManualReviewItem> _items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _items = (await Db.QueryAsync<ManualReviewItem>(
+                "SELECT * FROM \"ManualReviewQueue\" WHERE \"Resolved\" = false ORDER BY \"CreatedAt\" DESC")).ToList();
+        }
+        catch { }
+        finally { _loading = false; }
+    }
+
+    private async Task ResolveAsync(ManualReviewItem item)
+    {
+        try
+        {
+            await Db.ExecuteAsync(
+                "UPDATE \"ManualReviewQueue\" SET \"Resolved\" = true WHERE \"Guid\" = @Guid",
+                new { item.Guid });
+            _items.Remove(item);
+        }
+        catch { }
+    }
+}

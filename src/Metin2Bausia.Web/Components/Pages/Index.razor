@@ -1,0 +1,107 @@
+@page "/"
+@inject IDbService Db
+
+<PageTitle>Dashboard — Metin2Bausia</PageTitle>
+
+<h1>Metin2Bausia Admin</h1>
+
+@if (_loading)
+{
+    <p>Načítám statistiky...</p>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Itemy ke schválení</h5>
+                    <p class="card-text fs-2">@_pendingItems</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Mobové ke schválení</h5>
+                    <p class="card-text fs-2">@_pendingMobs</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Schváleno itemů</h5>
+                    <p class="card-text fs-2">@_approvedItems</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Ruční review</h5>
+                    <p class="card-text fs-2">@_manualReview</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4>Posledních 5 agent runů</h4>
+    @if (_recentRuns.Any())
+    {
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Agent</th>
+                    <th>Status</th>
+                    <th>Čas</th>
+                    <th>Items new</th>
+                    <th>Mobs new</th>
+                    <th>Obrázky</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var run in _recentRuns)
+                {
+                    <tr>
+                        <td>@run.AgentName</td>
+                        <td><span class="badge @(run.RunStatus == "completed" ? "bg-success" : "bg-danger")">@run.RunStatus</span></td>
+                        <td>@run.RunRunAt?.ToString("dd.MM HH:mm")</td>
+                        <td>@run.ItemsNew</td>
+                        <td>@run.MobsNew</td>
+                        <td>@run.ImagesDownloaded</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-muted">Zatím žádné agent runy.</p>
+    }
+}
+
+@code {
+    private bool _loading = true;
+    private int _pendingItems, _pendingMobs, _approvedItems, _manualReview;
+    private List<AgentRunReport> _recentRuns = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _pendingItems = await Db.QueryFirstOrDefaultAsync<int>(
+                "SELECT COUNT(*) FROM \"Items\" WHERE \"ContentStatus\" = 'pending' AND \"IsDeleted\" = false");
+            _pendingMobs = await Db.QueryFirstOrDefaultAsync<int>(
+                "SELECT COUNT(*) FROM \"Mobs\" WHERE \"ContentStatus\" = 'pending' AND \"IsDeleted\" = false");
+            _approvedItems = await Db.QueryFirstOrDefaultAsync<int>(
+                "SELECT COUNT(*) FROM \"Items\" WHERE \"ContentStatus\" = 'approved' AND \"IsDeleted\" = false");
+            _manualReview = await Db.QueryFirstOrDefaultAsync<int>(
+                "SELECT COUNT(*) FROM \"ManualReviewQueue\" WHERE \"Resolved\" = false");
+            _recentRuns = (await Db.QueryAsync<AgentRunReport>(
+                "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 5")).ToList();
+        }
+        catch { /* DB not yet available */ }
+        finally { _loading = false; }
+    }
+}
