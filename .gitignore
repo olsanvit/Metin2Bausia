@@ -1,0 +1,25 @@
+## .NET
+bin/
+obj/
+*.user
+.vs/
+publish/
+*.log
+
+## Large binary packs (client data) — uložit mimo git nebo LFS
+packs/*.epk
+packs/*.eix
+packs/*.idx
+proto/versions/*.bin
+
+## Secrets
+appsettings.Production.json
+*.env
+.env
+
+## macOS
+.DS_Store
+Thumbs.db
+
+## node_modules
+mcp/node_modules/

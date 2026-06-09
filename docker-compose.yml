@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  mt2-postgres:
+    image: postgres:16-alpine
+    container_name: mt2-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: Metin2Bausia
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - mt2-pgdata:/var/lib/postgresql/data
+      - ./database/postgres:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5442:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d Metin2Bausia"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - mt2-net
+
+  mt2-mcp:
+    build:
+      context: ./mcp
+      dockerfile: Dockerfile
+    image: metin2bausia-mcp:latest
+    container_name: mt2-mcp
+    restart: unless-stopped
+    depends_on:
+      mt2-postgres:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changeme}@mt2-postgres:5432/Metin2Bausia
+      MT2_FILES_DIR: /app/mt2files
+      NTFY_URL: https://ntfy.vo2info.cz
+      NTFY_AUTH: "Basic YWRtaW46Um91bmRuZXQ1NzVQYWRlbA=="
+      NTFY_TOPIC_RUNS: agent-runs
+      NTFY_TOPIC_ERRORS: agent-errors
+      NTFY_TOPIC_ALERTS: agent-alerts
+    volumes:
+      - mt2-files:/app/mt2files
+      - mt2-uploads:/app/uploads
+    ports:
+      - "3030:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - mt2-net
+
+volumes:
+  mt2-pgdata:
+    name: mt2-pgdata
+  mt2-files:
+    name: mt2-files
+  mt2-uploads:
+    name: mt2-uploads
+
+networks:
+  mt2-net:
+    name: mt2-net
+    driver: bridge

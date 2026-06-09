@@ -1,0 +1,92 @@
+version: "3.9"
+
+# ============================================================
+# Metin2Bausia — herní server stack (TMP4)
+# Spustit ODDĚLENĚ od management stacku
+# ============================================================
+
+services:
+
+  # MySQL — herní databáze (account, player, common, log)
+  mt2-mysql:
+    image: mysql:5.7
+    container_name: mt2-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-bausia_root_secret}
+      MYSQL_DATABASE: account
+    ports:
+      - "127.0.0.1:3366:3306"    # lokální přístup pro správu
+    volumes:
+      - mt2-mysql-data:/var/lib/mysql
+      - ../mysql/account:/docker-entrypoint-initdb.d/account:ro
+      - ../mysql/player:/docker-entrypoint-initdb.d/player:ro
+      - ../mysql/common:/docker-entrypoint-initdb.d/common:ro
+      - ../mysql/log:/docker-entrypoint-initdb.d/log:ro
+    networks:
+      - mt2-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # DB server (TMP4 db binary)
+  mt2-db:
+    image: metin2bausia-server:latest  # build lokálně z TMP4 source
+    container_name: mt2-db
+    restart: unless-stopped
+    depends_on:
+      mt2-mysql:
+        condition: service_healthy
+    environment:
+      - MT2_SERVICE=db
+    volumes:
+      - ./conf/db:/usr/local/metin2/db
+      - mt2-shared:/usr/local/metin2/share
+    networks:
+      - mt2-net
+
+  # Auth/Login server
+  mt2-auth:
+    image: metin2bausia-server:latest
+    container_name: mt2-auth
+    restart: unless-stopped
+    depends_on:
+      - mt2-db
+    ports:
+      - "11002:11002"   # auth port (veřejný)
+    environment:
+      - MT2_SERVICE=auth
+    volumes:
+      - ./conf/auth:/usr/local/metin2/auth
+      - mt2-shared:/usr/local/metin2/share:ro
+    networks:
+      - mt2-net
+
+  # Game server — channel 1
+  mt2-game-ch1:
+    image: metin2bausia-server:latest
+    container_name: mt2-game-ch1
+    restart: unless-stopped
+    depends_on:
+      - mt2-db
+      - mt2-auth
+    ports:
+      - "13000:13000"   # game port channel 1 (veřejný)
+    environment:
+      - MT2_SERVICE=game
+      - MT2_CHANNEL=1
+    volumes:
+      - ./conf/game-ch1:/usr/local/metin2/game
+      - mt2-shared:/usr/local/metin2/share:ro
+    networks:
+      - mt2-net
+
+volumes:
+  mt2-mysql-data:
+  mt2-shared:
+
+networks:
+  mt2-net:
+    driver: bridge

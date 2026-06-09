@@ -1,0 +1,190 @@
+Agent: 9.2.0 Metin2Bausia Collector
+AgentType: Collector
+SkillsVersion: 9.2.0
+
+=============================================================
+CHAPTER 1: SKILLS OVERVIEW — Metin2Bausia Collector 9.2.0
+=============================================================
+
+Tento soubor definuje skills agenta Metin2Bausia Collector.
+SKILLS CHECK: počet skills v tomto souboru musí být >= 11.
+Soubor musí být načten z Drive před prvním runem.
+
+=============================================================
+CHAPTER 2: SKILLS LIST
+=============================================================
+
+## db-ping — základní skill (startup)
+Task types: startup, db_check, health
+Description: Zavolá db_status na MT2 MCP. Pokud vrátí db_unreachable → STOP
+  a odešle ntfy na agent-errors. Nikdy nepokračuje bez potvrzení DB spojení.
+MCP tool: db_status → { status: "db_reachable" | "db_unreachable", version: "..." }
+
+---
+
+## web-scraper — sbírání dat z webu
+Task types: scraping, data_collection, html_parse
+Description: Stahuje a parsuje HTML stránky Metin2 private serverů.
+  Respektuje robots.txt, rate limit 1 req/2s, max 100 stránek/zdroj.
+  Hledá: tabulky itemů, mob databáze, wiki stránky, JSON v script tagu.
+  User-Agent: "Metin2BausiaBot/1.0 (research crawler; +https://bausia.cz)"
+  Při 429/503: exponential backoff (10s, 30s, 60s), pak circuit breaker.
+MCP tool: fetch_url({url, userAgent?, timeout?})
+
+---
+
+## source-discovery — nalezení nových zdrojů
+Task types: discovery, source_finding, auto_discover
+Description: Na startu každého runu hledá nové Metin2 weby k průzkumu.
+  Strategie: Google/Bing hledání "metin2 private server wiki database items"
+  + crawluje nalezené weby pro /wiki/, /database/, /items/ URL vzory.
+  Max 10 nových zdrojů / run. Nové zdroje ukládá do DiscoveryQueue.
+MCP tool: upsert_record("DiscoveryQueue", {...})
+
+---
+
+## item-extractor — extrakce itemů
+Task types: item_parse, item_extract, vnum_parse
+Description: Z HTML tabulky nebo JSON extrahuje data o itemech.
+  Povinné: Vnum (int, 1–99999), Name (string, min 2 znaky).
+  Volitelné: všechna pole z tabulky Items dle prompt Chapter 3.
+  Validace: Vnum musí být kladné celé číslo v platném rozsahu.
+  ContentStatus: VŽDY 'pending' — nikdy 'approved'.
+MCP tool: upsert_record("Items", { Vnum, Name, ContentStatus: "pending", ... })
+
+---
+
+## mob-extractor — extrakce mobů/monster
+Task types: mob_parse, mob_extract, monster_parse
+Description: Extrahuje data o monstrech (Vnum, Name, Level, HP, Exp, Drop tabulka).
+  Validace Rank: 0–5; MobType: 0–4.
+  DropItems jako JSON array: [{vnum, count, pct}].
+  ContentStatus: VŽDY 'pending'.
+MCP tool: upsert_record("Mobs", { Vnum, Name, ContentStatus: "pending", ... })
+
+---
+
+## image-downloader — stahování obrázků
+Task types: image_download, icon_save, texture_save
+Description: Hledá a stahuje ikony itemů (40×40 px) a mobů (různé rozměry).
+  Preferované formáty: PNG, TGA, DDJ.
+  Vždy ukládá originální SourceUrl i při selhání stáhnutí.
+  Deduplikace přes SHA256 hash.
+  Max 100 obrázků / run.
+MCP tool: save_image_url({entityTable, entityVnum, imageType, url, sha256?})
+  → upsert_record("ContentImages", {...})
+
+---
+
+## deduplication-check — kontrola duplikátů
+Task types: dedup, duplicate_check, vnum_conflict
+Description: Před uložením každé entity ověřuje:
+  1. Existuje Vnum v DB? → upsert (update), ne nový záznam.
+  2. Existuje NormalizedName + EntityType? → upsert.
+  3. Token overlap >80% s jiným záznamem? → ManualReviewQueue.
+  4. Vnum existuje v DB s JINÝM názvem + approved? → ManualReviewQueue (vnum_conflict).
+MCP tool: execute_sql({ sql: "SELECT ... FROM Items WHERE Vnum = $1", params: [vnum] })
+
+---
+
+## batch-upsert — hromadné ukládání
+Task types: bulk_save, batch_insert, smart_upsert_batch
+Description: Ukládá kolekci entit přes smart_upsert_batch.
+  Pokud smart_upsert_batch vrátí 502:
+    Jednotlivé SQL inserty jsou POVOLENY POUZE při VŠECH těchto podmínkách:
+      ✓ validace kvality proběhla
+      ✓ kontrola duplicit proběhla
+      ✓ idempotentní business key existuje (Vnum nebo NormalizedName+EntityType)
+      ✓ read-back potvrzení po každém zápisu
+    Výsledek VŽDY reportovat jako: batch_upsert_failed_but_single_insert_succeeded
+MCP tool: smart_upsert_batch({table, records}) → fallback: upsert_record() per item
+
+---
+
+## circuit-breaker-manager — správa circuit breakerů
+Task types: circuit_breaker, source_status, backoff
+Description: Sleduje spolehlivost zdrojů. Po 3 po sobě jdoucích chybách:
+  → SourceCircuitBreaker.State = 'open', CooldownUntil = now + 1h
+  Po 1h: State = 'half_open', zkusí 1 request.
+  Při úspěchu: State = 'closed', ErrorCount = 0.
+  Open zdroje přeskočit (nescrapovat).
+MCP tool: upsert_record("SourceCircuitBreaker", {...})
+
+---
+
+## proto-exporter — export do proto formátu
+Task types: proto_export, item_proto, mob_proto
+Description: Po každém runu exportuje schválené itemy/moby do .txt souborů.
+  Formát: tab-oddělený, kompatibilní s TMP4 serverem.
+  Uloží do /app/mt2files/proto/item_proto.txt a mob_proto.txt.
+  Provede compare_files pro diff report.
+  NIKDY nedeployuje na herní server.
+MCP tool: export_item_proto_txt({saveToFile: true, includeStatus: ["approved"]})
+          export_mob_proto_txt({saveToFile: true, includeStatus: ["approved"]})
+          compare_files(pathA, pathB)
+
+---
+
+## run-reporter — generování run reportu
+Task types: run_report, agent_report, final_report
+Description: Na konci každého runu generuje strukturovaný report (dle Chapter 7 promptu).
+  Ukládá do AgentRunReports, odesílá ntfy, aktualizuje AgentSchedules.
+  Report VŽDY česky s emoji sekcemi.
+  _error.txt: zapsat POUZE při skutečném selhání (singular název bez 's').
+MCP tool: upsert_record("AgentRunReports", {...})
+  send_notification({topic: "agent-runs", ...})
+
+---
+
+## calendar-scheduler — plánování dalšího runu
+Task types: calendar, schedule, next_run
+Description: Po každém runu vytvoří (nebo aktualizuje) kalendářní event pro příští run.
+  VŽDY nejdřív list_calendars() → najít "AI Collectors" → CALENDAR_ID proměnná.
+  NIKDY nepoužívat "AI Collectors" přímo jako calendar_id parametr.
+  Event: název "Metin2Bausia Collector Run", délka 30 min.
+MCP tool: list_calendars() → create_event({calendar_id: CALENDAR_ID, ...})
+
+---
+
+## agent-schedule-manager — správa plánů agentů
+Task types: schedule_conflict, agent_scheduling, advisory_lock
+Description: Načte AgentSchedules z DB. Detekuje konflikty ±15 minut s jinými agenty.
+  Při konfliktu: posunout run o 15 min (max 3 pokusy, pak reportovat do highlights).
+  Advisory lock: pg_try_advisory_lock před startem runu.
+  Při lock failure (jiný agent běží): STOP, ntfy, zkusit za 5 min.
+MCP tool: execute_sql({ sql: "SELECT pg_try_advisory_lock(...)" })
+  upsert_record("AgentSchedules", {...})
+
+---
+
+## manual-review-writer — zápis do fronty pro ruční review
+Task types: manual_review, vnum_conflict, ambiguous_data
+Description: Záznamy, které nelze automaticky rozřadit, zapíše do ManualReviewQueue.
+  Důvody: vnum_conflict, name_ambiguity, low_confidence (<30), token_overlap>80%.
+  Format: {EntityTable, EntityGuid, Reason, SourceA, SourceB, CreatedAt}.
+MCP tool: upsert_record("ManualReviewQueue", {...})
+
+=============================================================
+CHAPTER 3: SKILLS VALIDATION
+=============================================================
+
+SKILLS COUNT CHECK: Tento soubor musí obsahovat >= 11 skills.
+Aktuální počet: 14 skills ✓
+
+Skills checklist (startup ověření):
+  [ ] db-ping
+  [ ] web-scraper
+  [ ] source-discovery
+  [ ] item-extractor
+  [ ] mob-extractor
+  [ ] image-downloader
+  [ ] deduplication-check
+  [ ] batch-upsert
+  [ ] circuit-breaker-manager
+  [ ] proto-exporter
+  [ ] run-reporter
+  [ ] calendar-scheduler
+  [ ] agent-schedule-manager
+  [ ] manual-review-writer
+
+Pokud count < 11 → classify readiness_status=not_ready, zapsat do highlights[].
