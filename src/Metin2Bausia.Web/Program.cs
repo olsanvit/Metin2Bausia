@@ -1,17 +1,36 @@
 using Metin2Bausia.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using SharedServices.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ── Auth — cookie, single admin ──────────────────────────
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath    = "/account/login";
+        options.LogoutPath   = "/account/logout";
+        options.AccessDeniedPath = "/account/login";
+        options.ExpireTimeSpan   = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+        options.Cookie.Name = "mt2bausia_admin";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddRazorPages();   // pro Login Razor Page (POST + HttpContext)
+
+// ── Blazor ───────────────────────────────────────────────
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// DB service
+// ── DB ───────────────────────────────────────────────────
 builder.Services.AddSingleton<IDbService>(sp =>
     new DbService(builder.Configuration.GetConnectionString("Metin2Bausia")
         ?? throw new InvalidOperationException("Metin2Bausia connection string missing")));
 
-// SharedServices
+// ── SharedServices ────────────────────────────────────────
 builder.Services.AddSingleton<ThemeService>(_ => new ThemeService(builder.Configuration));
 builder.Services.AddSingleton<ConnectionStateService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, AppCircuitHandler>();
@@ -26,7 +45,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
+
+app.MapRazorPages();   // Login / Logout Razor Pages
 
 app.MapRazorComponents<Metin2Bausia.Web.Components.App>()
     .AddInteractiveServerRenderMode();

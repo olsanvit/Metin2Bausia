@@ -55,3 +55,52 @@ public class ManualReviewItem
     public bool Resolved { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
+// ── Manage stránky (IsEnabled toggle) ──────────────────────
+public class ManageItem
+{
+    public Guid Guid { get; set; }
+    public int? Vnum { get; set; }
+    public string Name { get; set; } = "";
+    public string? LocaleName { get; set; }
+    public int? ItemType { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+    public string? SourceName { get; set; }
+    public string? SourceUrl { get; set; }
+}
+
+public class ManageMob
+{
+    public Guid Guid { get; set; }
+    public int? Vnum { get; set; }
+    public string Name { get; set; } = "";
+    public string? LocaleName { get; set; }
+    public int? Level { get; set; }
+    public int? MobType { get; set; }
+    public int? Rank { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+    public string? SourceName { get; set; }
+}
+
+public class ManageMap
+{
+    public Guid Guid { get; set; }
+    public int? MapIndex { get; set; }
+    public string Name { get; set; } = "";
+    public string? LocaleName { get; set; }
+    public int? MinLevel { get; set; }
+    public int? MaxLevel { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+}
+
+public class ManageSystem
+{
+    public Guid Guid { get; set; }
+    public string SystemName { get; set; } = "";
+    public string? Category { get; set; }
+    public string? Description { get; set; }
+    public bool IsEnabled { get; set; }
+}

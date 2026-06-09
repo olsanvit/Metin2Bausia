@@ -1,0 +1,155 @@
+@page "/manage/items"
+@attribute [Authorize]
+@inject IDbService Db
+
+<PageTitle>Správa itemů — Metin2Bausia</PageTitle>
+
+<h2>Správa itemů</h2>
+<p class="text-muted mb-3">Zapínej/vypínej itemy ve hře. Nové itemy jsou ve výchozím stavu <strong>vypnuté</strong>.</p>
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <input class="form-control form-control-sm" style="max-width:220px"
+           placeholder="Hledat název / vnum..."
+           @bind="_search" @bind:event="oninput" />
+    <select class="form-select form-select-sm" style="max-width:160px" @bind="_filterEnabled">
+        <option value="">Vše</option>
+        <option value="true">Zapnuté</option>
+        <option value="false">Vypnuté</option>
+    </select>
+    <select class="form-select form-select-sm" style="max-width:160px" @bind="_filterStatus">
+        <option value="">Všechny statusy</option>
+        <option value="approved">Schválené</option>
+        <option value="pending">Pending</option>
+    </select>
+    <span class="text-muted small ms-auto">Zobrazeno: @Filtered.Count() / @_items.Count</span>
+</div>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <th style="width:56px">Zapnuto</th>
+                    <th style="width:70px">Vnum</th>
+                    <th>Název</th>
+                    <th style="width:90px">Typ</th>
+                    <th style="width:100px">Status</th>
+                    <th style="width:80px">Zdroj</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Filtered)
+                {
+                    <tr class="@(item.IsEnabled ? "" : "opacity-60")">
+                        <td class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input" type="checkbox"
+                                       checked="@item.IsEnabled"
+                                       @onchange="e => ToggleAsync(item, (bool)e.Value!)" />
+                            </div>
+                        </td>
+                        <td><code class="small">@item.Vnum</code></td>
+                        <td>
+                            <strong>@item.Name</strong>
+                            @if (item.LocaleName != null)
+                            { <small class="text-muted"> (@item.LocaleName)</small> }
+                        </td>
+                        <td><span class="badge bg-secondary">@ItemTypeName(item.ItemType)</span></td>
+                        <td>
+                            <span class="badge @StatusClass(item.ContentStatus)">@item.ContentStatus</span>
+                        </td>
+                        <td>
+                            @if (item.SourceUrl != null)
+                            { <a href="@item.SourceUrl" target="_blank" class="small">@item.SourceName</a> }
+                            else
+                            { <span class="small text-muted">@item.SourceName</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (_message != null)
+{
+    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok")">@_message</div>
+}
+
+@code {
+    private bool _loading = true;
+    private List<ManageItem> _items = new();
+    private string _search = "";
+    private string _filterEnabled = "";
+    private string _filterStatus = "approved";
+    private string? _message;
+    private bool _isError;
+
+    private IEnumerable<ManageItem> Filtered => _items.Where(i =>
+        (string.IsNullOrEmpty(_search) ||
+            (i.Name?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true) ||
+            (i.Vnum?.ToString() == _search)) &&
+        (string.IsNullOrEmpty(_filterEnabled) || i.IsEnabled.ToString().ToLower() == _filterEnabled) &&
+        (string.IsNullOrEmpty(_filterStatus) || i.ContentStatus == _filterStatus));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _items = (await Db.QueryAsync<ManageItem>(
+                @"SELECT ""Guid"", ""Vnum"", ""Name"", ""LocaleName"", ""ItemType"",
+                         ""ContentStatus"", ""IsEnabled"", ""SourceName"", ""SourceUrl""
+                  FROM ""Items""
+                  WHERE ""IsDeleted"" = FALSE
+                  ORDER BY ""IsEnabled"" DESC, ""Vnum"" ASC NULLS LAST
+                  LIMIT 2000")).ToList();
+        }
+        catch (Exception ex) { _message = ex.Message; _isError = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task ToggleAsync(ManageItem item, bool newValue)
+    {
+        var old = item.IsEnabled;
+        item.IsEnabled = newValue;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Items"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newValue, g = item.Guid });
+            _message = newValue
+                ? $"✓ {item.Name} zapnuto"
+                : $"○ {item.Name} vypnuto";
+            _isError = false;
+        }
+        catch (Exception ex)
+        {
+            item.IsEnabled = old;   // rollback UI
+            _message = $"Chyba: {ex.Message}";
+            _isError = true;
+        }
+    }
+
+    private static string ItemTypeName(int? t) => t switch
+    {
+        1 => "Zbraň", 2 => "Brnění", 3 => "Prsten", 4 => "Pásek",
+        5 => "Boty", 6 => "Náhrdelník", 7 => "Náramek",
+        10 => "Luk", 11 => "Šíp", 12 => "Štít",
+        50 => "Potion", 51 => "Speciální",
+        _ => t?.ToString() ?? "?"
+    };
+
+    private static string StatusClass(string? s) => s switch
+    {
+        "approved" => "bg-success",
+        "pending"  => "bg-warning text-dark",
+        "rejected" => "bg-danger",
+        _          => "bg-secondary"
+    };
+}

@@ -1,0 +1,95 @@
+@page "/manage/systems"
+@attribute [Authorize]
+@inject IDbService Db
+
+<PageTitle>Správa systémů — Metin2Bausia</PageTitle>
+
+<h2>Správa herních systémů</h2>
+<p class="text-muted mb-3">Zapínej/vypínej herní systémy (enchant, alchemy, crafting, pet, mount...).</p>
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center">
+    <input class="form-control form-control-sm" style="max-width:220px"
+           placeholder="Hledat..." @bind="_search" @bind:event="oninput" />
+    <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
+        <option value="">Vše</option>
+        <option value="true">Zapnuté</option>
+        <option value="false">Vypnuté</option>
+    </select>
+    <span class="text-muted small ms-auto">@Filtered.Count() / @_systems.Count</span>
+</div>
+
+@if (_loading) { <p>Načítám...</p> }
+else if (!_systems.Any()) { <div class="alert alert-info">Žádné systémy v databázi.</div> }
+else
+{
+    <div class="row g-3">
+        @foreach (var sys in Filtered)
+        {
+            <div class="col-md-4">
+                <div class="card @(sys.IsEnabled ? "border-success" : "border-secondary") h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 class="card-title mb-1">@sys.SystemName</h6>
+                            <div class="form-check form-switch ms-2">
+                                <input class="form-check-input" type="checkbox"
+                                       checked="@sys.IsEnabled"
+                                       @onchange="e => ToggleAsync(sys, (bool)e.Value!)" />
+                            </div>
+                        </div>
+                        @if (sys.Category != null)
+                        { <span class="badge bg-secondary mb-1">@sys.Category</span> }
+                        @if (sys.Description != null)
+                        { <p class="card-text small text-muted mt-1">@sys.Description[..Math.Min(sys.Description.Length, 100)]@(sys.Description.Length > 100 ? "…" : "")</p> }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (_message != null)
+{
+    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok") mt-3">@_message</div>
+}
+
+@code {
+    private bool _loading = true;
+    private List<ManageSystem> _systems = new();
+    private string _search = "";
+    private string _filterEnabled = "";
+    private string? _message;
+    private bool _isError;
+
+    private IEnumerable<ManageSystem> Filtered => _systems.Where(s =>
+        (string.IsNullOrEmpty(_search) || s.SystemName.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(_filterEnabled) || s.IsEnabled.ToString().ToLower() == _filterEnabled));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _systems = (await Db.QueryAsync<ManageSystem>(
+                @"SELECT ""Guid"", ""SystemName"", ""Category"", ""Description"", ""IsEnabled""
+                  FROM ""Systems"" WHERE ""IsDeleted"" = FALSE
+                  ORDER BY ""IsEnabled"" DESC, ""SystemName"" ASC")).ToList();
+        }
+        catch (Exception ex) { _message = ex.Message; _isError = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task ToggleAsync(ManageSystem sys, bool newValue)
+    {
+        var old = sys.IsEnabled;
+        sys.IsEnabled = newValue;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Systems"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newValue, g = sys.Guid });
+            _message = newValue ? $"✓ {sys.SystemName} zapnuto" : $"○ {sys.SystemName} vypnuto";
+            _isError = false;
+        }
+        catch (Exception ex) { sys.IsEnabled = old; _message = ex.Message; _isError = true; }
+    }
+}

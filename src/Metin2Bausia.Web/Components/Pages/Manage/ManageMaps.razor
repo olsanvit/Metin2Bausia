@@ -1,0 +1,110 @@
+@page "/manage/maps"
+@attribute [Authorize]
+@inject IDbService Db
+
+<PageTitle>Správa map — Metin2Bausia</PageTitle>
+
+<h2>Správa map</h2>
+<p class="text-muted mb-3">Zapínej/vypínej přístupnost map.</p>
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center">
+    <input class="form-control form-control-sm" style="max-width:220px"
+           placeholder="Hledat název..." @bind="_search" @bind:event="oninput" />
+    <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
+        <option value="">Vše</option>
+        <option value="true">Zapnuté</option>
+        <option value="false">Vypnuté</option>
+    </select>
+    <span class="text-muted small ms-auto">@Filtered.Count() / @_maps.Count</span>
+</div>
+
+@if (_loading) { <p>Načítám...</p> }
+else
+{
+    <table class="table table-sm table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:56px">Zapnuto</th>
+                <th style="width:70px">Index</th>
+                <th>Název</th>
+                <th style="width:80px">Min level</th>
+                <th style="width:80px">Max level</th>
+                <th style="width:100px">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var map in Filtered)
+            {
+                <tr class="@(map.IsEnabled ? "" : "opacity-60")">
+                    <td class="text-center">
+                        <div class="form-check form-switch d-flex justify-content-center">
+                            <input class="form-check-input" type="checkbox"
+                                   checked="@map.IsEnabled"
+                                   @onchange="e => ToggleAsync(map, (bool)e.Value!)" />
+                        </div>
+                    </td>
+                    <td><code class="small">@map.MapIndex</code></td>
+                    <td><strong>@map.Name</strong>
+                        @if (map.LocaleName != null) { <small class="text-muted"> (@map.LocaleName)</small> }
+                    </td>
+                    <td class="text-muted small">@map.MinLevel</td>
+                    <td class="text-muted small">@map.MaxLevel</td>
+                    <td><span class="badge @StatusClass(map.ContentStatus)">@map.ContentStatus</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (_message != null)
+{
+    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok")">@_message</div>
+}
+
+@code {
+    private bool _loading = true;
+    private List<ManageMap> _maps = new();
+    private string _search = "";
+    private string _filterEnabled = "";
+    private string? _message;
+    private bool _isError;
+
+    private IEnumerable<ManageMap> Filtered => _maps.Where(m =>
+        (string.IsNullOrEmpty(_search) || m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(_filterEnabled) || m.IsEnabled.ToString().ToLower() == _filterEnabled));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _maps = (await Db.QueryAsync<ManageMap>(
+                @"SELECT ""Guid"", ""MapIndex"", ""Name"", ""LocaleName"",
+                         ""MinLevel"", ""MaxLevel"", ""ContentStatus"", ""IsEnabled""
+                  FROM ""Maps"" WHERE ""IsDeleted"" = FALSE
+                  ORDER BY ""IsEnabled"" DESC, ""MapIndex"" ASC NULLS LAST")).ToList();
+        }
+        catch (Exception ex) { _message = ex.Message; _isError = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task ToggleAsync(ManageMap map, bool newValue)
+    {
+        var old = map.IsEnabled;
+        map.IsEnabled = newValue;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newValue, g = map.Guid });
+            _message = newValue ? $"✓ {map.Name} zapnuto" : $"○ {map.Name} vypnuto";
+            _isError = false;
+        }
+        catch (Exception ex) { map.IsEnabled = old; _message = ex.Message; _isError = true; }
+    }
+
+    private static string StatusClass(string? s) => s switch
+    {
+        "approved" => "bg-success", "pending" => "bg-warning text-dark", _ => "bg-secondary"
+    };
+}
