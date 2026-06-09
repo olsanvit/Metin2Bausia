@@ -4,10 +4,10 @@
   "serverName": "Metin2 Bausia",
   "serverIp": "0.0.0.0",
   "serverPort": 11002,
-  "baseUrl": "https://patch.bausia.cz/client/",
+  "baseUrl": "https://bausia.vo2info.cz/client/",
   "news": "Vítejte na Metin2 Bausia serveru! Server je v přípravné fázi.",
-  "websiteUrl": "https://bausia.cz",
-  "registerUrl": "https://bausia.cz/register",
+  "websiteUrl": "https://bausia.vo2info.cz",
+  "registerUrl": "https://bausia.vo2info.cz/register",
   "files": [
     {
       "path": "metin2.exe",

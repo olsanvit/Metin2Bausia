@@ -6,7 +6,7 @@
 #   .\generate_manifest.ps1 -ClientDir "C:\Metin2Bausia" -Version "1.0.1"
 #
 # Výstup:
-#   manifest.json — nahrát na patch server: https://patch.bausia.cz/client/manifest.json
+#   manifest.json — nahrát na patch server: https://bausia.vo2info.cz/client/manifest.json
 # ============================================================
 
 param(
@@ -16,7 +16,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Version,
 
-    [string]$BaseUrl = "https://patch.bausia.cz/client/",
+    [string]$BaseUrl = "https://bausia.vo2info.cz/client/",
     [string]$ServerIp = "0.0.0.0",
     [int]$ServerPort = 11002,
     [string]$OutputFile = "manifest.json"
@@ -79,8 +79,8 @@ $manifest = [PSCustomObject]@{
     serverPort = $ServerPort
     baseUrl    = $BaseUrl
     news       = "Verze $Version"
-    websiteUrl = "https://bausia.cz"
-    registerUrl= "https://bausia.cz/register"
+    websiteUrl = "https://bausia.vo2info.cz"
+    registerUrl= "https://bausia.vo2info.cz/register"
     files      = $files
     launcher   = [PSCustomObject]@{
         exe  = "metin2.exe"

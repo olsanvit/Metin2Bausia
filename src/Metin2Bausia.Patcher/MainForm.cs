@@ -7,9 +7,9 @@ namespace Metin2Bausia.Patcher;
 public partial class MainForm : Form
 {
     // ── Konfigurace ──────────────────────────────────────────
-    private const string ManifestUrl  = "https://patch.bausia.cz/client/manifest.json";
-    private const string WebsiteUrl   = "https://bausia.cz";
-    private const string RegisterUrl  = "https://bausia.cz/register";
+    private const string ManifestUrl  = "https://bausia.vo2info.cz/client/manifest.json";
+    private const string WebsiteUrl   = "https://bausia.vo2info.cz";
+    private const string RegisterUrl  = "https://bausia.vo2info.cz/register";
     // ─────────────────────────────────────────────────────────
 
     private readonly string _clientDir;
