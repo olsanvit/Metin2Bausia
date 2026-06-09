@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "date": "2026-06-09T00:00:00Z",
+  "serverName": "Metin2 Bausia",
+  "serverIp": "0.0.0.0",
+  "serverPort": 11002,
+  "baseUrl": "https://patch.bausia.cz/client/",
+  "news": "Vítejte na Metin2 Bausia serveru! Server je v přípravné fázi.",
+  "websiteUrl": "https://bausia.cz",
+  "registerUrl": "https://bausia.cz/register",
+  "files": [
+    {
+      "path": "metin2.exe",
+      "sha256": "PLACEHOLDER_REPLACE_WITH_GENERATE_MANIFEST_SCRIPT",
+      "size": 0,
+      "required": true
+    },
+    {
+      "path": "pack/textures.epk",
+      "sha256": "PLACEHOLDER",
+      "size": 0,
+      "required": true
+    },
+    {
+      "path": "pack/shaders.epk",
+      "sha256": "PLACEHOLDER",
+      "size": 0,
+      "required": true
+    },
+    {
+      "path": "pack/maps.epk",
+      "sha256": "PLACEHOLDER",
+      "size": 0,
+      "required": true
+    },
+    {
+      "path": "pack/sound.epk",
+      "sha256": "PLACEHOLDER",
+      "size": 0,
+      "required": true
+    },
+    {
+      "path": "pack/locale_czech.epk",
+      "sha256": "PLACEHOLDER",
+      "size": 0,
+      "required": true
+    }
+  ],
+  "launcher": {
+    "exe": "metin2.exe",
+    "args": ""
+  }
+}

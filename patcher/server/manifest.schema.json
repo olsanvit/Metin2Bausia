@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Metin2Bausia Patch Manifest",
+  "description": "Manifest soubor pro patcher — popisuje aktuální verzi klienta",
+  "type": "object",
+  "required": ["version", "date", "serverName", "files"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Verze klienta, např. 1.0.3",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "date": {
+      "type": "string",
+      "description": "Datum vydání (ISO 8601)",
+      "format": "date-time"
+    },
+    "serverName": {
+      "type": "string",
+      "description": "Název serveru zobrazený v patcheru"
+    },
+    "serverIp": {
+      "type": "string",
+      "description": "IP/hostname game serveru (auth port)"
+    },
+    "serverPort": {
+      "type": "integer",
+      "description": "Auth port"
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Základní URL pro stahování souborů"
+    },
+    "news": {
+      "type": "string",
+      "description": "HTML nebo plaintext novinek zobrazený v launcheru"
+    },
+    "websiteUrl": {
+      "type": "string",
+      "description": "URL webu serveru"
+    },
+    "registerUrl": {
+      "type": "string",
+      "description": "URL registrace"
+    },
+    "files": {
+      "type": "array",
+      "description": "Seznam všech souborů klienta s checksumem",
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "size"],
+        "properties": {
+          "path":    { "type": "string", "description": "Relativní cesta v adresáři klienta" },
+          "sha256":  { "type": "string", "description": "SHA-256 checksum souboru" },
+          "size":    { "type": "integer", "description": "Velikost v bytech" },
+          "url":     { "type": "string", "description": "Přímá URL ke stažení (volitelné, jinak baseUrl+path)" },
+          "required":{ "type": "boolean", "description": "false = volitelný soubor (např. HD textury)" }
+        }
+      }
+    },
+    "launcher": {
+      "type": "object",
+      "description": "Nastavení pro spuštění hry",
+      "properties": {
+        "exe":  { "type": "string", "description": "Název spustitelného souboru" },
+        "args": { "type": "string", "description": "Argumenty příkazové řádky" }
+      }
+    }
+  }
+}

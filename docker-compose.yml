@@ -78,6 +78,27 @@ services:
     networks:
       - mt2-net
 
+  # Patch server — hosting klientských souborů ke stažení
+  mt2-patch:
+    build:
+      context: ./patcher/server
+      dockerfile: Dockerfile
+    image: metin2bausia-patch:latest
+    container_name: mt2-patch
+    restart: unless-stopped
+    volumes:
+      - mt2-client-files:/usr/share/nginx/html/client
+      # Po vygenerování manifestu: zkopírovat manifest.json do volume
+    ports:
+      - "3031:80"    # http://localhost:3031/client/manifest.json
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ping || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - mt2-net
+
 volumes:
   mt2-pgdata:
     name: mt2-pgdata
@@ -85,6 +106,8 @@ volumes:
     name: mt2-files
   mt2-uploads:
     name: mt2-uploads
+  mt2-client-files:
+    name: mt2-client-files
 
 networks:
   mt2-net:
