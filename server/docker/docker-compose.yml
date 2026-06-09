@@ -2,12 +2,20 @@ version: "3.9"
 
 # ============================================================
 # Metin2Bausia — herní server stack (TMP4)
-# Spustit ODDĚLENĚ od management stacku
+# Spustit ODDĚLENĚ od management stacku (docker-compose.yml v root)
+#
+# PŘED PRVNÍM SPUŠTĚNÍM:
+#   1. Zkopíruj TMP4 source do: server/src/
+#   2. Zkopíruj herní data (maps, locale, scripts) do: server/share/
+#   3. Nastav PUBLIC_IP v server/game/conf.cfg
+#   4. Vytvoř .env ze server/docker/.env.example
+#   5. docker compose -f server/docker/docker-compose.yml build
+#   6. docker compose -f server/docker/docker-compose.yml up -d
 # ============================================================
 
 services:
 
-  # MySQL — herní databáze (account, player, common, log)
+  # MySQL 5.7 — herní databáze (account, player, common, log)
   mt2-mysql:
     image: mysql:5.7
     container_name: mt2-mysql
@@ -16,77 +24,120 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-bausia_root_secret}
       MYSQL_DATABASE: account
     ports:
-      - "127.0.0.1:3366:3306"    # lokální přístup pro správu
+      - "127.0.0.1:3366:3306"    # pouze lokální přístup (admin/phpMyAdmin)
     volumes:
       - mt2-mysql-data:/var/lib/mysql
-      - ../mysql/account:/docker-entrypoint-initdb.d/account:ro
-      - ../mysql/player:/docker-entrypoint-initdb.d/player:ro
-      - ../mysql/common:/docker-entrypoint-initdb.d/common:ro
-      - ../mysql/log:/docker-entrypoint-initdb.d/log:ro
+      - ../../database/mysql/account:/docker-entrypoint-initdb.d/00_account:ro
+      - ../../database/mysql/player:/docker-entrypoint-initdb.d/01_player:ro
+      - ../../database/mysql/common:/docker-entrypoint-initdb.d/02_common:ro
+      - ../../database/mysql/log:/docker-entrypoint-initdb.d/03_log:ro
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max_connections=500
+      --innodb_buffer_pool_size=256M
     networks:
-      - mt2-net
+      - mt2-game-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pbausia_root_secret"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
 
-  # DB server (TMP4 db binary)
+  # DB server — prostředník mezi MySQL a game/auth servery
   mt2-db:
-    image: metin2bausia-server:latest  # build lokálně z TMP4 source
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: metin2bausia-server:latest
     container_name: mt2-db
     restart: unless-stopped
     depends_on:
       mt2-mysql:
         condition: service_healthy
     environment:
-      - MT2_SERVICE=db
+      MT2_SERVICE: db
     volumes:
-      - ./conf/db:/usr/local/metin2/db
+      - ../db/conf.cfg:/usr/local/metin2/db/conf.cfg:ro
       - mt2-shared:/usr/local/metin2/share
+      - mt2-log:/usr/local/metin2/log
     networks:
-      - mt2-net
+      - mt2-game-net
+    healthcheck:
+      test: ["CMD-SHELL", "ss -tnlp | grep ':15000' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
-  # Auth/Login server
+  # Auth/Login server — ověřování účtů při přihlášení
   mt2-auth:
     image: metin2bausia-server:latest
     container_name: mt2-auth
     restart: unless-stopped
     depends_on:
-      - mt2-db
+      mt2-db:
+        condition: service_healthy
     ports:
-      - "11002:11002"   # auth port (veřejný)
+      - "11002:11002"    # klient se připojuje na přihlášení
     environment:
-      - MT2_SERVICE=auth
+      MT2_SERVICE: auth
     volumes:
-      - ./conf/auth:/usr/local/metin2/auth
+      - ../auth/conf.cfg:/usr/local/metin2/auth/conf.cfg:ro
       - mt2-shared:/usr/local/metin2/share:ro
+      - mt2-log:/usr/local/metin2/log
     networks:
-      - mt2-net
+      - mt2-game-net
 
-  # Game server — channel 1
+  # Game server — channel 1 (hlavní herní server)
   mt2-game-ch1:
     image: metin2bausia-server:latest
     container_name: mt2-game-ch1
     restart: unless-stopped
     depends_on:
-      - mt2-db
-      - mt2-auth
+      mt2-db:
+        condition: service_healthy
+      mt2-auth:
+        condition: service_started
     ports:
-      - "13000:13000"   # game port channel 1 (veřejný)
+      - "13000:13000"    # herní traffic — klienti
+      - "13900:13900"    # P2P komunikace mezi game servery
     environment:
-      - MT2_SERVICE=game
-      - MT2_CHANNEL=1
+      MT2_SERVICE: game
+      MT2_CHANNEL: "1"
     volumes:
-      - ./conf/game-ch1:/usr/local/metin2/game
+      - ../game/conf.cfg:/usr/local/metin2/game/conf.cfg:ro
       - mt2-shared:/usr/local/metin2/share:ro
+      - mt2-log:/usr/local/metin2/log
     networks:
-      - mt2-net
+      - mt2-game-net
+
+  # phpMyAdmin — admin UI pro MySQL (pouze lokálně)
+  mt2-phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: mt2-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - mt2-mysql
+    ports:
+      - "127.0.0.1:8099:80"    # http://localhost:8099 (jen lokální přístup)
+    environment:
+      PMA_HOST: mt2-mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-bausia_root_secret}
+      UPLOAD_LIMIT: 128M
+    networks:
+      - mt2-game-net
 
 volumes:
   mt2-mysql-data:
+    name: mt2-mysql-data
   mt2-shared:
+    name: mt2-shared
+  mt2-log:
+    name: mt2-log
 
 networks:
-  mt2-net:
+  mt2-game-net:
+    name: mt2-game-net
     driver: bridge
