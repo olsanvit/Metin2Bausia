@@ -4,20 +4,36 @@ obj/
 *.user
 .vs/
 publish/
-*.log
 
-## Large binary packs (client data) — uložit mimo git nebo LFS
+## Secrets — NIKDY neverzovat
+.env
+*.env
+!.env.example
+appsettings.Production.json
+
+## Herní server source a data — příliš velké / proprietární
+server/src/*
+!server/src/.gitkeep
+!server/src/README.md
+server/share/*
+!server/share/README.md
+!server/share/**/.gitkeep
+
+## Velké binární pack soubory — verzovat pouze metadata
 packs/*.epk
 packs/*.eix
 packs/*.idx
+packs/*.tbl
+
+## Proto binary soubory — jen .txt verze z DB exportu jsou povoleny
+proto/*.bin
 proto/versions/*.bin
 
-## Secrets
-appsettings.Production.json
-*.env
-.env
+## Logy
+*.log
+logs/
 
-## macOS
+## macOS / Windows
 .DS_Store
 Thumbs.db
 

@@ -27,10 +27,13 @@ services:
       - "127.0.0.1:3366:3306"    # pouze lokální přístup (admin/phpMyAdmin)
     volumes:
       - mt2-mysql-data:/var/lib/mysql
-      - ../../database/mysql/account:/docker-entrypoint-initdb.d/00_account:ro
-      - ../../database/mysql/player:/docker-entrypoint-initdb.d/01_player:ro
-      - ../../database/mysql/common:/docker-entrypoint-initdb.d/02_common:ro
-      - ../../database/mysql/log:/docker-entrypoint-initdb.d/03_log:ro
+      # FIX: MySQL initdb zpracuje jen soubory přímo v initdb.d (ne podadresáře)
+      # Každý SQL soubor se mountuje jednotlivě s číselným prefixem (= pořadí spouštění)
+      - ./mysql-init/00_create_databases.sql:/docker-entrypoint-initdb.d/00_create_databases.sql:ro
+      - ../../database/mysql/account/00_account.sql:/docker-entrypoint-initdb.d/01_account.sql:ro
+      - ../../database/mysql/player/00_player.sql:/docker-entrypoint-initdb.d/02_player.sql:ro
+      - ../../database/mysql/common/00_common.sql:/docker-entrypoint-initdb.d/03_common.sql:ro
+      - ../../database/mysql/log/00_log.sql:/docker-entrypoint-initdb.d/04_log.sql:ro
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
