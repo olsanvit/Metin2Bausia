@@ -10,6 +10,7 @@
             <AuthorizeView>
                 <Authorized>
                     <span class="text-muted me-3">@context.User.Identity?.Name</span>
+                    <a href="/account/change-password" class="btn-logout me-2">Změnit heslo</a>
                     <a href="/account/logout" class="btn-logout">Odhlásit</a>
                 </Authorized>
             </AuthorizeView>

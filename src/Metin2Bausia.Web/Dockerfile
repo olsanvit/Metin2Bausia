@@ -7,7 +7,7 @@ WORKDIR /src
 
 # Zkopírovat projekty
 COPY src/Metin2Bausia.Web/Metin2Bausia.Web.csproj src/Metin2Bausia.Web/
-COPY src/SharedServices/SharedServices.csproj src/SharedServices/
+COPY src/SharedServices/SharedServices/SharedServices.csproj src/SharedServices/SharedServices/
 
 # Restore
 RUN dotnet restore src/Metin2Bausia.Web/Metin2Bausia.Web.csproj

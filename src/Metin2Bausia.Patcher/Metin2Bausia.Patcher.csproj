@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Metin2Bausia.Patcher</RootNamespace>
     <AssemblyName>Metin2BausiaPatcher</AssemblyName>
-    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+    <!-- <ApplicationIcon>Resources\icon.ico</ApplicationIcon> — přidat vlastní ikonu do Resources\icon.ico -->
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
