@@ -21,6 +21,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();   // pro Login Razor Page (POST + HttpContext)
 
+// Admin přihlašovací údaje + MustChangePassword flag
+builder.Services.AddSingleton<AdminCredentialService>();
+
 // ── Blazor ───────────────────────────────────────────────
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

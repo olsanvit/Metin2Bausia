@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Metin2Bausia.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -8,16 +9,15 @@ namespace Metin2Bausia.Web.Pages.Account;
 
 public class LoginModel : PageModel
 {
-    private readonly IConfiguration _config;
+    private readonly AdminCredentialService _creds;
 
     public string? Error { get; private set; }
     public string? Email { get; private set; }
 
-    public LoginModel(IConfiguration config) => _config = config;
+    public LoginModel(AdminCredentialService creds) => _creds = creds;
 
-    public void OnGet(string? returnUrl = null)
+    public void OnGet()
     {
-        // Pokud je user už přihlášen, přesměrovat na hlavní stránku
         if (User.Identity?.IsAuthenticated == true)
             Response.Redirect("/");
     }
@@ -27,11 +27,8 @@ public class LoginModel : PageModel
     {
         Email = email;
 
-        var adminEmail    = _config["Admin:Email"]    ?? "";
-        var adminPassword = _config["Admin:Password"] ?? "";
-
-        if (!string.Equals(email, adminEmail, StringComparison.OrdinalIgnoreCase)
-            || password != adminPassword)
+        if (!string.Equals(email, _creds.AdminEmail, StringComparison.OrdinalIgnoreCase)
+            || !_creds.VerifyPassword(password))
         {
             Error = "Nesprávný e-mail nebo heslo.";
             return Page();
@@ -39,8 +36,8 @@ public class LoginModel : PageModel
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name,  adminEmail),
-            new(ClaimTypes.Email, adminEmail),
+            new(ClaimTypes.Name,  _creds.AdminEmail),
+            new(ClaimTypes.Email, _creds.AdminEmail),
             new(ClaimTypes.Role,  "Admin"),
         };
 
@@ -55,6 +52,10 @@ public class LoginModel : PageModel
                 IsPersistent = true,
                 ExpiresUtc   = DateTimeOffset.UtcNow.AddDays(7)
             });
+
+        // Povinná změna hesla při prvním přihlášení
+        if (_creds.MustChangePassword)
+            return Redirect("/account/change-password");
 
         var target = Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
         return Redirect(target);
