@@ -1,34 +1,34 @@
 version: "3.9"
 
 # ============================================================
-# Metin2Bausia — herní server stack (TMP4)
+# Metin2Bausia — herní server stack (The Old Metin2 Project)
 # Spustit ODDĚLENĚ od management stacku (docker-compose.yml v root)
 #
 # PŘED PRVNÍM SPUŠTĚNÍM:
-#   1. Zkopíruj TMP4 source do: server/src/
-#   2. Zkopíruj herní data (maps, locale, scripts) do: server/share/
-#   3. Nastav PUBLIC_IP v server/game/conf.cfg
-#   4. Vytvoř .env ze server/docker/.env.example
-#   5. docker compose -f server/docker/docker-compose.yml build
-#   6. docker compose -f server/docker/docker-compose.yml up -d
+#   1. Vytvoř .env ze server/docker/.env.example a vyplň hodnoty
+#   2. Zkopíruj SQL schémata do database/mysql/ (account/player/common/log)
+#   3. docker compose -f server/docker/docker-compose.yml build
+#   4. docker compose -f server/docker/docker-compose.yml up -d
+#
+# Build se provádí přímo ze server/src/ (klonovaný old-metin2 projekt)
 # ============================================================
 
 services:
 
-  # MySQL 5.7 — herní databáze (account, player, common, log)
+  # MySQL 5.7 — herní databáze
   mt2-mysql:
     image: mysql:5.7
     container_name: mt2-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-bausia_root_secret}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: account
     ports:
-      - "127.0.0.1:3366:3306"    # pouze lokální přístup (admin/phpMyAdmin)
+      - "127.0.0.1:3366:3306"
     volumes:
       - mt2-mysql-data:/var/lib/mysql
-      # FIX: MySQL initdb zpracuje jen soubory přímo v initdb.d (ne podadresáře)
-      # Každý SQL soubor se mountuje jednotlivě s číselným prefixem (= pořadí spouštění)
       - ./mysql-init/00_create_databases.sql:/docker-entrypoint-initdb.d/00_create_databases.sql:ro
       - ../../database/mysql/account/00_account.sql:/docker-entrypoint-initdb.d/01_account.sql:ro
       - ../../database/mysql/player/00_player.sql:/docker-entrypoint-initdb.d/02_player.sql:ro
@@ -42,16 +42,16 @@ services:
     networks:
       - mt2-game-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pbausia_root_secret"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 10
 
-  # DB server — prostředník mezi MySQL a game/auth servery
+  # DB server — prostředník mezi MySQL a game serverem
   mt2-db:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
+      context: ../src
+      dockerfile: Dockerfile
     image: metin2bausia-server:latest
     container_name: mt2-db
     restart: unless-stopped
@@ -59,11 +59,17 @@ services:
       mt2-mysql:
         condition: service_healthy
     environment:
-      MT2_SERVICE: db
-    volumes:
-      - ../db/conf.cfg:/usr/local/metin2/db/conf.cfg:ro
-      - mt2-shared:/usr/local/metin2/share
-      - mt2-log:/usr/local/metin2/log
+      MYSQL_HOST: mt2-mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB_ACCOUNT: account
+      MYSQL_DB_COMMON: common
+      MYSQL_DB_PLAYER: player
+      MYSQL_DB_LOG: log
+      DB_PORT: "15000"
+      TEST_SERVER: "0"
+    command: ["/bin/db", "/app/db.conf"]
     networks:
       - mt2-game-net
     healthcheck:
@@ -72,26 +78,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Auth/Login server — ověřování účtů při přihlášení
-  mt2-auth:
-    image: metin2bausia-server:latest
-    container_name: mt2-auth
-    restart: unless-stopped
-    depends_on:
-      mt2-db:
-        condition: service_healthy
-    ports:
-      - "11002:11002"    # klient se připojuje na přihlášení
-    environment:
-      MT2_SERVICE: auth
-    volumes:
-      - ../auth/conf.cfg:/usr/local/metin2/auth/conf.cfg:ro
-      - mt2-shared:/usr/local/metin2/share:ro
-      - mt2-log:/usr/local/metin2/log
-    networks:
-      - mt2-game-net
-
-  # Game server — channel 1 (hlavní herní server)
+  # Game server — channel 1 (obsahuje i autentizaci)
   mt2-game-ch1:
     image: metin2bausia-server:latest
     container_name: mt2-game-ch1
@@ -99,22 +86,40 @@ services:
     depends_on:
       mt2-db:
         condition: service_healthy
-      mt2-auth:
-        condition: service_started
     ports:
       - "13000:13000"    # herní traffic — klienti
-      - "13900:13900"    # P2P komunikace mezi game servery
+      - "13900:13900"    # P2P komunikace
     environment:
-      MT2_SERVICE: game
-      MT2_CHANNEL: "1"
-    volumes:
-      - ../game/conf.cfg:/usr/local/metin2/game/conf.cfg:ro
-      - mt2-shared:/usr/local/metin2/share:ro
-      - mt2-log:/usr/local/metin2/log
+      MYSQL_HOST: mt2-mysql
+      MYSQL_PORT: "3306"
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB_ACCOUNT: account
+      MYSQL_DB_COMMON: common
+      MYSQL_DB_PLAYER: player
+      MYSQL_DB_LOG: log
+      DB_ADDR: mt2-db
+      DB_PORT: "15000"
+      PUBLIC_IP: ${MT2_PUBLIC_IP}
+      PUBLIC_BIND_IP: "0.0.0.0"
+      INTERNAL_IP: mt2-game-ch1
+      INTERNAL_BIND_IP: "0.0.0.0"
+      GAME_HOSTNAME: bausia-ch1
+      GAME_CHANNEL: "1"
+      GAME_PORT: "13000"
+      GAME_P2P_PORT: "13900"
+      GAME_AUTH_SERVER: mt2-game-ch1
+      GAME_MARK_SERVER: mt2-game-ch1
+      GAME_MAP_ALLOW: "1 21 22 23 24 25 26 27 41 42 43 44 45 46 61 62 63 64 65 66"
+      GAME_MAX_LEVEL: "120"
+      WEB_APP_URL: ""
+      WEB_APP_KEY: ""
+      TEST_SERVER: "0"
+    command: ["/bin/game", "/app/game.conf"]
     networks:
       - mt2-game-net
 
-  # phpMyAdmin — admin UI pro MySQL (pouze lokálně)
+  # phpMyAdmin — admin UI pro MySQL
   mt2-phpmyadmin:
     image: phpmyadmin:latest
     container_name: mt2-phpmyadmin
@@ -122,12 +127,12 @@ services:
     depends_on:
       - mt2-mysql
     ports:
-      - "127.0.0.1:8099:80"    # http://localhost:8099 (jen lokální přístup)
+      - "127.0.0.1:8099:80"
     environment:
       PMA_HOST: mt2-mysql
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-bausia_root_secret}
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       UPLOAD_LIMIT: 128M
     networks:
       - mt2-game-net
@@ -135,10 +140,6 @@ services:
 volumes:
   mt2-mysql-data:
     name: mt2-mysql-data
-  mt2-shared:
-    name: mt2-shared
-  mt2-log:
-    name: mt2-log
 
 networks:
   mt2-game-net:
