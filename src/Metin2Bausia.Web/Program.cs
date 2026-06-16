@@ -37,6 +37,7 @@ builder.Services.AddSingleton<IDbService>(sp =>
 builder.Services.AddSingleton<ThemeService>(_ => new ThemeService(builder.Configuration));
 builder.Services.AddSingleton<ConnectionStateService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, AppCircuitHandler>();
+builder.Services.AddGlobalErrorNotifications();
 
 var app = builder.Build();
 
