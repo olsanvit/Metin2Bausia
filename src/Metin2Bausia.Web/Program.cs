@@ -1,5 +1,6 @@
 using Metin2Bausia.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using SharedServices;
 using SharedServices.Services;
 
 var builder = WebApplication.CreateBuilder(args);
