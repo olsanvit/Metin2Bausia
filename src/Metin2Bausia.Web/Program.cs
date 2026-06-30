@@ -1,4 +1,5 @@
 using Metin2Bausia.Web.Services;
+using MercenariesAndBeasts.Infrastructure.Localization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using SharedServices;
 using SharedServices.Services;
@@ -39,6 +40,7 @@ builder.Services.AddSingleton<ThemeService>(_ => new ThemeService(builder.Config
 builder.Services.AddSingleton<ConnectionStateService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, AppCircuitHandler>();
 builder.Services.AddGlobalErrorNotifications();
+builder.Services.AddSimpleLocalization();
 
 var app = builder.Build();
 
@@ -50,10 +52,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
+app.MapMabCultureEndpoint();
 app.MapRazorPages();   // Login / Logout Razor Pages
 
 app.MapRazorComponents<Metin2Bausia.Web.Components.App>()
