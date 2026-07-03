@@ -4,7 +4,10 @@
 
 <PageTitle>Dashboard — Metin2Bausia</PageTitle>
 
-<h1>Metin2Bausia Admin</h1>
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="mb-0">Metin2Bausia Admin</h1>
+    <a href="/stats" class="btn btn-outline-secondary btn-sm">📊 Statistiky</a>
+</div>
 
 @if (_loading)
 {
@@ -12,69 +15,102 @@
 }
 else
 {
+    @* ── Urgentní fronta ──────────────────────────────────── *@
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card text-bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">Itemy ke schválení</h5>
-                    <p class="card-text fs-2">@_pendingItems</p>
+        <div class="col-6 col-md-3">
+            <a href="/items" class="text-decoration-none">
+                <div class="card @(_pendingItems > 0 ? "text-bg-warning" : "text-bg-light") h-100">
+                    <div class="card-body">
+                        <div class="card-title small">📋 Itemy ke schválení</div>
+                        <div class="fs-2 fw-bold">@_pendingItems</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-warning">
-                <div class="card-body">
-                    <h5 class="card-title">Mobové ke schválení</h5>
-                    <p class="card-text fs-2">@_pendingMobs</p>
+        <div class="col-6 col-md-3">
+            <a href="/mobs" class="text-decoration-none">
+                <div class="card @(_pendingMobs > 0 ? "text-bg-warning" : "text-bg-light") h-100">
+                    <div class="card-body">
+                        <div class="card-title small">👹 Mobové ke schválení</div>
+                        <div class="fs-2 fw-bold">@_pendingMobs</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-success">
-                <div class="card-body">
-                    <h5 class="card-title">Schváleno itemů</h5>
-                    <p class="card-text fs-2">@_approvedItems</p>
+        <div class="col-6 col-md-3">
+            <a href="/items/browse" class="text-decoration-none">
+                <div class="card text-bg-success h-100">
+                    <div class="card-body">
+                        <div class="card-title small">✅ Schváleno itemů</div>
+                        <div class="fs-2 fw-bold">@_approvedItems</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-bg-danger">
-                <div class="card-body">
-                    <h5 class="card-title">Ruční review</h5>
-                    <p class="card-text fs-2">@_manualReview</p>
+        <div class="col-6 col-md-3">
+            <a href="/review" class="text-decoration-none">
+                <div class="card @(_manualReview > 0 ? "text-bg-danger" : "text-bg-light") h-100">
+                    <div class="card-body">
+                        <div class="card-title small">⚠️ Ruční review</div>
+                        <div class="fs-2 fw-bold">@_manualReview</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
-    <h4>Posledních 5 agent runů</h4>
+    @* ── Agent stav ───────────────────────────────────────── *@
     @if (_recentRuns.Any())
     {
-        <table class="table table-sm">
-            <thead>
+        var lastRun = _recentRuns.First();
+        var isHealthy = lastRun.RunStatus == "completed";
+        <div class="alert @(isHealthy ? "alert-success" : "alert-danger") d-flex align-items-center gap-2 mb-3">
+            <span style="font-size:1.2rem">@(isHealthy ? "✅" : "❌")</span>
+            <div>
+                <strong>Poslední agent run: @lastRun.AgentName</strong>
+                <span class="ms-2 text-muted small">@lastRun.RunRunAt?.ToString("dd.MM.yyyy HH:mm")</span>
+                — Status: <strong>@lastRun.RunStatus</strong>
+                @if (lastRun.ItemsNew.HasValue || lastRun.MobsNew.HasValue)
+                {
+                    <span class="ms-2">·  @(lastRun.ItemsNew ?? 0) nových itemů, @(lastRun.MobsNew ?? 0) mobů</span>
+                }
+            </div>
+        </div>
+    }
+
+    <h5 class="mb-2">Posledních 5 agent runů</h5>
+    @if (_recentRuns.Any())
+    {
+        <table class="table table-sm table-hover">
+            <thead class="table-secondary">
                 <tr>
                     <th>Agent</th>
                     <th>Status</th>
-                    <th>Čas</th>
-                    <th>Items new</th>
-                    <th>Mobs new</th>
-                    <th>Obrázky</th>
+                    <th>Spuštěn</th>
+                    <th class="text-end">Items +</th>
+                    <th class="text-end">Mobs +</th>
+                    <th class="text-end">Obrázky</th>
+                    <th>Highlights</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var run in _recentRuns)
                 {
                     <tr>
-                        <td>@run.AgentName</td>
+                        <td class="fw-semibold">@run.AgentName</td>
                         <td><span class="badge @(run.RunStatus == "completed" ? "bg-success" : "bg-danger")">@run.RunStatus</span></td>
-                        <td>@run.RunRunAt?.ToString("dd.MM HH:mm")</td>
-                        <td>@run.ItemsNew</td>
-                        <td>@run.MobsNew</td>
-                        <td>@run.ImagesDownloaded</td>
+                        <td class="text-muted small">@run.RunRunAt?.ToString("dd.MM HH:mm")</td>
+                        <td class="text-end small">@(run.ItemsNew ?? 0)</td>
+                        <td class="text-end small">@(run.MobsNew ?? 0)</td>
+                        <td class="text-end small">@(run.ImagesDownloaded ?? 0)</td>
+                        <td class="text-muted small" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            @run.Highlights
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
+        <a href="/reports" class="btn btn-outline-secondary btn-sm">Zobrazit všechny reporty</a>
     }
     else
     {
