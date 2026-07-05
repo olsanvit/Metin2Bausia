@@ -1,0 +1,311 @@
+@page "/manage/items/{Guid:guid}"
+@attribute [Authorize]
+@inject IDbService Db
+@inject NavigationManager Nav
+
+<PageTitle>@(_item?.Name ?? "Item detail") — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/manage/items" class="btn btn-outline-secondary btn-sm">← Zpět na itemy</a>
+    @if (_item != null)
+    {
+        <span class="badge @StatusClass(_item.ContentStatus)">@_item.ContentStatus</span>
+        <span class="badge @(_item.IsEnabled ? "bg-success" : "bg-secondary")">
+            @(_item.IsEnabled ? "Zapnuto" : "Vypnuto")
+        </span>
+    }
+</div>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else if (_item == null)
+{
+    <div class="alert alert-danger">Item nenalezen.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Základní info -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Základní informace</strong>
+                    <code class="small">vnum @_item.Vnum</code>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small">Název (interní)</label>
+                            <input class="form-control form-control-sm" @bind="_editName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Lokalizovaný název</label>
+                            <input class="form-control form-control-sm" @bind="_editLocaleName" />
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-4">
+                            <label class="form-label small">Typ</label>
+                            <select class="form-select form-select-sm" @bind="_editItemType">
+                                <option value="">—</option>
+                                <option value="weapon">Zbraň (weapon)</option>
+                                <option value="armor">Brnění (armor)</option>
+                                <option value="ring">Prsten (ring)</option>
+                                <option value="belt">Pásek (belt)</option>
+                                <option value="boots">Boty (boots)</option>
+                                <option value="necklace">Náhrdelník (necklace)</option>
+                                <option value="bracelet">Náramek (bracelet)</option>
+                                <option value="shield">Štít (shield)</option>
+                                <option value="bow">Luk (bow)</option>
+                                <option value="arrow">Šíp (arrow)</option>
+                                <option value="potion">Lektvar (potion)</option>
+                                <option value="quest">Quest</option>
+                                <option value="unique">Unikátní</option>
+                                <option value="special">Speciální</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Váha</label>
+                            <input class="form-control form-control-sm" type="number" @bind="_item.Weight" readonly />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Velikost</label>
+                            <input class="form-control form-control-sm" type="number" @bind="_item.Size" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Popis</label>
+                        <textarea class="form-control form-control-sm" rows="3" @bind="_editDescription"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ceny a atributy -->
+            <div class="card mb-3">
+                <div class="card-header"><strong>Ceny a atributy</strong></div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small">Prodejní cena (gold)</label>
+                            <input class="form-control form-control-sm" type="number" value="@_item.Gold" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Nákupní cena (buy)</label>
+                            <input class="form-control form-control-sm" type="number" value="@_item.Buy" readonly />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(_item.LimitType0) || !string.IsNullOrEmpty(_item.LimitType1))
+                    {
+                        <p class="small fw-bold text-muted mb-1">Limity</p>
+                        <div class="row g-1 mb-2">
+                            @if (!string.IsNullOrEmpty(_item.LimitType0))
+                            {
+                                <div class="col-md-6"><span class="badge bg-light text-dark">@_item.LimitType0: @_item.LimitValue0</span></div>
+                            }
+                            @if (!string.IsNullOrEmpty(_item.LimitType1))
+                            {
+                                <div class="col-md-6"><span class="badge bg-light text-dark">@_item.LimitType1: @_item.LimitValue1</span></div>
+                            }
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(_item.ApplyType0) || !string.IsNullOrEmpty(_item.ApplyType1) || !string.IsNullOrEmpty(_item.ApplyType2))
+                    {
+                        <p class="small fw-bold text-muted mb-1">Bonusy (apply)</p>
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            @if (!string.IsNullOrEmpty(_item.ApplyType0))
+                            { <span class="badge bg-primary">@_item.ApplyType0 +@_item.ApplyValue0</span> }
+                            @if (!string.IsNullOrEmpty(_item.ApplyType1))
+                            { <span class="badge bg-primary">@_item.ApplyType1 +@_item.ApplyValue1</span> }
+                            @if (!string.IsNullOrEmpty(_item.ApplyType2))
+                            { <span class="badge bg-primary">@_item.ApplyType2 +@_item.ApplyValue2</span> }
+                        </div>
+                    }
+
+                    <p class="small fw-bold text-muted mb-1">Hodnoty (value0–5)</p>
+                    <div class="row g-1">
+                        @foreach (var (label, val) in new[] {
+                            ("v0", _item.Value0), ("v1", _item.Value1), ("v2", _item.Value2),
+                            ("v3", _item.Value3), ("v4", _item.Value4), ("v5", _item.Value5)
+                        })
+                        {
+                            <div class="col-4 col-md-2">
+                                <div class="text-muted small text-center">@label</div>
+                                <div class="text-center fw-bold small">@(val ?? 0)</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zdroj -->
+            @if (_item.SourceName != null)
+            {
+                <div class="card mb-3">
+                    <div class="card-header"><strong>Zdroj dat</strong></div>
+                    <div class="card-body small">
+                        <strong>@_item.SourceName</strong>
+                        @if (_item.SourceUrl != null)
+                        { <a href="@_item.SourceUrl" target="_blank" class="ms-2">@_item.SourceUrl</a> }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Skóre -->
+            <div class="card mb-3">
+                <div class="card-header"><strong>Kvalita dat</strong></div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Final Score</span>
+                        <strong>@(_item.FinalScore?.ToString("F2") ?? "—")</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Confidence</span>
+                        <strong>@(_item.ConfidenceScore?.ToString("F2") ?? "—")</strong>
+                    </div>
+                    <hr class="my-2" />
+                    <div class="small text-muted">
+                        Vytvořeno: @_item.CreatedAt.ToString("dd.MM.yyyy")<br />
+                        Aktualizováno: @_item.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+
+            <!-- Akce -->
+            <div class="card mb-3">
+                <div class="card-header"><strong>Akce</strong></div>
+                <div class="card-body d-grid gap-2">
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">Uložit změny</button>
+
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-success btn-sm flex-fill" @onclick="() => SetStatusAsync(\"approved\")"
+                                disabled="@(_item.ContentStatus == "approved")">
+                            ✓ Schválit
+                        </button>
+                        <button class="btn btn-danger btn-sm flex-fill" @onclick="() => SetStatusAsync(\"rejected\")"
+                                disabled="@(_item.ContentStatus == "rejected")">
+                            ✗ Zamítnout
+                        </button>
+                    </div>
+
+                    <button class="btn @(_item.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"
+                            @onclick="ToggleEnabledAsync">
+                        @(_item.IsEnabled ? "⊘ Vypnout" : "✓ Zapnout")
+                    </button>
+                </div>
+            </div>
+
+            <div class="small text-muted">GUID: <code class="small">@_item.Guid</code></div>
+        </div>
+    </div>
+}
+
+@if (_msg != null)
+{
+    <div class="toast-msg @(_isErr ? "toast-err" : "toast-ok") mt-3">@_msg</div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private DetailItem? _item;
+    private string _editName = "";
+    private string? _editLocaleName;
+    private string? _editItemType;
+    private string? _editDescription;
+    private string? _msg;
+    private bool _isErr;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _item = await Db.QueryFirstOrDefaultAsync<DetailItem>(
+                @"SELECT ""Guid"", ""Vnum"", ""Name"", ""LocaleName"", ""ItemType"", ""SubType"",
+                         ""Weight"", ""Size"", ""Gold"", ""Buy"",
+                         ""LimitType0"", ""LimitValue0"", ""LimitType1"", ""LimitValue1"",
+                         ""ApplyType0"", ""ApplyValue0"", ""ApplyType1"", ""ApplyValue1"", ""ApplyType2"", ""ApplyValue2"",
+                         ""Value0"", ""Value1"", ""Value2"", ""Value3"", ""Value4"", ""Value5"",
+                         ""Description"", ""SourceName"", ""SourceUrl"",
+                         ""ContentStatus"", ""IsEnabled"", ""FinalScore"", ""ConfidenceScore"",
+                         ""CreatedAt"", ""UpdatedAt""
+                  FROM ""Items"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
+                new { g = Guid });
+
+            if (_item != null)
+            {
+                _editName = _item.Name;
+                _editLocaleName = _item.LocaleName;
+                _editItemType = _item.ItemType;
+                _editDescription = _item.Description;
+            }
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_item == null) return;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Items"" SET ""Name"" = @n, ""LocaleName"" = @l,
+                         ""ItemType"" = @t, ""Description"" = @d, ""UpdatedAt"" = NOW()
+                  WHERE ""Guid"" = @g",
+                new { n = _editName, l = _editLocaleName, t = _editItemType, d = _editDescription, g = _item.Guid });
+            _item.Name = _editName;
+            _item.LocaleName = _editLocaleName;
+            _item.ItemType = _editItemType;
+            _item.Description = _editDescription;
+            _msg = "✓ Uloženo";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private async Task SetStatusAsync(string status)
+    {
+        if (_item == null) return;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Items"" SET ""ContentStatus"" = @s, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { s = status, g = _item.Guid });
+            _item.ContentStatus = status;
+            _msg = $"Status změněn na: {status}";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private async Task ToggleEnabledAsync()
+    {
+        if (_item == null) return;
+        var newVal = !_item.IsEnabled;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Items"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newVal, g = _item.Guid });
+            _item.IsEnabled = newVal;
+            _msg = newVal ? "✓ Zapnuto" : "○ Vypnuto";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private static string StatusClass(string? s) => s switch
+    {
+        "approved" => "bg-success",
+        "pending"  => "bg-warning text-dark",
+        "rejected" => "bg-danger",
+        _          => "bg-secondary"
+    };
+}

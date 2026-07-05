@@ -51,6 +51,7 @@ else
                     <th style="width:90px">Typ</th>
                     <th style="width:90px">Rank</th>
                     <th style="width:100px">Status</th>
+                    <th style="width:50px"></th>
                 </tr>
             </thead>
             <tbody>
@@ -74,6 +75,7 @@ else
                         <td><span class="badge @MobTypeBadge(mob.MobType)">@MobTypeName(mob.MobType)</span></td>
                         <td><span class="badge @RankBadge(mob.Rank)">@RankName(mob.Rank)</span></td>
                         <td><span class="badge @StatusClass(mob.ContentStatus)">@mob.ContentStatus</span></td>
+                        <td><a href="/manage/mobs/@mob.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
                     </tr>
                 }
             </tbody>

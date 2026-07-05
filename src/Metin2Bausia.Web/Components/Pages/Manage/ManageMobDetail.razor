@@ -1,0 +1,300 @@
+@page "/manage/mobs/{Guid:guid}"
+@attribute [Authorize]
+@inject IDbService Db
+@inject NavigationManager Nav
+
+<PageTitle>@(_mob?.Name ?? "Mob detail") — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/manage/mobs" class="btn btn-outline-secondary btn-sm">← Zpět na moby</a>
+    @if (_mob != null)
+    {
+        <span class="badge @StatusClass(_mob.ContentStatus)">@_mob.ContentStatus</span>
+        <span class="badge @(_mob.IsEnabled ? "bg-success" : "bg-secondary")">
+            @(_mob.IsEnabled ? "Zapnuto" : "Vypnuto")
+        </span>
+    }
+</div>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else if (_mob == null)
+{
+    <div class="alert alert-danger">Mob nenalezen.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Základní info -->
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>Základní informace</strong>
+                    <code class="small">vnum @_mob.Vnum</code>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small">Název (interní)</label>
+                            <input class="form-control form-control-sm" @bind="_editName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Lokalizovaný název</label>
+                            <input class="form-control form-control-sm" @bind="_editLocaleName" />
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-4">
+                            <label class="form-label small">Typ</label>
+                            <select class="form-select form-select-sm" @bind="_editMobType">
+                                <option value="">—</option>
+                                <option value="monster">Příšera</option>
+                                <option value="npc">NPC</option>
+                                <option value="metin">Metin</option>
+                                <option value="boss">Boss</option>
+                                <option value="chest">Truhla</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Rank</label>
+                            <select class="form-select form-select-sm" @bind="_editRank">
+                                <option value="">—</option>
+                                <option value="pawn">Pěšák</option>
+                                <option value="knight">Rytíř</option>
+                                <option value="super_knight">Super Rytíř</option>
+                                <option value="boss">Boss</option>
+                                <option value="king">Král</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Level</label>
+                            <input class="form-control form-control-sm" type="number" value="@_mob.Level" readonly />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Popis</label>
+                        <textarea class="form-control form-control-sm" rows="3" @bind="_editDescription"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiky -->
+            <div class="card mb-3">
+                <div class="card-header"><strong>Statistiky boje</strong></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Max HP</div>
+                            <div class="fw-bold">@(_mob.MaxHp?.ToString("N0") ?? "—")</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">EXP</div>
+                            <div class="fw-bold">@(_mob.Exp?.ToString("N0") ?? "—")</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Útok</div>
+                            <div class="fw-bold">@(_mob.Atk ?? 0)</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Obrana</div>
+                            <div class="fw-bold">@(_mob.Def ?? 0)</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Mag. útok</div>
+                            <div class="fw-bold">@(_mob.MagicAtk ?? 0)</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Mag. obrana</div>
+                            <div class="fw-bold">@(_mob.MagicDef ?? 0)</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Rychlost útoku</div>
+                            <div class="fw-bold">@(_mob.AttackSpeed ?? 0)</div>
+                        </div>
+                        <div class="col-6 col-md-3 text-center">
+                            <div class="small text-muted">Rychlost pohybu</div>
+                            <div class="fw-bold">@(_mob.MoveSpeed ?? 0)</div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row g-2">
+                        <div class="col-md-4 text-center">
+                            <div class="small text-muted">Gold (min–max)</div>
+                            <div class="fw-bold">@(_mob.GoldMin?.ToString("N0") ?? "0") – @(_mob.GoldMax?.ToString("N0") ?? "0")</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="small text-muted">Šance na gold</div>
+                            <div class="fw-bold">@(_mob.GoldDropRate ?? 0) %</div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="small text-muted">Agresivní dohled</div>
+                            <div class="fw-bold">@(_mob.AggressiveSight ?? 0)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (_mob.SourceName != null)
+            {
+                <div class="card mb-3">
+                    <div class="card-header"><strong>Zdroj dat</strong></div>
+                    <div class="card-body small">
+                        <strong>@_mob.SourceName</strong>
+                        @if (_mob.SourceUrl != null)
+                        { <a href="@_mob.SourceUrl" target="_blank" class="ms-2">@_mob.SourceUrl</a> }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><strong>Kvalita dat</strong></div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Final Score</span>
+                        <strong>@(_mob.FinalScore?.ToString("F2") ?? "—")</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Confidence</span>
+                        <strong>@(_mob.ConfidenceScore?.ToString("F2") ?? "—")</strong>
+                    </div>
+                    <hr class="my-2" />
+                    <div class="small text-muted">
+                        Vytvořeno: @_mob.CreatedAt.ToString("dd.MM.yyyy")<br />
+                        Aktualizováno: @_mob.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><strong>Akce</strong></div>
+                <div class="card-body d-grid gap-2">
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">Uložit změny</button>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
+                                disabled="@(_mob.ContentStatus == "approved")">✓ Schválit</button>
+                        <button class="btn btn-danger btn-sm flex-fill" @onclick='() => SetStatusAsync("rejected")'
+                                disabled="@(_mob.ContentStatus == "rejected")">✗ Zamítnout</button>
+                    </div>
+                    <button class="btn @(_mob.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"
+                            @onclick="ToggleEnabledAsync">
+                        @(_mob.IsEnabled ? "⊘ Vypnout" : "✓ Zapnout")
+                    </button>
+                </div>
+            </div>
+
+            <div class="small text-muted">GUID: <code class="small">@_mob.Guid</code></div>
+        </div>
+    </div>
+}
+
+@if (_msg != null)
+{
+    <div class="toast-msg @(_isErr ? "toast-err" : "toast-ok") mt-3">@_msg</div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private DetailMob? _mob;
+    private string _editName = "";
+    private string? _editLocaleName;
+    private string? _editMobType;
+    private string? _editRank;
+    private string? _editDescription;
+    private string? _msg;
+    private bool _isErr;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _mob = await Db.QueryFirstOrDefaultAsync<DetailMob>(
+                @"SELECT ""Guid"", ""Vnum"", ""Name"", ""LocaleName"", ""MobType"", ""Rank"",
+                         ""BattleType"", ""Level"", ""MaxHp"", ""Exp"",
+                         ""GoldMin"", ""GoldMax"", ""GoldDropRate"",
+                         ""AttackSpeed"", ""MoveSpeed"", ""Atk"", ""MagicAtk"", ""Def"", ""MagicDef"",
+                         ""AggressiveSight"", ""AttackRange"", ""Description"",
+                         ""SourceName"", ""SourceUrl"", ""ContentStatus"", ""IsEnabled"",
+                         ""FinalScore"", ""ConfidenceScore"", ""CreatedAt"", ""UpdatedAt""
+                  FROM ""Mobs"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
+                new { g = Guid });
+
+            if (_mob != null)
+            {
+                _editName = _mob.Name;
+                _editLocaleName = _mob.LocaleName;
+                _editMobType = _mob.MobType;
+                _editRank = _mob.Rank;
+                _editDescription = _mob.Description;
+            }
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_mob == null) return;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Mobs"" SET ""Name"" = @n, ""LocaleName"" = @l,
+                         ""MobType"" = @t, ""Rank"" = @r, ""Description"" = @d, ""UpdatedAt"" = NOW()
+                  WHERE ""Guid"" = @g",
+                new { n = _editName, l = _editLocaleName, t = _editMobType, r = _editRank, d = _editDescription, g = _mob.Guid });
+            _mob.Name = _editName;
+            _mob.LocaleName = _editLocaleName;
+            _mob.MobType = _editMobType;
+            _mob.Rank = _editRank;
+            _mob.Description = _editDescription;
+            _msg = "✓ Uloženo";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private async Task SetStatusAsync(string status)
+    {
+        if (_mob == null) return;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Mobs"" SET ""ContentStatus"" = @s, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { s = status, g = _mob.Guid });
+            _mob.ContentStatus = status;
+            _msg = $"Status: {status}";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private async Task ToggleEnabledAsync()
+    {
+        if (_mob == null) return;
+        var newVal = !_mob.IsEnabled;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Mobs"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newVal, g = _mob.Guid });
+            _mob.IsEnabled = newVal;
+            _msg = newVal ? "✓ Zapnuto" : "○ Vypnuto";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private static string StatusClass(string? s) => s switch
+    {
+        "approved" => "bg-success",
+        "pending"  => "bg-warning text-dark",
+        "rejected" => "bg-danger",
+        _          => "bg-secondary"
+    };
+}

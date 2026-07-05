@@ -1,0 +1,255 @@
+@page "/manage/systems/{Guid:guid}"
+@attribute [Authorize]
+@inject IDbService Db
+@inject NavigationManager Nav
+
+<PageTitle>@(_sys?.SystemName ?? "Systém detail") — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/manage/systems" class="btn btn-outline-secondary btn-sm">← Zpět na systémy</a>
+    @if (_sys != null)
+    {
+        <span class="badge @StatusClass(_sys.ContentStatus)">@_sys.ContentStatus</span>
+        <span class="badge @(_sys.IsEnabled ? "bg-success" : "bg-secondary")">
+            @(_sys.IsEnabled ? "Zapnuto" : "Vypnuto")
+        </span>
+        @if (_sys.Complexity != null)
+        {
+            <span class="badge @ComplexityBadge(_sys.Complexity)">@_sys.Complexity</span>
+        }
+    }
+</div>
+
+@if (_loading)
+{
+    <p>Načítám...</p>
+}
+else if (_sys == null)
+{
+    <div class="alert alert-danger">Systém nenalezen.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><strong>Základní informace</strong></div>
+                <div class="card-body">
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small">Název systému</label>
+                            <input class="form-control form-control-sm" @bind="_editName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Kategorie</label>
+                            <select class="form-select form-select-sm" @bind="_editCategory">
+                                <option value="">—</option>
+                                <option value="crafting">Crafting (výroba)</option>
+                                <option value="enchant">Enchant (zlepšování)</option>
+                                <option value="mount">Mount (mounty)</option>
+                                <option value="pet">Pet (mazlíčci)</option>
+                                <option value="pvp">PvP</option>
+                                <option value="guild">Guild</option>
+                                <option value="quest">Quest</option>
+                                <option value="economy">Ekonomika</option>
+                                <option value="drop">Drop systém</option>
+                                <option value="event">Eventy</option>
+                                <option value="skill">Dovednosti</option>
+                                <option value="other">Ostatní</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small">Složitost implementace</label>
+                            <select class="form-select form-select-sm" @bind="_editComplexity">
+                                <option value="">—</option>
+                                <option value="low">Nízká</option>
+                                <option value="medium">Střední</option>
+                                <option value="high">Vysoká</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Zdrojový server</label>
+                            <input class="form-control form-control-sm" @bind="_editSourceServer" />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Popis</label>
+                        <textarea class="form-control form-control-sm" rows="3" @bind="_editDescription"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(_sys.Implementation))
+            {
+                <div class="card mb-3">
+                    <div class="card-header"><strong>Implementace</strong></div>
+                    <div class="card-body">
+                        <pre class="small mb-0" style="white-space:pre-wrap;">@_sys.Implementation</pre>
+                    </div>
+                </div>
+            }
+
+            @if (_sys.SourceName != null)
+            {
+                <div class="card mb-3">
+                    <div class="card-header"><strong>Zdroj dat</strong></div>
+                    <div class="card-body small">
+                        <strong>@_sys.SourceName</strong>
+                        @if (_sys.SourceUrl != null)
+                        { <a href="@_sys.SourceUrl" target="_blank" class="ms-2">@_sys.SourceUrl</a> }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header"><strong>Kvalita dat</strong></div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Final Score</span>
+                        <strong>@(_sys.FinalScore?.ToString("F2") ?? "—")</strong>
+                    </div>
+                    <hr class="my-2" />
+                    <div class="small text-muted">
+                        Vytvořeno: @_sys.CreatedAt.ToString("dd.MM.yyyy")<br />
+                        Aktualizováno: @_sys.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header"><strong>Akce</strong></div>
+                <div class="card-body d-grid gap-2">
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">Uložit změny</button>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
+                                disabled="@(_sys.ContentStatus == "approved")">✓ Schválit</button>
+                        <button class="btn btn-danger btn-sm flex-fill" @onclick='() => SetStatusAsync("rejected")'
+                                disabled="@(_sys.ContentStatus == "rejected")">✗ Zamítnout</button>
+                    </div>
+                    <button class="btn @(_sys.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"
+                            @onclick="ToggleEnabledAsync">
+                        @(_sys.IsEnabled ? "⊘ Vypnout" : "✓ Zapnout")
+                    </button>
+                </div>
+            </div>
+
+            <div class="small text-muted">GUID: <code class="small">@_sys.Guid</code></div>
+        </div>
+    </div>
+}
+
+@if (_msg != null)
+{
+    <div class="toast-msg @(_isErr ? "toast-err" : "toast-ok") mt-3">@_msg</div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private DetailSystem? _sys;
+    private string _editName = "";
+    private string? _editCategory;
+    private string? _editDescription;
+    private string? _editComplexity;
+    private string? _editSourceServer;
+    private string? _msg;
+    private bool _isErr;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _sys = await Db.QueryFirstOrDefaultAsync<DetailSystem>(
+                @"SELECT ""Guid"", ""SystemName"", ""Category"", ""Description"",
+                         ""Implementation"", ""Complexity"", ""SourceServer"",
+                         ""SourceName"", ""SourceUrl"", ""ContentStatus"", ""IsEnabled"",
+                         ""FinalScore"", ""CreatedAt"", ""UpdatedAt""
+                  FROM ""Systems"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
+                new { g = Guid });
+
+            if (_sys != null)
+            {
+                _editName = _sys.SystemName;
+                _editCategory = _sys.Category;
+                _editDescription = _sys.Description;
+                _editComplexity = _sys.Complexity;
+                _editSourceServer = _sys.SourceServer;
+            }
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        finally { _loading = false; }
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_sys == null) return;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Systems"" SET ""SystemName"" = @n, ""Category"" = @c,
+                         ""Description"" = @d, ""Complexity"" = @cx, ""SourceServer"" = @ss, ""UpdatedAt"" = NOW()
+                  WHERE ""Guid"" = @g",
+                new { n = _editName, c = _editCategory, d = _editDescription, cx = _editComplexity, ss = _editSourceServer, g = _sys.Guid });
+            _sys.SystemName = _editName;
+            _sys.Category = _editCategory;
+            _sys.Description = _editDescription;
+            _sys.Complexity = _editComplexity;
+            _sys.SourceServer = _editSourceServer;
+            _msg = "✓ Uloženo";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private async Task SetStatusAsync(string status)
+    {
+        if (_sys == null) return;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Systems"" SET ""ContentStatus"" = @s, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { s = status, g = _sys.Guid });
+            _sys.ContentStatus = status;
+            _msg = $"Status: {status}";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private async Task ToggleEnabledAsync()
+    {
+        if (_sys == null) return;
+        var newVal = !_sys.IsEnabled;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Systems"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newVal, g = _sys.Guid });
+            _sys.IsEnabled = newVal;
+            _msg = newVal ? "✓ Zapnuto" : "○ Vypnuto";
+            _isErr = false;
+        }
+        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+    }
+
+    private static string StatusClass(string? s) => s switch
+    {
+        "approved" => "bg-success",
+        "pending"  => "bg-warning text-dark",
+        "rejected" => "bg-danger",
+        _          => "bg-secondary"
+    };
+
+    private static string ComplexityBadge(string? c) => c switch
+    {
+        "low"    => "bg-success",
+        "medium" => "bg-warning text-dark",
+        "high"   => "bg-danger",
+        _        => "bg-secondary"
+    };
+}

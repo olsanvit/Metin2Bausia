@@ -40,6 +40,7 @@ else
                     <th style="width:90px">Typ</th>
                     <th style="width:100px">Status</th>
                     <th style="width:80px">Zdroj</th>
+                    <th style="width:50px"></th>
                 </tr>
             </thead>
             <tbody>
@@ -68,6 +69,9 @@ else
                             { <a href="@item.SourceUrl" target="_blank" class="small">@item.SourceName</a> }
                             else
                             { <span class="small text-muted">@item.SourceName</span> }
+                        </td>
+                        <td>
+                            <a href="/manage/items/@item.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a>
                         </td>
                     </tr>
                 }

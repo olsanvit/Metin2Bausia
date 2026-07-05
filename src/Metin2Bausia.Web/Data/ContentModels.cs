@@ -104,3 +104,112 @@ public class ManageSystem
     public string? Description { get; set; }
     public bool IsEnabled { get; set; }
 }
+
+// ── Detail stránky (full data) ──────────────────────────────
+public class DetailItem
+{
+    public Guid Guid { get; set; }
+    public int? Vnum { get; set; }
+    public string Name { get; set; } = "";
+    public string? LocaleName { get; set; }
+    public string? ItemType { get; set; }
+    public int? SubType { get; set; }
+    public int? Weight { get; set; }
+    public int? Size { get; set; }
+    public long? Gold { get; set; }
+    public long? Buy { get; set; }
+    public string? LimitType0 { get; set; } public int? LimitValue0 { get; set; }
+    public string? LimitType1 { get; set; } public int? LimitValue1 { get; set; }
+    public string? ApplyType0 { get; set; } public int? ApplyValue0 { get; set; }
+    public string? ApplyType1 { get; set; } public int? ApplyValue1 { get; set; }
+    public string? ApplyType2 { get; set; } public int? ApplyValue2 { get; set; }
+    public long? Value0 { get; set; }
+    public long? Value1 { get; set; }
+    public long? Value2 { get; set; }
+    public long? Value3 { get; set; }
+    public long? Value4 { get; set; }
+    public long? Value5 { get; set; }
+    public string? Description { get; set; }
+    public string? SourceName { get; set; }
+    public string? SourceUrl { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+    public decimal? FinalScore { get; set; }
+    public decimal? ConfidenceScore { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class DetailMob
+{
+    public Guid Guid { get; set; }
+    public int? Vnum { get; set; }
+    public string Name { get; set; } = "";
+    public string? LocaleName { get; set; }
+    public string? MobType { get; set; }
+    public string? Rank { get; set; }
+    public string? BattleType { get; set; }
+    public int? Level { get; set; }
+    public long? MaxHp { get; set; }
+    public long? Exp { get; set; }
+    public long? GoldMin { get; set; }
+    public long? GoldMax { get; set; }
+    public int? GoldDropRate { get; set; }
+    public int? AttackSpeed { get; set; }
+    public int? MoveSpeed { get; set; }
+    public int? Atk { get; set; }
+    public int? MagicAtk { get; set; }
+    public int? Def { get; set; }
+    public int? MagicDef { get; set; }
+    public int? AggressiveSight { get; set; }
+    public int? AttackRange { get; set; }
+    public string? Description { get; set; }
+    public string? SourceName { get; set; }
+    public string? SourceUrl { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+    public decimal? FinalScore { get; set; }
+    public decimal? ConfidenceScore { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class DetailMap
+{
+    public Guid Guid { get; set; }
+    public int? MapIndex { get; set; }
+    public string Name { get; set; } = "";
+    public string? LocaleName { get; set; }
+    public string? MapType { get; set; }
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    public int? MinLevel { get; set; }
+    public int? MaxLevel { get; set; }
+    public string? Description { get; set; }
+    public string? PreviewImageUrl { get; set; }
+    public string? SourceName { get; set; }
+    public string? SourceUrl { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+    public decimal? FinalScore { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}
+
+public class DetailSystem
+{
+    public Guid Guid { get; set; }
+    public string SystemName { get; set; } = "";
+    public string? Category { get; set; }
+    public string? Description { get; set; }
+    public string? Implementation { get; set; }
+    public string? Complexity { get; set; }
+    public string? SourceServer { get; set; }
+    public string? SourceName { get; set; }
+    public string? SourceUrl { get; set; }
+    public string ContentStatus { get; set; } = "";
+    public bool IsEnabled { get; set; }
+    public decimal? FinalScore { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+}

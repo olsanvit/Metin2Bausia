@@ -30,6 +30,7 @@ else
                 <th style="width:80px">Min level</th>
                 <th style="width:80px">Max level</th>
                 <th style="width:100px">Status</th>
+                <th style="width:50px"></th>
             </tr>
         </thead>
         <tbody>
@@ -50,6 +51,7 @@ else
                     <td class="text-muted small">@map.MinLevel</td>
                     <td class="text-muted small">@map.MaxLevel</td>
                     <td><span class="badge @StatusClass(map.ContentStatus)">@map.ContentStatus</span></td>
+                    <td><a href="/manage/maps/@map.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
                 </tr>
             }
         </tbody>
