@@ -183,11 +183,11 @@ else
                     <button class="btn btn-primary btn-sm" @onclick="SaveAsync">Uložit změny</button>
 
                     <div class="d-flex gap-1">
-                        <button class="btn btn-success btn-sm flex-fill" @onclick="() => SetStatusAsync(\"approved\")"
+                        <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
                                 disabled="@(_item.ContentStatus == "approved")">
                             ✓ Schválit
                         </button>
-                        <button class="btn btn-danger btn-sm flex-fill" @onclick="() => SetStatusAsync(\"rejected\")"
+                        <button class="btn btn-danger btn-sm flex-fill" @onclick='() => SetStatusAsync("rejected")'
                                 disabled="@(_item.ContentStatus == "rejected")">
                             ✗ Zamítnout
                         </button>
