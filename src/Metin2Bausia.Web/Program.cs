@@ -21,6 +21,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHealthChecks();
 builder.Services.AddRazorPages();   // pro Login Razor Page (POST + HttpContext)
 
 // Admin přihlašovací údaje + MustChangePassword flag
@@ -57,6 +58,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
+app.MapHealthChecks("/health");
 app.MapMabCultureEndpoint();
 app.MapRazorPages();   // Login / Logout Razor Pages
 
