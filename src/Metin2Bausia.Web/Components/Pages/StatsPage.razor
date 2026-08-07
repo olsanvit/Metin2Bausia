@@ -178,33 +178,50 @@ else
     {
         try
         {
-            _itemTotal    = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"IsDeleted\"=FALSE");
-            _itemApproved = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE");
-            _itemEnabled  = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
-            _mobTotal     = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE");
-            _mobApproved  = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE");
-            _mobEnabled   = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
-            _mapTotal     = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsDeleted\"=FALSE");
-            _mapEnabled   = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
-            _sysTotal     = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\"");
-            _sysEnabled   = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsEnabled\"=TRUE");
+            // Všechny dotazy paralelně — každý DbService.QueryFirstOrDefaultAsync otevírá vlastní spojení
+            var tItemTotal    = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"IsDeleted\"=FALSE");
+            var tItemApproved = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE");
+            var tItemEnabled  = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
+            var tMobTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE");
+            var tMobApproved  = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE");
+            var tMobEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
+            var tMapTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsDeleted\"=FALSE");
+            var tMapEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
+            var tSysTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\"");
+            var tSysEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsEnabled\"=TRUE");
+            var tItemsByType  = Db.QueryAsync<TypeCount>("SELECT \"ItemType\", COUNT(*) AS \"Count\" FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE GROUP BY \"ItemType\" ORDER BY \"Count\" DESC LIMIT 15");
+            var tMobsByRank   = Db.QueryAsync<RankCount>("SELECT \"Rank\", COUNT(*) AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE GROUP BY \"Rank\" ORDER BY \"Count\" DESC");
+            var tHighConf     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 80 AND \"IsDeleted\"=FALSE");
+            var tMidConf      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 50 AND \"ConfidenceScore\" < 80 AND \"IsDeleted\"=FALSE");
+            var tLowConf      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" < 50 AND \"ConfidenceScore\" IS NOT NULL AND \"IsDeleted\"=FALSE");
+            var tNullConf     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" IS NULL AND \"IsDeleted\"=FALSE");
+            var tLvlHigh      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" >= 80 AND \"IsDeleted\"=FALSE");
+            var tLvlMid       = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" >= 40 AND \"Level\" < 80 AND \"IsDeleted\"=FALSE");
+            var tLvlLow       = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" < 40 AND \"Level\" IS NOT NULL AND \"IsDeleted\"=FALSE");
+            var tLvlNull      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" IS NULL AND \"IsDeleted\"=FALSE");
 
-            _itemsByType = (await Db.QueryAsync<TypeCount>(
-                "SELECT \"ItemType\", COUNT(*) AS \"Count\" FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE GROUP BY \"ItemType\" ORDER BY \"Count\" DESC LIMIT 15")).ToList();
-            _mobsByRank = (await Db.QueryAsync<RankCount>(
-                "SELECT \"Rank\", COUNT(*) AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE GROUP BY \"Rank\" ORDER BY \"Count\" DESC")).ToList();
+            await Task.WhenAll(
+                tItemTotal, tItemApproved, tItemEnabled,
+                tMobTotal, tMobApproved, tMobEnabled,
+                tMapTotal, tMapEnabled, tSysTotal, tSysEnabled,
+                tItemsByType, tMobsByRank,
+                tHighConf, tMidConf, tLowConf, tNullConf,
+                tLvlHigh, tLvlMid, tLvlLow, tLvlNull);
 
-            var highConf  = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 80 AND \"IsDeleted\"=FALSE");
-            var midConf   = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 50 AND \"ConfidenceScore\" < 80 AND \"IsDeleted\"=FALSE");
-            var lowConf   = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" < 50 AND \"ConfidenceScore\" IS NOT NULL AND \"IsDeleted\"=FALSE");
-            var nullConf  = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" IS NULL AND \"IsDeleted\"=FALSE");
-            _itemsByConf  = [new("≥80 (vysoká)", highConf, "bg-success"), new("50–79 (střední)", midConf, "bg-warning"), new("<50 (nízká)", lowConf, "bg-danger"), new("Neznámá", nullConf, "bg-secondary")];
-
-            var lvlHigh = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" >= 80 AND \"IsDeleted\"=FALSE");
-            var lvlMid  = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" >= 40 AND \"Level\" < 80 AND \"IsDeleted\"=FALSE");
-            var lvlLow  = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" < 40 AND \"Level\" IS NOT NULL AND \"IsDeleted\"=FALSE");
-            var lvlNull = await Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"Level\" IS NULL AND \"IsDeleted\"=FALSE");
-            _mobsByLevel = [new("Lv.80+ (endgame)", lvlHigh, "bg-danger"), new("Lv.40-79", lvlMid, "bg-warning"), new("Lv.1-39", lvlLow, "bg-success"), new("Neznámý", lvlNull, "bg-secondary")];
+            _itemTotal    = tItemTotal.Result;
+            _itemApproved = tItemApproved.Result;
+            _itemEnabled  = tItemEnabled.Result;
+            _mobTotal     = tMobTotal.Result;
+            _mobApproved  = tMobApproved.Result;
+            _mobEnabled   = tMobEnabled.Result;
+            _mapTotal     = tMapTotal.Result;
+            _mapEnabled   = tMapEnabled.Result;
+            _sysTotal     = tSysTotal.Result;
+            _sysEnabled   = tSysEnabled.Result;
+            _itemsByType  = tItemsByType.Result.ToList();
+            _mobsByRank   = tMobsByRank.Result.ToList();
+            _itemsByConf  = [new("≥80 (vysoká)", tHighConf.Result, "bg-success"), new("50–79 (střední)", tMidConf.Result, "bg-warning"), new("<50 (nízká)", tLowConf.Result, "bg-danger"), new("Neznámá", tNullConf.Result, "bg-secondary")];
+            _mobsByLevel  = [new("Lv.80+ (endgame)", tLvlHigh.Result, "bg-danger"), new("Lv.40-79", tLvlMid.Result, "bg-warning"), new("Lv.1-39", tLvlLow.Result, "bg-success"), new("Neznámý", tLvlNull.Result, "bg-secondary")];
         }
         catch { }
         finally { _loading = false; }
