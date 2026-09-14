@@ -52,7 +52,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+// MapStaticAssets servíruje framework assety (_framework/blazor.web.js) — bez něj vrací 404 a circuit se nenaváže
+app.MapStaticAssets();
+app.UseStaticFiles();   // kvůli vlastním souborům ve wwwroot (app.css)
 app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();

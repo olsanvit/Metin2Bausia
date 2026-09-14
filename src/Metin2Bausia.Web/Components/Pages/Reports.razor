@@ -1,10 +1,17 @@
 @page "/reports"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Agent reporty — Metin2Bausia</PageTitle>
 
 <h2>Agent run reporty</h2>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">Chyba DB: @_error</div>
+}
 
 @if (_loading)
 {
@@ -20,13 +27,14 @@ else
         <thead class="table-dark">
             <tr>
                 <th>Agent</th>
+                <th>Režim</th>
                 <th>Readiness</th>
-                <th>Status</th>
+                <th>Výsledek</th>
                 <th>Spuštěn</th>
                 <th>Trvání</th>
-                <th>Items</th>
-                <th>Mobs</th>
-                <th>Obr.</th>
+                <th class="text-end">Nové</th>
+                <th class="text-end">Změněné</th>
+                <th class="text-end">Chybné</th>
                 <th>Highlights</th>
             </tr>
         </thead>
@@ -35,13 +43,14 @@ else
             {
                 <tr>
                     <td>@run.AgentName</td>
+                    <td class="small text-muted">@run.RunMode</td>
                     <td><span class="badge @(run.ReadinessStatus == "ready" ? "bg-success" : "bg-secondary")">@run.ReadinessStatus</span></td>
-                    <td><span class="badge @(run.RunStatus == "completed" ? "bg-success" : "bg-danger")">@run.RunStatus</span></td>
-                    <td>@run.RunRunAt?.ToString("dd.MM.yy HH:mm")</td>
+                    <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? "OK" : "chyba")</span></td>
+                    <td>@run.CreatedAt.ToString("dd.MM.yy HH:mm")</td>
                     <td>@Duration(run)</td>
-                    <td>@run.ItemsNew</td>
-                    <td>@run.MobsNew</td>
-                    <td>@run.ImagesDownloaded</td>
+                    <td class="text-end">@run.EntitiesInserted</td>
+                    <td class="text-end">@run.EntitiesUpdated</td>
+                    <td class="text-end">@run.EntitiesFailed</td>
                     <td><small class="text-muted">@TruncateHighlights(run.Highlights)</small></td>
                 </tr>
             }
@@ -51,6 +60,7 @@ else
 
 @code {
     private bool _loading = true;
+    private string? _error;
     private List<AgentRunReport> _runs = new();
 
     protected override async Task OnInitializedAsync()
@@ -61,15 +71,16 @@ else
             _runs = (await Db.QueryAsync<AgentRunReport>(
                 "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 50")).ToList();
         }
-        catch { }
+        catch (Exception ex) { _error = ex.Message; }
         finally { _loading = false; }
     }
 
+    // DurationMs je jediný zdroj délky běhu — sloupce s časem začátku/konce v tabulce nejsou
     private static string Duration(AgentRunReport run)
     {
-        if (run.RunRunAt == null || run.RunFinishedAt == null) return "-";
-        var span = run.RunFinishedAt.Value - run.RunRunAt.Value;
-        return span.TotalMinutes >= 1 ? $"{(int)span.TotalMinutes}m" : $"{(int)span.TotalSeconds}s";
+        if (run.DurationMs is not > 0) return "-";
+        var span = TimeSpan.FromMilliseconds(run.DurationMs.Value);
+        return span.TotalMinutes >= 1 ? $"{(int)span.TotalMinutes}m {span.Seconds}s" : $"{(int)span.TotalSeconds}s";
     }
 
     private static string TruncateHighlights(string? highlights)

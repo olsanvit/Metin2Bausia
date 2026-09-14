@@ -1,5 +1,7 @@
 @page "/manage/maps/{Guid:guid}"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 @inject NavigationManager Nav
 
@@ -162,6 +164,9 @@ else
 @code {
     [Parameter] public Guid Guid { get; set; }
 
+    // Operátor do auditu — bez toho by v ApprovalLog nebylo poznat, kdo změnu provedl
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
     private bool _loading = true;
     private DetailMap? _map;
     private string _editName = "";
@@ -219,11 +224,23 @@ else
     private async Task SetStatusAsync(string status)
     {
         if (_map == null) return;
+        var op = await AuthState.OperatorNameAsync();
+        var prev = _map.ContentStatus;
         try
         {
+            // Razítko schválení/zamítnutí patří k záznamu — seznamové stránky ho zapisují taky
             await Db.ExecuteAsync(
-                @"UPDATE ""Maps"" SET ""ContentStatus"" = @s, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
-                new { s = status, g = _map.Guid });
+                @"UPDATE ""Maps"" SET ""ContentStatus"" = @s,
+                         ""ApprovedAt""  = CASE WHEN @s = 'approved' THEN NOW() ELSE ""ApprovedAt"" END,
+                         ""ApprovedBy""  = CASE WHEN @s = 'approved' THEN @op   ELSE ""ApprovedBy"" END,
+                         ""RejectedAt""  = CASE WHEN @s = 'rejected' THEN NOW() ELSE ""RejectedAt"" END,
+                         ""UpdatedAt"" = NOW()
+                  WHERE ""Guid"" = @g",
+                new { s = status, op, g = _map.Guid });
+            await Db.ExecuteAsync(
+                @"INSERT INTO ""ApprovalLog"" (""Guid"", ""EntityTable"", ""EntityGuid"", ""EntityVnum"", ""EntityName"", ""Action"", ""Operator"", ""PrevStatus"", ""NewStatus"", ""CreatedAt"")
+                  VALUES (gen_random_uuid(), 'Maps', @g, @vnum, @name, @s, @op, @prev, @s, NOW())",
+                new { g = _map.Guid, vnum = _map.MapIndex, name = _map.Name, s = status, op, prev });
             _map.ContentStatus = status;
             _msg = $"Status: {status}";
             _isErr = false;

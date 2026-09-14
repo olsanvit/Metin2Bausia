@@ -7,6 +7,7 @@ import path from "path";
 import os from "os";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { ITEM_PROTO_HEADER, MOB_PROTO_HEADER, buildItemProtoLine, buildMobProtoLine } from "./proto-format.js";
 
 const { Pool } = pkg;
 
@@ -2019,25 +2020,20 @@ function createMcpServer() {
   });
 
   // ── export_item_proto_txt ───────────────────────────────────────────────────
-  wrapTool("export_item_proto_txt", "Export approved Items from DB to item_proto text format. Saves to proto/item_proto.txt.", {
+  wrapTool("export_item_proto_txt", "Export approved+enabled Items from DB to item_proto text format. Saves to proto/item_proto.txt.", {
     saveToFile: z.boolean().optional().default(true),
-    includeStatus: z.array(z.string()).optional().default(["approved"])
-  }, async ({ saveToFile, includeStatus }) => {
+    includeStatus: z.array(z.string()).optional().default(["approved"]),
+    // Přepínač IsEnabled v adminu musí mít dopad na hru — jinak je zapínání obsahu jen evidence
+    onlyEnabled: z.boolean().optional().default(true)
+  }, async ({ saveToFile, includeStatus, onlyEnabled }) => {
     const statuses = includeStatus.map(s => `'${s.replace(/'/g, "")}'`).join(",");
+    const enabledFilter = onlyEnabled ? `AND "IsEnabled"=true` : "";
     const rows = await pool.query(
-      `SELECT * FROM "Items" WHERE "ContentStatus" = ANY(ARRAY[${statuses}]) AND "IsDeleted"=false ORDER BY "Vnum" ASC`
+      `SELECT * FROM "Items" WHERE "ContentStatus" = ANY(ARRAY[${statuses}]) AND "IsDeleted"=false ${enabledFilter} ORDER BY "Vnum" ASC`
     );
-    const lines = rows.rows.map(r => [
-      r.Vnum, r.Name || "", r.LocaleName || r.Name || "",
-      r.ItemType || 0, r.SubType || 0, r.Weight || 0, r.Size || 1,
-      r.AntiFlags || 0, r.Flags || 0, r.WearFlags || 0, r.ImmuneFlags || 0,
-      r.Gold || 0, r.Buy || 0,
-      r.LimitType0 || 0, r.LimitValue0 || 0, r.LimitType1 || 0, r.LimitValue1 || 0,
-      r.ApplyType0 || 0, r.ApplyValue0 || 0, r.ApplyType1 || 0, r.ApplyValue1 || 0, r.ApplyType2 || 0, r.ApplyValue2 || 0,
-      r.Value0 || 0, r.Value1 || 0, r.Value2 || 0, r.Value3 || 0, r.Value4 || 0, r.Value5 || 0,
-      0, 0, 0, 0, 0, 0  // socket0-2, specular, socket_pct, addon_type
-    ].join("\t"));
-    const content = lines.join("\n");
+    // Formát je poziční a symbolický — skládání řádku řeší proto-format.js (testovatelné bez DB)
+    const lines = rows.rows.map(buildItemProtoLine);
+    const content = [ITEM_PROTO_HEADER.join("\t"), ...lines].join("\n") + "\n";
     let saved = false;
     if (saveToFile) {
       const outPath = path.join(MT2_FILES_DIR, "proto/item_proto.txt");
@@ -2046,31 +2042,24 @@ function createMcpServer() {
       saved = true;
     }
     return { content: [{ type: "text", text: JSON.stringify({
-      exported: rows.rows.length, saved, preview: lines.slice(0, 5)
+      exported: rows.rows.length, saved, onlyEnabled, preview: lines.slice(0, 5)
     }, null, 2) }] };
   });
 
   // ── export_mob_proto_txt ────────────────────────────────────────────────────
-  wrapTool("export_mob_proto_txt", "Export approved Mobs from DB to mob_proto text format. Saves to proto/mob_proto.txt.", {
+  wrapTool("export_mob_proto_txt", "Export approved+enabled Mobs from DB to mob_proto text format. Saves to proto/mob_proto.txt.", {
     saveToFile: z.boolean().optional().default(true),
-    includeStatus: z.array(z.string()).optional().default(["approved"])
-  }, async ({ saveToFile, includeStatus }) => {
+    includeStatus: z.array(z.string()).optional().default(["approved"]),
+    // Stejně jako u itemů — vypnutý mob se do hry exportovat nemá
+    onlyEnabled: z.boolean().optional().default(true)
+  }, async ({ saveToFile, includeStatus, onlyEnabled }) => {
     const statuses = includeStatus.map(s => `'${s.replace(/'/g, "")}'`).join(",");
+    const enabledFilter = onlyEnabled ? `AND "IsEnabled"=true` : "";
     const rows = await pool.query(
-      `SELECT * FROM "Mobs" WHERE "ContentStatus" = ANY(ARRAY[${statuses}]) AND "IsDeleted"=false ORDER BY "Vnum" ASC`
+      `SELECT * FROM "Mobs" WHERE "ContentStatus" = ANY(ARRAY[${statuses}]) AND "IsDeleted"=false ${enabledFilter} ORDER BY "Vnum" ASC`
     );
-    const lines = rows.rows.map(r => [
-      r.Vnum, r.Name || "", r.LocaleName || r.Name || "",
-      r.MobType || 0, r.Rank || 0, r.BattleType || 0, r.Level || 0, r.Size || 0,
-      r.GoldMin || 0, r.GoldMax || 0, r.Exp || 0, r.MaxHp || 0,
-      r.RegenCycle || 0, r.RegenPercent || 0, r.GoldDropRate || 0,
-      r.Def || 0, r.AttackSpeed || 0, r.MoveSpeed || 0,
-      r.AggressiveHpPct || 0, r.AggressiveSight || 0, r.AttackRange || 0,
-      r.ScalePercent || 100, r.Atk || 0, r.MagicAtk || 0, r.MagicDef || 0,
-      r.ImmuneFlags || 0,
-      0,0,0,0,0,0,0,0,0,0,0,0  // resists
-    ].join("\t"));
-    const content = lines.join("\n");
+    const lines = rows.rows.map(buildMobProtoLine);
+    const content = [MOB_PROTO_HEADER.join("\t"), ...lines].join("\n") + "\n";
     let saved = false;
     if (saveToFile) {
       const outPath = path.join(MT2_FILES_DIR, "proto/mob_proto.txt");
@@ -2079,7 +2068,7 @@ function createMcpServer() {
       saved = true;
     }
     return { content: [{ type: "text", text: JSON.stringify({
-      exported: rows.rows.length, saved, preview: lines.slice(0, 5)
+      exported: rows.rows.length, saved, onlyEnabled, preview: lines.slice(0, 5)
     }, null, 2) }] };
   });
 

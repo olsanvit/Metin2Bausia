@@ -37,7 +37,7 @@ services:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changeme}@mt2-postgres:5432/Metin2Bausia
       MT2_FILES_DIR: /app/mt2files
       NTFY_URL: https://ntfy.vo2info.cz
-      NTFY_AUTH: "Basic YWRtaW46Um91bmRuZXQ1NzVQYWRlbA=="
+      NTFY_AUTH: ${NTFY_AUTH:-}
       NTFY_TOPIC_RUNS: agent-runs
       NTFY_TOPIC_ERRORS: agent-errors
       NTFY_TOPIC_ALERTS: agent-alerts

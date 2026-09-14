@@ -1,5 +1,7 @@
 @page "/items"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Itemy ke schválení — Metin2Bausia</PageTitle>
@@ -35,7 +37,7 @@ else
                 <tr class="@(_processing == item.Guid ? "table-secondary" : "")">
                     <td><code>@item.Vnum</code></td>
                     <td><strong>@item.Name</strong>@if (item.LocaleName != null) { <small class="text-muted"> (@item.LocaleName)</small> }</td>
-                    <td>@item.ItemType</td>
+                    <td>@ContentLabels.ItemType(item.ItemType)</td>
                     <td>
                         @if (item.SourceUrl != null)
                         {
@@ -67,6 +69,9 @@ else
 }
 
 @code {
+    // Operátor do auditu — jméno přihlášeného uživatele místo natvrdo zapsaného 'admin'
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
     private bool _loading = true;
     private List<PendingItem> _items = new();
     private Guid? _processing;
@@ -95,14 +100,15 @@ else
     private async Task ApproveAsync(PendingItem item)
     {
         _processing = item.Guid;
+        var op = await AuthState.OperatorNameAsync();
         try
         {
             await Db.ExecuteAsync(
-                "UPDATE \"Items\" SET \"ContentStatus\" = 'approved', \"ApprovalAt\" = NOW(), \"ApprovalBy\" = 'admin', \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
-                new { item.Guid });
+                "UPDATE \"Items\" SET \"ContentStatus\" = 'approved', \"ApprovedAt\" = NOW(), \"ApprovedBy\" = @op, \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
+                new { item.Guid, op });
             await Db.ExecuteAsync(
-                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"Action\", \"Operator\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Items', @Guid, 'approved', 'admin', NOW())",
-                new { item.Guid });
+                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Items', @Guid, @Vnum, @Name, 'approved', @op, 'approved', NOW())",
+                new { item.Guid, item.Vnum, item.Name, op });
             _message = $"✓ Item '{item.Name}' (Vnum {item.Vnum}) schválen.";
             _isError = false;
             _items.Remove(item);
@@ -114,11 +120,15 @@ else
     private async Task RejectAsync(PendingItem item)
     {
         _processing = item.Guid;
+        var op = await AuthState.OperatorNameAsync();
         try
         {
             await Db.ExecuteAsync(
                 "UPDATE \"Items\" SET \"ContentStatus\" = 'rejected', \"RejectedAt\" = NOW(), \"RejectedReason\" = 'manual_reject', \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
                 new { item.Guid });
+            await Db.ExecuteAsync(
+                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Items', @Guid, @Vnum, @Name, 'rejected', @op, 'rejected', NOW())",
+                new { item.Guid, item.Vnum, item.Name, op });
             _message = $"✗ Item '{item.Name}' zamítnut.";
             _isError = false;
             _items.Remove(item);

@@ -1,5 +1,7 @@
 @page "/manage/mobs"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Správa mobů / NPC / Metinů — Metin2Bausia</PageTitle>
@@ -72,9 +74,9 @@ else
                             { <small class="text-muted"> (@mob.LocaleName)</small> }
                         </td>
                         <td class="text-muted small">@mob.Level</td>
-                        <td><span class="badge @MobTypeBadge(mob.MobType)">@MobTypeName(mob.MobType)</span></td>
-                        <td><span class="badge @RankBadge(mob.Rank)">@RankName(mob.Rank)</span></td>
-                        <td><span class="badge @StatusClass(mob.ContentStatus)">@mob.ContentStatus</span></td>
+                        <td><span class="badge @ContentLabels.MobTypeBadge(mob.MobType)">@ContentLabels.MobType(mob.MobType)</span></td>
+                        <td><span class="badge @ContentLabels.RankBadge(mob.Rank)">@ContentLabels.Rank(mob.Rank)</span></td>
+                        <td><span class="badge @ContentLabels.StatusBadge(mob.ContentStatus)">@mob.ContentStatus</span></td>
                         <td><a href="/manage/mobs/@mob.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
                     </tr>
                 }
@@ -100,15 +102,17 @@ else
     private IEnumerable<ManageMob> Filtered => _mobs.Where(m =>
         (string.IsNullOrEmpty(_search) ||
             (m.Name?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true) ||
+            (m.LocaleName?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true) ||
             (m.Vnum?.ToString() == _search)) &&
         (string.IsNullOrEmpty(_filterEnabled) || m.IsEnabled.ToString().ToLower() == _filterEnabled) &&
         _tab switch
         {
-            "monster" => m.MobType == 0,
-            "npc"     => m.MobType == 1,
-            // Metiny: Vnum 8001–8999 nebo MobType=2 (stone)
-            "metin"   => m.MobType == 2 || (m.Vnum >= 8001 && m.Vnum <= 8999),
-            "boss"    => m.Rank >= 4,
+            "monster" => string.Equals(m.MobType, "monster", StringComparison.OrdinalIgnoreCase),
+            "npc"     => string.Equals(m.MobType, "npc", StringComparison.OrdinalIgnoreCase),
+            // Metiny: typ "metin" nebo klasický vnum rozsah 8001–8999, když typ chybí
+            "metin"   => string.Equals(m.MobType, "metin", StringComparison.OrdinalIgnoreCase)
+                         || (m.Vnum >= 8001 && m.Vnum <= 8999),
+            "boss"    => ContentLabels.IsBossRank(m.Rank),
             _         => true
         });
 
@@ -149,24 +153,4 @@ else
         }
     }
 
-    private static string MobTypeName(int? t) => t switch
-    {
-        0 => "Příšera", 1 => "NPC", 2 => "Metin", 3 => "Příšera2", 4 => "Truhla", _ => "?"
-    };
-    private static string MobTypeBadge(int? t) => t switch
-    {
-        1 => "bg-info text-dark", 2 => "bg-warning text-dark", 4 => "bg-secondary", _ => "bg-danger"
-    };
-    private static string RankName(int? r) => r switch
-    {
-        0 => "Pěšák", 1 => "S-Pěšák", 2 => "Rytíř", 3 => "S-Rytíř", 4 => "Boss", 5 => "Král", _ => "?"
-    };
-    private static string RankBadge(int? r) => r switch
-    {
-        4 => "bg-danger", 5 => "bg-dark", _ => "bg-secondary"
-    };
-    private static string StatusClass(string? s) => s switch
-    {
-        "approved" => "bg-success", "pending" => "bg-warning text-dark", _ => "bg-secondary"
-    };
 }

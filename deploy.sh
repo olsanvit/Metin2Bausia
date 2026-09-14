@@ -1,7 +1,7 @@
 #!/bin/bash
 # deploy.sh — Metin2Bausia QNAP deployment script
 # Nasazuje management stack (PostgreSQL + MT2 MCP) na QNAP přes SSH
-set -e
+set -euo pipefail
 
 QNAP_HOST="192.168.60.221"
 QNAP_USER="admin"
@@ -28,8 +28,8 @@ ssh -i "$QNAP_SSH_KEY" "$QNAP_USER@$QNAP_HOST" "mkdir -p $QNAP_DIR/mcp $QNAP_DIR
 # Nahrát soubory přes scp
 echo "→ Nahrávám soubory..."
 scp -i "$QNAP_SSH_KEY" "$COMPOSE_FILE" "$QNAP_USER@$QNAP_HOST:$QNAP_DIR/"
-scp -i "$QNAP_SSH_KEY" mcp/Dockerfile mcp/server.js mcp/package.json "$QNAP_USER@$QNAP_HOST:$QNAP_DIR/mcp/"
-scp -i "$QNAP_SSH_KEY" database/postgres/01_content_tables.sql database/postgres/02_approval_workflow.sql "$QNAP_USER@$QNAP_HOST:$QNAP_DIR/database/postgres/"
+scp -i "$QNAP_SSH_KEY" mcp/Dockerfile mcp/server.js mcp/proto-format.js mcp/package.json "$QNAP_USER@$QNAP_HOST:$QNAP_DIR/mcp/"
+scp -i "$QNAP_SSH_KEY" database/postgres/*.sql "$QNAP_USER@$QNAP_HOST:$QNAP_DIR/database/postgres/"
 
 # Pokud existuje .env, nahrát také
 if [ -f ".env" ]; then
@@ -42,6 +42,7 @@ echo "✓ Soubory nahrány"
 # Build a spustit kontejnery
 echo "→ Spouštím docker-compose build + up na QNAP..."
 ssh -i "$QNAP_SSH_KEY" "$QNAP_USER@$QNAP_HOST" "
+  export PATH=\$PATH:/usr/local/bin:/opt/bin
   cd $QNAP_DIR
   docker compose build --no-cache mt2-mcp
   docker compose up -d

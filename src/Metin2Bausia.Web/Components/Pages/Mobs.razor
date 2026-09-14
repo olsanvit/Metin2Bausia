@@ -1,5 +1,7 @@
 @page "/mobs"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Mobové ke schválení — Metin2Bausia</PageTitle>
@@ -36,7 +38,7 @@ else
                     <td><code>@mob.Vnum</code></td>
                     <td><strong>@mob.Name</strong>@if (mob.LocaleName != null) { <small class="text-muted"> (@mob.LocaleName)</small> }</td>
                     <td>@mob.Level</td>
-                    <td>@RankLabel(mob.Rank)</td>
+                    <td>@ContentLabels.Rank(mob.Rank)</td>
                     <td>@mob.SourceName</td>
                     <td>
                         <span class="badge @(mob.ConfidenceScore >= 80 ? "bg-success" : mob.ConfidenceScore >= 50 ? "bg-warning text-dark" : "bg-danger")">
@@ -61,6 +63,9 @@ else
 }
 
 @code {
+    // Operátor do auditu — jméno přihlášeného uživatele místo natvrdo zapsaného 'admin'
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
     private bool _loading = true;
     private List<PendingMob> _mobs = new();
     private Guid? _processing;
@@ -84,14 +89,15 @@ else
     private async Task ApproveAsync(PendingMob mob)
     {
         _processing = mob.Guid;
+        var op = await AuthState.OperatorNameAsync();
         try
         {
             await Db.ExecuteAsync(
-                "UPDATE \"Mobs\" SET \"ContentStatus\" = 'approved', \"ApprovalAt\" = NOW(), \"ApprovalBy\" = 'admin', \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
-                new { mob.Guid });
+                "UPDATE \"Mobs\" SET \"ContentStatus\" = 'approved', \"ApprovedAt\" = NOW(), \"ApprovedBy\" = @op, \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
+                new { mob.Guid, op });
             await Db.ExecuteAsync(
-                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"Action\", \"Operator\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Mobs', @Guid, 'approved', 'admin', NOW())",
-                new { mob.Guid });
+                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Mobs', @Guid, @Vnum, @Name, 'approved', @op, 'approved', NOW())",
+                new { mob.Guid, mob.Vnum, mob.Name, op });
             _message = $"✓ Mob '{mob.Name}' (Vnum {mob.Vnum}) schválen.";
             _isError = false;
             _mobs.Remove(mob);
@@ -103,11 +109,15 @@ else
     private async Task RejectAsync(PendingMob mob)
     {
         _processing = mob.Guid;
+        var op = await AuthState.OperatorNameAsync();
         try
         {
             await Db.ExecuteAsync(
                 "UPDATE \"Mobs\" SET \"ContentStatus\" = 'rejected', \"RejectedAt\" = NOW(), \"RejectedReason\" = 'manual_reject', \"UpdatedAt\" = NOW() WHERE \"Guid\" = @Guid",
                 new { mob.Guid });
+            await Db.ExecuteAsync(
+                "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Mobs', @Guid, @Vnum, @Name, 'rejected', @op, 'rejected', NOW())",
+                new { mob.Guid, mob.Vnum, mob.Name, op });
             _message = $"✗ Mob '{mob.Name}' zamítnut.";
             _isError = false;
             _mobs.Remove(mob);
@@ -116,14 +126,4 @@ else
         finally { _processing = null; }
     }
 
-    private static string RankLabel(int? rank) => rank switch
-    {
-        0 => "Pawn",
-        1 => "S-Pawn",
-        2 => "Knight",
-        3 => "S-Knight",
-        4 => "Boss",
-        5 => "King",
-        _ => "?"
-    };
 }

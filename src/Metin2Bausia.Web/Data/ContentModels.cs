@@ -6,7 +6,7 @@ public class PendingItem
     public int? Vnum { get; set; }
     public string Name { get; set; } = "";
     public string? LocaleName { get; set; }
-    public int? ItemType { get; set; }
+    public string? ItemType { get; set; }
     public string ContentStatus { get; set; } = "pending";
     public string? SourceName { get; set; }
     public string? SourceUrl { get; set; }
@@ -21,7 +21,7 @@ public class PendingMob
     public string Name { get; set; } = "";
     public string? LocaleName { get; set; }
     public int? Level { get; set; }
-    public int? Rank { get; set; }
+    public string? Rank { get; set; }
     public string ContentStatus { get; set; } = "pending";
     public string? SourceName { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -31,16 +31,23 @@ public class PendingMob
 public class AgentRunReport
 {
     public Guid Guid { get; set; }
-    public string AgentType { get; set; } = "";
-    public string AgentName { get; set; } = "";
+    public string? AgentName { get; set; }
+    public string? RunMode { get; set; }
+    public bool? Success { get; set; }
+    public string? PromptVersion { get; set; }
+    public string? SkillsVersion { get; set; }
+    public string? McpVersion { get; set; }
+    public string? DbStatus { get; set; }
     public string? ReadinessStatus { get; set; }
-    public string? RunStatus { get; set; }
-    public DateTime? RunRunAt { get; set; }
-    public DateTime? RunFinishedAt { get; set; }
-    public int? ItemsNew { get; set; }
-    public int? MobsNew { get; set; }
-    public int? ImagesDownloaded { get; set; }
-    public string? Highlights { get; set; }
+    public int? DurationMs { get; set; }
+    public int? EntitiesProcessed { get; set; }
+    public int? EntitiesInserted { get; set; }
+    public int? EntitiesUpdated { get; set; }
+    public int? EntitiesFailed { get; set; }
+    public string? BlockerCategory { get; set; }
+    public string? Highlights { get; set; }   // jsonb pole v DB — čteme jako text a zobrazujeme zkráceně
+    public string? Errors { get; set; }       // jsonb pole v DB
+    public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 
@@ -50,9 +57,7 @@ public class ManualReviewItem
     public string? EntityTable { get; set; }
     public Guid? EntityGuid { get; set; }
     public string? Reason { get; set; }
-    public string? SourceA { get; set; }
-    public string? SourceB { get; set; }
-    public bool Resolved { get; set; }
+    public string? Status { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 
@@ -63,7 +68,7 @@ public class ManageItem
     public int? Vnum { get; set; }
     public string Name { get; set; } = "";
     public string? LocaleName { get; set; }
-    public int? ItemType { get; set; }
+    public string? ItemType { get; set; }
     public string ContentStatus { get; set; } = "";
     public bool IsEnabled { get; set; }
     public string? SourceName { get; set; }
@@ -77,8 +82,8 @@ public class ManageMob
     public string Name { get; set; } = "";
     public string? LocaleName { get; set; }
     public int? Level { get; set; }
-    public int? MobType { get; set; }
-    public int? Rank { get; set; }
+    public string? MobType { get; set; }
+    public string? Rank { get; set; }
     public string ContentStatus { get; set; } = "";
     public bool IsEnabled { get; set; }
     public string? SourceName { get; set; }

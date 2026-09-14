@@ -1,5 +1,7 @@
 @page "/manage/items"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Správa itemů — Metin2Bausia</PageTitle>
@@ -60,9 +62,9 @@ else
                             @if (item.LocaleName != null)
                             { <small class="text-muted"> (@item.LocaleName)</small> }
                         </td>
-                        <td><span class="badge bg-secondary">@ItemTypeName(item.ItemType)</span></td>
+                        <td><span class="badge bg-secondary">@ContentLabels.ItemType(item.ItemType)</span></td>
                         <td>
-                            <span class="badge @StatusClass(item.ContentStatus)">@item.ContentStatus</span>
+                            <span class="badge @ContentLabels.StatusBadge(item.ContentStatus)">@item.ContentStatus</span>
                         </td>
                         <td>
                             @if (item.SourceUrl != null)
@@ -97,6 +99,7 @@ else
     private IEnumerable<ManageItem> Filtered => _items.Where(i =>
         (string.IsNullOrEmpty(_search) ||
             (i.Name?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true) ||
+            (i.LocaleName?.Contains(_search, StringComparison.OrdinalIgnoreCase) == true) ||
             (i.Vnum?.ToString() == _search)) &&
         (string.IsNullOrEmpty(_filterEnabled) || i.IsEnabled.ToString().ToLower() == _filterEnabled) &&
         (string.IsNullOrEmpty(_filterStatus) || i.ContentStatus == _filterStatus));
@@ -140,20 +143,5 @@ else
         }
     }
 
-    private static string ItemTypeName(int? t) => t switch
-    {
-        1 => "Zbraň", 2 => "Brnění", 3 => "Prsten", 4 => "Pásek",
-        5 => "Boty", 6 => "Náhrdelník", 7 => "Náramek",
-        10 => "Luk", 11 => "Šíp", 12 => "Štít",
-        50 => "Potion", 51 => "Speciální",
-        _ => t?.ToString() ?? "?"
-    };
 
-    private static string StatusClass(string? s) => s switch
-    {
-        "approved" => "bg-success",
-        "pending"  => "bg-warning text-dark",
-        "rejected" => "bg-danger",
-        _          => "bg-secondary"
-    };
 }

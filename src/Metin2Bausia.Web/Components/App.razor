@@ -1,10 +1,16 @@
+@inject SharedServices.Services.ThemeService ThemeService
+@implements IDisposable
+
 <!DOCTYPE html>
-<html lang="cs">
+@* data-bs-theme řídí světlou/tmavou variantu Bootstrapu podle zvoleného Bootswatch tématu *@
+<html lang="cs" data-bs-theme="@ThemeService.BsThemeAttr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Metin2Bausia Admin</title>
     <base href="/" />
+    @* Bootstrap chodí z Bootswatch CDN přes ThemeService — bez něj by celé UI (cards, tables, badges) zůstalo nenastylované *@
+    <link rel="stylesheet" href="@ThemeService.CurrentThemeUrl" />
     <link rel="stylesheet" href="app.css" />
     <HeadOutlet />
 </head>
@@ -12,6 +18,13 @@
     <CascadingAuthenticationState>
         <Routes />
     </CascadingAuthenticationState>
-    <script src="_framework/blazor.server.js"></script>
+    @* blazor.web.js patří k MapRazorComponents/AddInteractiveServerRenderMode; starší blazor.server.js by circuit nenavázal a @onclick by nefungovalo *@
+    <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
+
+@code {
+    // Překreslit hlavičku, když ThemePicker změní téma za běhu
+    protected override void OnInitialized() => ThemeService.OnChange += StateHasChanged;
+    public void Dispose() => ThemeService.OnChange -= StateHasChanged;
+}

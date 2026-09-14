@@ -39,3 +39,6 @@ Thumbs.db
 
 ## node_modules
 mcp/node_modules/
+
+## Lokální admin credentials (plaintext heslo) — nikdy neverzovat
+data/

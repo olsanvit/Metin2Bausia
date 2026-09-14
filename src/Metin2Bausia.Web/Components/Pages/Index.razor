@@ -1,5 +1,7 @@
 @page "/"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Dashboard — Metin2Bausia</PageTitle>
@@ -8,6 +10,11 @@
     <h1 class="mb-0">Metin2Bausia Admin</h1>
     <a href="/stats" class="btn btn-outline-secondary btn-sm">📊 Statistiky</a>
 </div>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">Chyba DB: @_error</div>
+}
 
 @if (_loading)
 {
@@ -63,16 +70,17 @@ else
     @if (_recentRuns.Any())
     {
         var lastRun = _recentRuns.First();
-        var isHealthy = lastRun.RunStatus == "completed";
+        var isHealthy = lastRun.Success == true;
         <div class="alert @(isHealthy ? "alert-success" : "alert-danger") d-flex align-items-center gap-2 mb-3">
             <span style="font-size:1.2rem">@(isHealthy ? "✅" : "❌")</span>
             <div>
                 <strong>Poslední agent run: @lastRun.AgentName</strong>
-                <span class="ms-2 text-muted small">@lastRun.RunRunAt?.ToString("dd.MM.yyyy HH:mm")</span>
-                — Status: <strong>@lastRun.RunStatus</strong>
-                @if (lastRun.ItemsNew.HasValue || lastRun.MobsNew.HasValue)
+                <span class="ms-2 text-muted small">@lastRun.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                — <strong>@(isHealthy ? "úspěch" : "selhání")</strong>
+                <span class="ms-2">· @(lastRun.EntitiesInserted ?? 0) nových, @(lastRun.EntitiesUpdated ?? 0) aktualizovaných</span>
+                @if (lastRun.BlockerCategory != null)
                 {
-                    <span class="ms-2">·  @(lastRun.ItemsNew ?? 0) nových itemů, @(lastRun.MobsNew ?? 0) mobů</span>
+                    <span class="ms-2">· blocker: <strong>@lastRun.BlockerCategory</strong></span>
                 }
             </div>
         </div>
@@ -85,11 +93,11 @@ else
             <thead class="table-secondary">
                 <tr>
                     <th>Agent</th>
-                    <th>Status</th>
+                    <th>Výsledek</th>
                     <th>Spuštěn</th>
-                    <th class="text-end">Items +</th>
-                    <th class="text-end">Mobs +</th>
-                    <th class="text-end">Obrázky</th>
+                    <th class="text-end">Nové</th>
+                    <th class="text-end">Změněné</th>
+                    <th class="text-end">Chybné</th>
                     <th>Highlights</th>
                 </tr>
             </thead>
@@ -98,11 +106,11 @@ else
                 {
                     <tr>
                         <td class="fw-semibold">@run.AgentName</td>
-                        <td><span class="badge @(run.RunStatus == "completed" ? "bg-success" : "bg-danger")">@run.RunStatus</span></td>
-                        <td class="text-muted small">@run.RunRunAt?.ToString("dd.MM HH:mm")</td>
-                        <td class="text-end small">@(run.ItemsNew ?? 0)</td>
-                        <td class="text-end small">@(run.MobsNew ?? 0)</td>
-                        <td class="text-end small">@(run.ImagesDownloaded ?? 0)</td>
+                        <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? "OK" : "chyba")</span></td>
+                        <td class="text-muted small">@run.CreatedAt.ToString("dd.MM HH:mm")</td>
+                        <td class="text-end small">@(run.EntitiesInserted ?? 0)</td>
+                        <td class="text-end small">@(run.EntitiesUpdated ?? 0)</td>
+                        <td class="text-end small">@(run.EntitiesFailed ?? 0)</td>
                         <td class="text-muted small" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                             @run.Highlights
                         </td>
@@ -120,6 +128,7 @@ else
 
 @code {
     private bool _loading = true;
+    private string? _error;
     private int _pendingItems, _pendingMobs, _approvedItems, _manualReview;
     private List<AgentRunReport> _recentRuns = new();
 
@@ -134,11 +143,11 @@ else
             _approvedItems = await Db.QueryFirstOrDefaultAsync<int>(
                 "SELECT COUNT(*) FROM \"Items\" WHERE \"ContentStatus\" = 'approved' AND \"IsDeleted\" = false");
             _manualReview = await Db.QueryFirstOrDefaultAsync<int>(
-                "SELECT COUNT(*) FROM \"ManualReviewQueue\" WHERE \"Resolved\" = false");
+                "SELECT COUNT(*) FROM \"ManualReviewQueue\" WHERE \"Status\" = 'pending' AND \"IsDeleted\" = FALSE");
             _recentRuns = (await Db.QueryAsync<AgentRunReport>(
                 "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 5")).ToList();
         }
-        catch { /* DB not yet available */ }
+        catch (Exception ex) { _error = ex.Message; }
         finally { _loading = false; }
     }
 }

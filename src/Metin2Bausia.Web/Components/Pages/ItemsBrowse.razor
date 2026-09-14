@@ -1,5 +1,7 @@
 @page "/items/browse"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Item databáze — Metin2Bausia</PageTitle>
@@ -15,7 +17,7 @@
         <option value="">Všechny typy</option>
         @foreach (var t in _types)
         {
-            <option value="@t">Typ @t</option>
+            <option value="@t">@ContentLabels.ItemType(t)</option>
         }
     </select>
     <select class="form-select form-select-sm" style="max-width:140px" @bind="_enabledFilter" @bind:after="ApplyFilter">
@@ -60,7 +62,7 @@ else
                                 <small class="text-muted ms-1">(@item.LocaleName)</small>
                             }
                         </td>
-                        <td><span class="badge bg-secondary">@(item.ItemType?.ToString() ?? "?")</span></td>
+                        <td><span class="badge bg-secondary">@ContentLabels.ItemType(item.ItemType)</span></td>
                         <td>
                             @if (item.ConfidenceScore.HasValue)
                             {
@@ -99,7 +101,7 @@ else
     private string _enabledFilter = "";
 
     private List<BrowseItem> _items = [];
-    private List<int> _types = [];
+    private List<string> _types = [];
 
     private IEnumerable<BrowseItem> Filtered =>
         _items.Where(i =>
@@ -107,7 +109,7 @@ else
              i.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
              (i.LocaleName?.Contains(_search, StringComparison.OrdinalIgnoreCase) ?? false) ||
              i.Vnum?.ToString() == _search) &&
-            (string.IsNullOrEmpty(_typeFilter) || i.ItemType?.ToString() == _typeFilter) &&
+            (string.IsNullOrEmpty(_typeFilter) || string.Equals(i.ItemType, _typeFilter, StringComparison.OrdinalIgnoreCase)) &&
             (string.IsNullOrEmpty(_enabledFilter) || i.IsEnabled.ToString().ToLower() == _enabledFilter));
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
@@ -126,7 +128,7 @@ else
                   WHERE ""ContentStatus"" = 'approved' AND ""IsDeleted"" = FALSE
                   ORDER BY ""Vnum"" ASC NULLS LAST
                   LIMIT 5000")).ToList();
-            _types = _items.Where(i => i.ItemType.HasValue).Select(i => i.ItemType!.Value).Distinct().OrderBy(t => t).ToList();
+            _types = _items.Where(i => !string.IsNullOrWhiteSpace(i.ItemType)).Select(i => i.ItemType!).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(t => t).ToList();
         }
         catch { }
         finally { _loading = false; }
@@ -140,7 +142,7 @@ else
         public int? Vnum { get; set; }
         public string Name { get; set; } = "";
         public string? LocaleName { get; set; }
-        public int? ItemType { get; set; }
+        public string? ItemType { get; set; }
         public int? ConfidenceScore { get; set; }
         public bool IsEnabled { get; set; }
         public string? SourceName { get; set; }

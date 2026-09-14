@@ -66,11 +66,35 @@ KLÍČOVÁ PRAVIDLA:
 - ConfidenceScore: 90+ = official source, 70+ = known wiki, 50+ = private server site, <50 = neověřeno
 
 -----------------------------------------------------------
+HODNOTY PRO PROTO EXPORT (od migrace 04):
+-----------------------------------------------------------
+item_proto.txt a mob_proto.txt používají SYMBOLICKÉ hodnoty, ne čísla.
+Ukládej je do DB rovnou v této podobě, ať export nemusí hádat:
+- Items.ItemType:    ITEM_WEAPON | ITEM_ARMOR | ITEM_BELT | ITEM_USE | ITEM_QUEST |
+                     ITEM_UNIQUE | ITEM_MATERIAL | ITEM_METIN | ITEM_COSTUME | ITEM_NONE …
+- Items.SubType:     WEAPON_SWORD | WEAPON_BOW | WEAPON_DAGGER | WEAPON_TWO_HANDED |
+                     ARMOR_BODY | ARMOR_HEAD | ARMOR_FOOTS | ARMOR_WRIST | ARMOR_NECK |
+                     ARMOR_EAR | ARMOR_SHIELD | USE_* … (jinak "0")
+- Items.AntiFlags/Flags/WearFlags/ImmuneFlags: seznam oddělený " | ", např.
+                     "ANTI_DROP | ANTI_GIVE | ANTI_MYSHOP"; prázdné = "NONE"
+- Items.LimitType0/1: LIMIT_NONE | LEVEL | PC_BANG | REAL_TIME …
+- Items.ApplyType0-2: APPLY_NONE | APPLY_ATT_SPEED | APPLY_CRITICAL_PCT | APPLY_MAX_HP …
+- Mobs.Rank:         PAWN | S_PAWN | KNIGHT | S_KNIGHT | BOSS | KING
+- Mobs.MobType:      MONSTER | NPC | STONE | WARP | GOTO | DOOR | BUILDING
+- Mobs.BattleType:   MELEE | RANGE | MAGIC | SPECIAL | POWER | TANKER
+- Mobs.AiFlag/RaceFlag/ImmuneFlags: seznam oddělený čárkou bez mezer, např.
+                     "AGGR,BERSERK" nebo "ANIMAL,ATT_WIND"; prázdné = prázdný řetězec
+Malá písmena z admin UI (weapon, pawn, monster) export sice přeloží, ale symbolická
+hodnota je přesnější — u částí zbroje se z ní odvozuje i SUB_TYPE a ITEM_WEAR.
+Nové sloupce k vyplnění: Refine, RefineSet, MagicPct, Specular, Socket, AttuAddon (itemy),
+St/Dx/Ht/Iq, DamageMin/Max, Folder, DropItemVnum, Enchant*, Resist*, Skill* (moby).
+
+-----------------------------------------------------------
 INFRASTRUKTURA:
 -----------------------------------------------------------
 MCP MT2:      https://mcp.vo2info.cz/MT2/   (DB: Metin2Bausia)
 ntfy:         https://ntfy.vo2info.cz
-  Auth: Authorization: Basic YWRtaW46Um91bmRuZXQ1NzVQYWRlbA==
+  Auth: Authorization: Basic <NTFY_AUTH — načíst z Vaultu / env, nikdy nevkládat do promptu>
   Topics: agent-runs | agent-errors | agent-alerts | agent-maintenance
 Drive:        https://drive.google.com/drive/folders/1GKqFES4r1zoEBsWjfOD0qs2-Tc08a8xQ
 MCP_VERSION:  9.0.0

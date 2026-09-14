@@ -1,10 +1,17 @@
 @page "/stats"
 @attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
 @inject IDbService Db
 
 <PageTitle>Statistiky — Metin2Bausia</PageTitle>
 
 <h2>Statistiky databáze</h2>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">Chyba DB: @_error</div>
+}
 
 @if (_loading)
 {
@@ -66,7 +73,7 @@ else
                             @foreach (var row in _itemsByType.Take(15))
                             {
                                 <tr>
-                                    <td class="small">@ItemTypeName(row.ItemType)</td>
+                                    <td class="small">@ContentLabels.ItemType(row.ItemType)</td>
                                     <td class="text-end small">@row.Count</td>
                                     <td style="min-width:80px">
                                         <div class="progress" style="height:4px">
@@ -95,7 +102,7 @@ else
                             @foreach (var row in _mobsByRank)
                             {
                                 <tr>
-                                    <td class="small">@MobRankName(row.Rank)</td>
+                                    <td class="small">@ContentLabels.Rank(row.Rank)</td>
                                     <td class="text-end small">@row.Count</td>
                                     <td style="min-width:80px">
                                         <div class="progress" style="height:4px">
@@ -160,13 +167,14 @@ else
 
 @code {
     private bool _loading = true;
+    private string? _error;
     private int _itemTotal, _itemApproved, _itemEnabled;
     private int _mobTotal, _mobApproved, _mobEnabled;
     private int _mapTotal, _mapEnabled;
     private int _sysTotal, _sysEnabled;
 
-    private record TypeCount(int? ItemType, int Count);
-    private record RankCount(int? Rank, int Count);
+    private record TypeCount(string? ItemType, int Count);
+    private record RankCount(string? Rank, int Count);
     private record Band(string Label, int Count, string Css);
 
     private List<TypeCount> _itemsByType = [];
@@ -187,8 +195,8 @@ else
             var tMobEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Mobs\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
             var tMapTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsDeleted\"=FALSE");
             var tMapEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
-            var tSysTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\"");
-            var tSysEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsEnabled\"=TRUE");
+            var tSysTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsDeleted\"=FALSE");
+            var tSysEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
             var tItemsByType  = Db.QueryAsync<TypeCount>("SELECT \"ItemType\", COUNT(*) AS \"Count\" FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE GROUP BY \"ItemType\" ORDER BY \"Count\" DESC LIMIT 15");
             var tMobsByRank   = Db.QueryAsync<RankCount>("SELECT \"Rank\", COUNT(*) AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE GROUP BY \"Rank\" ORDER BY \"Count\" DESC");
             var tHighConf     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 80 AND \"IsDeleted\"=FALSE");
@@ -223,21 +231,9 @@ else
             _itemsByConf  = [new("≥80 (vysoká)", tHighConf.Result, "bg-success"), new("50–79 (střední)", tMidConf.Result, "bg-warning"), new("<50 (nízká)", tLowConf.Result, "bg-danger"), new("Neznámá", tNullConf.Result, "bg-secondary")];
             _mobsByLevel  = [new("Lv.80+ (endgame)", tLvlHigh.Result, "bg-danger"), new("Lv.40-79", tLvlMid.Result, "bg-warning"), new("Lv.1-39", tLvlLow.Result, "bg-success"), new("Neznámý", tLvlNull.Result, "bg-secondary")];
         }
-        catch { }
+        catch (Exception ex) { _error = ex.Message; }
         finally { _loading = false; }
     }
 
-    private static string ItemTypeName(int? t) => t switch
-    {
-        0 => "0 – Jiné", 1 => "1 – Zbraň", 2 => "2 – Brnění", 3 => "3 – Helma", 4 => "4 – Přílba",
-        5 => "5 – Štít", 6 => "6 – Náhrdelník", 7 => "7 – Prsten", 8 => "8 – Opasek",
-        9 => "9 – Boty", 10 => "10 – Plášť", 11 => "11 – Kůň",
-        _ => $"{t}"
-    };
 
-    private static string MobRankName(int? r) => r switch
-    {
-        0 => "0 – Normální", 1 => "1 – Silný", 2 => "2 – Elite", 3 => "3 – Unique",
-        4 => "4 – Boss", 5 => "5 – Meta Boss", _ => $"{r}"
-    };
 }
