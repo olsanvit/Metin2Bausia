@@ -44,3 +44,12 @@ Ověřeno buildem (0 chyb, 0 varování) a během aplikace na localhost:5099 —
 | [ManageSystemDetail](ManageSystemDetail.md) | `/manage/systems/{guid}` | ✅ typy OK, chybí Files |
 
 Mimo `.razor`: `Pages/Account/Login|ChangePassword|Logout.cshtml` (Razor Pages, cookie auth, heslo v plaintextu v `data/admin-creds.json`).
+
+## Obsah a herní server (2026-09-15)
+
+- **Import herních dat** (`tools/gamefiles-import/`): z `server/src/gamefiles` generuje SQL do `database/import/generated/` (v `.gitignore`, proprietární data). Obsah: 5743 itemů a 1334 mobů s českými názvy, dropy u 372 mobů, 65 map (17 v `MAP_ALLOW`, 28 933 spawnů), 284 questů (238 kompilovaných), 1298 skupin. Migrace `05_imported_content.sql` přidává `Quests.FileName`, tabulku `ContentGroups` a přesnost `DamMultiply`.
+- **Round-trip test** `node --test tools/gamefiles-import/roundtrip.test.mjs`: 7/7 — proto soubory i české názvy se vyexportují zpět beze změny.
+- **Admin** zobrazuje symbolické hodnoty z proto (`ITEM_WEAPON`, `STONE`, `S_PAWN`) česky přes `ContentLabels`; tab Metiny bere i `STONE`.
+- **MCP export** zapisuje proto v původním kódování (latin1 + `Metadata.protoName`) a nový nástroj `export_names_txt` vytváří `item_names_<locale>.txt` / `mob_names_<locale>.txt` v CP1250.
+- **Herní server**: `server/docker` odvozen od upstream deploye (`server/deploy`, v `.gitignore`): MySQL 5.5, web (Laravel, zakládá SQL schéma), db, auth, 3 jádra kanálu 1 a game99; image se builduje z `server/src`, názvy česky. Runbook v `server/README.md`. Build a start neověřeny (lokálně není Docker).
+- **Neaplikováno na živou DB:** migrace 05 ani import — QNAP je v RAID resyncu.

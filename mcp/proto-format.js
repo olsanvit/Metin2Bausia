@@ -70,6 +70,36 @@ function num(value, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+/**
+ * Metadata z DB (jsonb) — node-pg ho vrací jako objekt, ale ručně vložený řádek může mít text.
+ */
+function meta(r) {
+  const m = r?.Metadata;
+  if (!m) return {};
+  if (typeof m === "string") { try { return JSON.parse(m); } catch { return {}; } }
+  return m;
+}
+
+/**
+ * NAME v proto souborech je interní (v originále korejsky v EUC-KR). Importér ukládá původní
+ * bajty do Metadata.protoName jako latin1 text, aby export vrátil soubor bajt po bajtu.
+ * U nových položek bez originálu se jméno zjednoduší na ASCII — soubor se zapisuje v latin1
+ * a server ho používá jen do logů, zobrazované jméno bere z item_names/mob_names.
+ */
+function protoName(r) {
+  const m = meta(r);
+  if (typeof m.protoName === "string") return m.protoName;
+  return String(r.Name ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x20-\x7e]/g, "?");
+}
+
+/** Rozsah vnum ("110000~110099") se do integer sloupce nevejde — drží se v Metadata.vnumRange. */
+function protoVnum(r) {
+  const m = meta(r);
+  if (typeof m.vnumRange === "string") return m.vnumRange;
+  if (/~/.test(String(r.Vnum ?? ""))) return String(r.Vnum);
+  return num(r.Vnum);
+}
+
 /** Jeden řádek item_proto.txt (33 sloupců oddělených tabulátorem). */
 export function buildItemProtoLine(r) {
   const type = symbolic(r.ItemType, ITEM_TYPE_MAP, "ITEM_NONE");
@@ -82,10 +112,9 @@ export function buildItemProtoLine(r) {
   const wear = flagList(r.WearFlags, ITEM_WEAR_MAP[key] ?? "NONE");
 
   return [
-    // Proto umí i rozsah vnum ("110000~110099") u skupin kostýmů — číslo z něj nedělat
-    /~/.test(String(r.Vnum ?? "")) ? String(r.Vnum) : num(r.Vnum),
+    protoVnum(r),
     // Do proto jde interní název; lokalizovaný patří do item_names.txt, ne sem
-    r.Name || "",
+    protoName(r),
     type,
     subType,
     num(r.Size, 1),
@@ -151,8 +180,8 @@ export function buildMobProtoLine(r) {
   const list = (v) => (v === null || v === undefined || String(v) === "0" ? "" : String(v).trim());
 
   return [
-    num(r.Vnum),
-    r.Name || "",
+    protoVnum(r),
+    protoName(r),
     symbolic(r.Rank, MOB_RANK_MAP, "PAWN"),
     symbolic(r.MobType, MOB_TYPE_MAP, "MONSTER"),
     symbolic(r.BattleType, MOB_BATTLE_TYPE_MAP, "MELEE"),
@@ -180,10 +209,51 @@ export function buildMobProtoLine(r) {
     num(r.ResistSword), num(r.ResistTwohand), num(r.ResistDagger), num(r.ResistBell),
     num(r.ResistFan), num(r.ResistBow), num(r.ResistFire), num(r.ResistElect),
     num(r.ResistMagic), num(r.ResistWind), num(r.ResistPoison),
-    num(r.DamMultiply, 1), num(r.Summon), num(r.DrainSp), num(r.MobColor), num(r.PolymorphItem),
+    (typeof meta(r).damMultiplyRaw === "string" ? meta(r).damMultiplyRaw : num(r.DamMultiply, 1)), num(r.Summon), num(r.DrainSp), num(r.MobColor), num(r.PolymorphItem),
     num(r.SkillLevel0), num(r.SkillVnum0), num(r.SkillLevel1), num(r.SkillVnum1),
     num(r.SkillLevel2), num(r.SkillVnum2), num(r.SkillLevel3), num(r.SkillVnum3),
     num(r.SkillLevel4), num(r.SkillVnum4),
     num(r.SpBerserk), num(r.SpStoneskin), num(r.SpGodspeed), num(r.SpDeathblow), num(r.SpRevive),
   ].join("\t");
+}
+
+
+// ── item_names / mob_names (VNUM<TAB>LOCALE_NAME) ─────────────────────────────
+
+export const NAMES_HEADER = "VNUM\tLOCALE_NAME";
+
+// Tabulka Unicode → bajt pro CP1250 se skládá z TextDecoderu, protože Node umí
+// windows-1250 jen dekódovat. Obejde se tím závislost na iconv.
+let cp1250Encode = null;
+function cp1250Table() {
+  if (cp1250Encode) return cp1250Encode;
+  cp1250Encode = new Map();
+  const dec = new TextDecoder("windows-1250");
+  for (let b = 0x80; b <= 0xff; b++) {
+    const ch = dec.decode(Uint8Array.of(b));
+    if (ch !== "\ufffd") cp1250Encode.set(ch, b);
+  }
+  return cp1250Encode;
+}
+
+/** Text → Buffer v CP1250; znak, který v kódové stránce není, se nahradí "?". */
+export function encodeCp1250(text) {
+  const table = cp1250Table();
+  const out = [];
+  for (const ch of String(text)) {
+    const code = ch.codePointAt(0);
+    if (code < 0x80) out.push(code);
+    else out.push(table.get(ch) ?? 0x3f);
+  }
+  return Buffer.from(out);
+}
+
+/**
+ * Soubor názvů pro server (item_names_cz.txt / mob_names_cz.txt).
+ * rows: [{ Vnum, LocaleName, Name, Metadata }] — pořadí se zachová, jak přišlo.
+ */
+export function buildNamesFile(rows) {
+  const lines = [NAMES_HEADER];
+  for (const r of rows) lines.push(`${protoVnum(r)}\t${r.LocaleName ?? r.Name ?? ""}`);
+  return encodeCp1250(lines.join("\n") + "\n");
 }

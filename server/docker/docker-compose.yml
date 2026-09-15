@@ -1,147 +1,210 @@
-version: "3.9"
+# ============================================================
+# Metin2Bausia — herní server (The Old Metin2 Project)
+#
+# Vychází z upstream deployment projektu (server/deploy, git.old-metin2.com/metin2/deploy).
+# Rozdíly proti upstreamu:
+#   - image herního serveru se builduje z server/src místo předpřipraveného GAME_IMAGE,
+#   - názvy itemů a mobů jdou z českých souborů (bind mount přes symlinky v image),
+#   - MySQL a web jsou vystavené jen na localhost, hesla jen z .env.
+#
+# NESPOUŠTĚT NA QNAPU: build přes vcpkg i běh 7 kontejnerů jsou náročné a QNAP
+# opakovaně padá pod I/O zátěží. Postup: server/README.md
+# ============================================================
 
-# ============================================================
-# Metin2Bausia — herní server stack (The Old Metin2 Project)
-# Spustit ODDĚLENĚ od management stacku (docker-compose.yml v root)
-#
-# PŘED PRVNÍM SPUŠTĚNÍM:
-#   1. Vytvoř .env ze server/docker/.env.example a vyplň hodnoty
-#   2. Zkopíruj SQL schémata do database/mysql/ (account/player/common/log)
-#   3. docker compose -f server/docker/docker-compose.yml build
-#   4. docker compose -f server/docker/docker-compose.yml up -d
-#
-# Build se provádí přímo ze server/src/ (klonovaný old-metin2 projekt)
-# ============================================================
+x-environment: &common-environment
+  MYSQL_HOST: mysql
+  MYSQL_USER: root
+  MYSQL_PASSWORD: ${MT2_MYSQL_PASSWORD}
+  MYSQL_PORT: "3306"
+  MYSQL_DB_ACCOUNT: account
+  MYSQL_DB_PLAYER: player
+  MYSQL_DB_COMMON: common
+  MYSQL_DB_LOG: log
+  TEST_SERVER: ${MT2_TEST_SERVER:-0}
+  DB_ADDR: db
+  DB_PORT: "15000"
+  PUBLIC_IP: ${MT2_PUBLIC_IP}
+  GAME_MAX_LEVEL: ${MT2_GAME_MAX_LEVEL:-105}
+  WEB_APP_URL: ${MT2_WEB_APP_URL}
+  WEB_APP_KEY: ${MT2_WEB_APP_KEY}
+
+# Jádra herního serveru se spouští až po webu: ten při prvním startu zakládá tabulky
+x-core-depends: &core-depends
+  mysql:
+    condition: service_healthy
+  web:
+    condition: service_healthy
 
 services:
 
-  # MySQL 5.7 — herní databáze
-  mt2-mysql:
-    image: mysql:5.7
+  # MySQL 5.5 — upstream je na této verzi připnutý (biarms/mysql běží i na ARM)
+  mysql:
+    image: biarms/mysql:5.5
     container_name: mt2-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: account
+      MYSQL_ROOT_PASSWORD: ${MT2_MYSQL_PASSWORD}
     ports:
       - "127.0.0.1:3366:3306"
     volumes:
-      - mt2-mysql-data:/var/lib/mysql
-      - ./mysql-init/00_create_databases.sql:/docker-entrypoint-initdb.d/00_create_databases.sql:ro
-      - ../../database/mysql/account/00_account.sql:/docker-entrypoint-initdb.d/01_account.sql:ro
-      - ../../database/mysql/player/00_player.sql:/docker-entrypoint-initdb.d/02_player.sql:ro
-      - ../../database/mysql/common/00_common.sql:/docker-entrypoint-initdb.d/03_common.sql:ro
-      - ../../database/mysql/log/00_log.sql:/docker-entrypoint-initdb.d/04_log.sql:ro
-    command: >
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-      --max_connections=500
-      --innodb_buffer_pool_size=256M
-    networks:
-      - mt2-game-net
+      - ./storage/database/:/var/lib/mysql/
+      - ./mysql-init/:/docker-entrypoint-initdb.d/:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
 
-  # DB server — prostředník mezi MySQL a game serverem
-  mt2-db:
+  # Web (Laravel) — web, item shop, autopatcher. Hlavně ale spravuje SQL schéma herních
+  # databází: tabulky account/player/common/log vytvoří a naplní při prvním startu.
+  web:
+    image: ${MT2_WEB_IMAGE:-git.old-metin2.com/metin2/web:latest}
+    container_name: mt2-web
+    restart: unless-stopped
+    environment:
+      APP_NAME: ${MT2_WEB_APP_NAME:-Bausia}
+      APP_ENV: production
+      APP_KEY: ${MT2_WEB_APP_KEY}
+      APP_URL: ${MT2_WEB_APP_URL}
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USERNAME: root
+      DB_PASSWORD: ${MT2_MYSQL_PASSWORD}
+      MAIL_MAILER: ${MT2_MAIL_MAILER:-log}
+      MAIL_HOST: ${MT2_MAIL_HOST:-}
+      MAIL_PORT: ${MT2_MAIL_PORT:-587}
+      MAIL_USERNAME: ${MT2_MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MT2_MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MT2_MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MT2_MAIL_FROM_ADDRESS:-no-reply@example.com}
+      MAIL_FROM_NAME: ${MT2_WEB_APP_NAME:-Bausia}
+    ports:
+      - "127.0.0.1:${MT2_WEB_PORT:-8098}:80"
+    volumes:
+      - ./storage/web/:/app/storage/
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost:80/ || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # DBCache — čte proto a názvy ze souborů, drží cache hráčů mezi MySQL a jádry.
+  # Upstream image odkazuje item_names.txt / mob_names.txt na anglické soubory; bind mount
+  # přes stejnou cestu je přesměruje na zvolený jazyk. Jádra tabulky dostávají od db.
+  db:
     build:
       context: ../src
       dockerfile: Dockerfile
     image: metin2bausia-server:latest
     container_name: mt2-db
     restart: unless-stopped
-    depends_on:
-      mt2-mysql:
-        condition: service_healthy
-    environment:
-      MYSQL_HOST: mt2-mysql
-      MYSQL_PORT: "3306"
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DB_ACCOUNT: account
-      MYSQL_DB_COMMON: common
-      MYSQL_DB_PLAYER: player
-      MYSQL_DB_LOG: log
-      DB_PORT: "15000"
-      TEST_SERVER: "0"
-    command: ["/bin/db", "/app/db.conf"]
-    networks:
-      - mt2-game-net
-    healthcheck:
-      test: ["CMD-SHELL", "ss -tnlp | grep ':15000' || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
+    environment: *common-environment
+    command: db
+    volumes:
+      - ./storage/log/db/:/app/log/
+      - ../src/gamefiles/conf/item_names_${MT2_LOCALE:-cz}.txt:/app/item_names.txt:ro
+      - ../src/gamefiles/conf/mob_names_${MT2_LOCALE:-cz}.txt:/app/mob_names.txt:ro
+    depends_on: *core-depends
 
-  # Game server — channel 1 (obsahuje i autentizaci)
-  mt2-game-ch1:
+  # Auth — AUTH_SERVER "master" bez portu (game/src/config.cpp port u master nevyžaduje).
+  # Hráčská DB auth instance je account, stejně jako v upstreamu.
+  auth:
     image: metin2bausia-server:latest
-    container_name: mt2-game-ch1
+    container_name: mt2-auth
     restart: unless-stopped
-    depends_on:
-      mt2-db:
-        condition: service_healthy
-    ports:
-      - "13000:13000"    # herní traffic — klienti
-      - "13900:13900"    # P2P komunikace
     environment:
-      MYSQL_HOST: mt2-mysql
-      MYSQL_PORT: "3306"
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DB_ACCOUNT: account
-      MYSQL_DB_COMMON: common
-      MYSQL_DB_PLAYER: player
-      MYSQL_DB_LOG: log
-      DB_ADDR: mt2-db
-      DB_PORT: "15000"
-      PUBLIC_IP: ${MT2_PUBLIC_IP}
-      PUBLIC_BIND_IP: "0.0.0.0"
-      INTERNAL_IP: mt2-game-ch1
-      INTERNAL_BIND_IP: "0.0.0.0"
-      GAME_HOSTNAME: bausia-ch1
+      <<: *common-environment
+      MYSQL_DB_PLAYER: account
+      GAME_HOSTNAME: auth
       GAME_CHANNEL: "1"
-      GAME_PORT: "13000"
-      GAME_P2P_PORT: "13900"
-      GAME_AUTH_SERVER: mt2-game-ch1
-      GAME_MARK_SERVER: mt2-game-ch1
-      GAME_MAP_ALLOW: "1 21 22 23 24 25 26 27 41 42 43 44 45 46 61 62 63 64 65 66"
-      GAME_MAX_LEVEL: "120"
-      WEB_APP_URL: ""
-      WEB_APP_KEY: ""
-      TEST_SERVER: "0"
-    command: ["/bin/game", "/app/game.conf"]
-    networks:
-      - mt2-game-net
-
-  # phpMyAdmin — admin UI pro MySQL
-  mt2-phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: mt2-phpmyadmin
-    restart: unless-stopped
-    depends_on:
-      - mt2-mysql
+      GAME_AUTH_SERVER: master
+      GAME_PORT: "11000"
+      GAME_P2P_PORT: "12000"
     ports:
-      - "127.0.0.1:8099:80"
+      - "11000:11000"
+    command: game
+    volumes:
+      - ./storage/log/auth/:/app/log/
+    depends_on: *core-depends
+
+  # Kanál 1 je rozdělený do tří jader podle map — rozdělení převzato z upstreamu
+  ch1_first:
+    image: metin2bausia-server:latest
+    container_name: mt2-ch1-first
+    restart: unless-stopped
     environment:
-      PMA_HOST: mt2-mysql
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      UPLOAD_LIMIT: 128M
-    networks:
-      - mt2-game-net
+      <<: *common-environment
+      GAME_HOSTNAME: ch1_first
+      GAME_CHANNEL: "1"
+      GAME_MARK_SERVER: "1"
+      GAME_PORT: "13000"
+      GAME_P2P_PORT: "14000"
+      GAME_MAP_ALLOW: 1 4 5 6 3 23 43 112 107 67 68 72 208 302 304
+    ports:
+      - "13000:13000"
+    command: game
+    volumes:
+      - ./storage/log/ch1/first/:/app/log/
+      - ./storage/mark/:/app/mark/
+    depends_on: *core-depends
 
-volumes:
-  mt2-mysql-data:
-    name: mt2-mysql-data
+  ch1_game1:
+    image: metin2bausia-server:latest
+    container_name: mt2-ch1-game1
+    restart: unless-stopped
+    environment:
+      <<: *common-environment
+      GAME_HOSTNAME: ch1_game1
+      GAME_CHANNEL: "1"
+      GAME_MARK_SERVER: "0"
+      GAME_PORT: "13001"
+      GAME_P2P_PORT: "14001"
+      GAME_MAP_ALLOW: 21 24 25 26 108 61 63 69 70 73 216 217 303
+    ports:
+      - "13001:13001"
+    command: game
+    volumes:
+      - ./storage/log/ch1/game1/:/app/log/
+    depends_on: *core-depends
 
-networks:
-  mt2-game-net:
-    name: mt2-game-net
-    driver: bridge
+  ch1_game2:
+    image: metin2bausia-server:latest
+    container_name: mt2-ch1-game2
+    restart: unless-stopped
+    environment:
+      <<: *common-environment
+      GAME_HOSTNAME: ch1_game2
+      GAME_CHANNEL: "1"
+      GAME_MARK_SERVER: "0"
+      GAME_PORT: "13002"
+      GAME_P2P_PORT: "14002"
+      GAME_MAP_ALLOW: 41 44 45 46 109 62 64 65 66 71 104 301 351
+    ports:
+      - "13002:13002"
+    command: game
+    volumes:
+      - ./storage/log/ch1/game2/:/app/log/
+    depends_on: *core-depends
+
+  # game99 — speciální mapy (dungeony, válka říší, eventy)
+  game99:
+    image: metin2bausia-server:latest
+    container_name: mt2-game99
+    restart: unless-stopped
+    environment:
+      <<: *common-environment
+      GAME_HOSTNAME: game99
+      GAME_CHANNEL: "99"
+      GAME_MARK_SERVER: "0"
+      GAME_PORT: "13099"
+      GAME_P2P_PORT: "14099"
+      GAME_MAP_ALLOW: 113 81 100 101 103 105 110 111 114 118 119 120 121 122 123 124 125 126 127 128 181 182 183 200
+    ports:
+      - "13099:13099"
+    command: game
+    volumes:
+      - ./storage/log/game99/:/app/log/
+    depends_on: *core-depends

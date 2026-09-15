@@ -7,7 +7,7 @@ import path from "path";
 import os from "os";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { ITEM_PROTO_HEADER, MOB_PROTO_HEADER, buildItemProtoLine, buildMobProtoLine } from "./proto-format.js";
+import { ITEM_PROTO_HEADER, MOB_PROTO_HEADER, buildItemProtoLine, buildMobProtoLine, buildNamesFile } from "./proto-format.js";
 
 const { Pool } = pkg;
 
@@ -2038,7 +2038,7 @@ function createMcpServer() {
     if (saveToFile) {
       const outPath = path.join(MT2_FILES_DIR, "proto/item_proto.txt");
       await fs.mkdir(path.dirname(outPath), { recursive: true });
-      await fs.writeFile(outPath, content, "utf8");
+      await fs.writeFile(outPath, content, "latin1");  // původní bajty jmen z Metadata.protoName
       saved = true;
     }
     return { content: [{ type: "text", text: JSON.stringify({
@@ -2064,12 +2064,38 @@ function createMcpServer() {
     if (saveToFile) {
       const outPath = path.join(MT2_FILES_DIR, "proto/mob_proto.txt");
       await fs.mkdir(path.dirname(outPath), { recursive: true });
-      await fs.writeFile(outPath, content, "utf8");
+      await fs.writeFile(outPath, content, "latin1");  // původní bajty jmen z Metadata.protoName
       saved = true;
     }
     return { content: [{ type: "text", text: JSON.stringify({
       exported: rows.rows.length, saved, onlyEnabled, preview: lines.slice(0, 5)
     }, null, 2) }] };
+  });
+
+  // ── export_names_txt ────────────────────────────────────────────────────────
+  // Server bere zobrazované jméno z item_names / mob_names, ne z proto souboru —
+  // bez tohoto exportu by české názvy z adminu do hry nikdy nedošly.
+  wrapTool("export_names_txt", "Export LocaleName of approved+enabled Items or Mobs to item_names_<locale>.txt / mob_names_<locale>.txt (CP1250).", {
+    entity: z.enum(["Items", "Mobs"]),
+    locale: z.string().regex(/^[a-z]{2}$/).optional().default("cz"),
+    saveToFile: z.boolean().optional().default(true),
+    onlyEnabled: z.boolean().optional().default(true)
+  }, async ({ entity, locale, saveToFile, onlyEnabled }) => {
+    const enabledFilter = onlyEnabled ? `AND "IsEnabled"=true` : "";
+    const rows = await pool.query(
+      `SELECT "Vnum", "Name", "LocaleName", "Metadata" FROM "${entity}"
+       WHERE "ContentStatus"='approved' AND "IsDeleted"=false ${enabledFilter} ORDER BY "Vnum" ASC`
+    );
+    const buffer = buildNamesFile(rows.rows);
+    const fileName = `${entity === "Items" ? "item" : "mob"}_names_${locale}.txt`;
+    let saved = false;
+    if (saveToFile) {
+      const outPath = path.join(MT2_FILES_DIR, "proto", fileName);
+      await fs.mkdir(path.dirname(outPath), { recursive: true });
+      await fs.writeFile(outPath, buffer);
+      saved = true;
+    }
+    return { content: [{ type: "text", text: JSON.stringify({ exported: rows.rows.length, file: fileName, saved, onlyEnabled }, null, 2) }] };
   });
 
   // ── get_pending_content ─────────────────────────────────────────────────────

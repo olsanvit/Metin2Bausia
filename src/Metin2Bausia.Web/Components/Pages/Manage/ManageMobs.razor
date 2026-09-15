@@ -110,7 +110,9 @@ else
             "monster" => string.Equals(m.MobType, "monster", StringComparison.OrdinalIgnoreCase),
             "npc"     => string.Equals(m.MobType, "npc", StringComparison.OrdinalIgnoreCase),
             // Metiny: typ "metin" nebo klasický vnum rozsah 8001–8999, když typ chybí
+            // Import z mob_proto.txt ukládá metiny jako STONE, admin UI jako metin
             "metin"   => string.Equals(m.MobType, "metin", StringComparison.OrdinalIgnoreCase)
+                         || string.Equals(m.MobType, "STONE", StringComparison.OrdinalIgnoreCase)
                          || (m.Vnum >= 8001 && m.Vnum <= 8999),
             "boss"    => ContentLabels.IsBossRank(m.Rank),
             _         => true

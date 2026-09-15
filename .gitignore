@@ -41,4 +41,14 @@ Thumbs.db
 mcp/node_modules/
 
 ## Lokální admin credentials (plaintext heslo) — nikdy neverzovat
-data/
+src/Metin2Bausia.Web/data/admin-creds.json
+**/data/admin-creds.json
+
+## Vygenerovaný import herních dat — proprietární obsah, repo je veřejné
+database/import/generated/
+
+## Upstream deployment projekt (git.old-metin2.com/metin2/deploy) — cizí repo, jen jako reference schémat
+server/deploy/
+
+## Data a logy lokálního herního serveru (MySQL, web, logy jader)
+server/docker/storage/
