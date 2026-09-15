@@ -90,7 +90,9 @@ test("dropy se připojí k existujícím mobům", { skip }, () => {
 });
 
 test("mapy, questy a skupiny mají jedinečné klíče pro upsert", { skip }, () => {
-  const maps = parseMaps(path.join(data, "map"), readMapAllow(path.join(repoRoot, "server/game/conf.cfg")));
+  const allow = readMapAllow([path.join(repoRoot, "server/docker/docker-compose.yml"), path.join(repoRoot, "server/game/conf.cfg")]);
+  assert.ok(allow.size >= 40, `map v GAME_MAP_ALLOW napříč jádry: ${allow.size}`);
+  const maps = parseMaps(path.join(data, "map"), allow);
   assert.equal(new Set(maps.map((m) => m.MapIndex)).size, maps.length, "MapIndex");
   assert.ok(maps.some((m) => m.IsEnabled), "aspoň jedna mapa je v MAP_ALLOW");
   assert.ok(maps.reduce((a, m) => a + m.SpawnMobs.length, 0) > 10000, "spawny");

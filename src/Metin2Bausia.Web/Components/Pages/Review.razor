@@ -4,34 +4,34 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Ruční review — Metin2Bausia</PageTitle>
+<PageTitle>@S["ReviewPageTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Fronta pro ruční review</h2>
+<h2>@S["ReviewHeading"]</h2>
 
 @if (_error != null)
 {
-    <div class="alert alert-danger">Chyba DB: @_error</div>
+    <div class="alert alert-danger">@S["DbError", _error]</div>
 }
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else if (!_items.Any())
 {
-    <div class="alert alert-success">Fronta je prázdná. Žádné konflikty k řešení.</div>
+    <div class="alert alert-success">@S["ReviewEmpty"]</div>
 }
 else
 {
-    <p class="text-muted">Celkem neresolved: @_items.Count</p>
+    <p class="text-muted">@S["ReviewTotal", _items.Count]</p>
     <table class="table table-sm">
         <thead class="table-dark">
             <tr>
-                <th>Entita</th>
-                <th>Důvod</th>
-                <th>Záznam</th>
-                <th>Vytvořen</th>
-                <th>Akce</th>
+                <th>@S["ColEntity"]</th>
+                <th>@S["ColReason"]</th>
+                <th>@S["ColRecord"]</th>
+                <th>@S["Created"]</th>
+                <th>@S["Actions"]</th>
             </tr>
         </thead>
         <tbody>
@@ -44,7 +44,7 @@ else
                     <td>@item.CreatedAt.ToString("dd.MM.yy")</td>
                     <td>
                         <button class="btn btn-sm btn-outline-secondary" @onclick="() => ResolveAsync(item)">
-                            Vyřešeno
+                            @S["MarkResolved"]
                         </button>
                     </td>
                 </tr>

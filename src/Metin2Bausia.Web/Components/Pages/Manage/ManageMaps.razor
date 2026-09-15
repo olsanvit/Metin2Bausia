@@ -4,34 +4,34 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Správa map — Metin2Bausia</PageTitle>
+<PageTitle>@S["ManageMapsTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Správa map</h2>
-<p class="text-muted mb-3">Zapínej/vypínej přístupnost map.</p>
+<h2>@S["ManageMapsTitle"]</h2>
+<p class="text-muted mb-3">@S["ManageMapsIntro"]</p>
 
 <div class="toolbar mb-3 d-flex gap-2 align-items-center">
     <input class="form-control form-control-sm" style="max-width:220px"
-           placeholder="Hledat název..." @bind="_search" @bind:event="oninput" />
+           placeholder="@S["SearchName"]" @bind="_search" @bind:event="oninput" />
     <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
-        <option value="">Vše</option>
-        <option value="true">Zapnuté</option>
-        <option value="false">Vypnuté</option>
+        <option value="">@S["All"]</option>
+        <option value="true">@S["Enabled"]</option>
+        <option value="false">@S["Disabled"]</option>
     </select>
     <span class="text-muted small ms-auto">@Filtered.Count() / @_maps.Count</span>
 </div>
 
-@if (_loading) { <p>Načítám...</p> }
+@if (_loading) { <p>@S["Loading"]</p> }
 else
 {
     <table class="table table-sm table-hover align-middle">
         <thead class="table-dark">
             <tr>
-                <th style="width:56px">Zapnuto</th>
+                <th style="width:56px">@S["On"]</th>
                 <th style="width:70px">Index</th>
-                <th>Název</th>
-                <th style="width:80px">Min level</th>
-                <th style="width:80px">Max level</th>
-                <th style="width:100px">Status</th>
+                <th>@S["ColName"]</th>
+                <th style="width:80px">@S["ColMinLevel"]</th>
+                <th style="width:80px">@S["ColMaxLevel"]</th>
+                <th style="width:100px">@S["Status"]</th>
                 <th style="width:50px"></th>
             </tr>
         </thead>
@@ -101,7 +101,7 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = map.Guid });
-            _message = newValue ? $"✓ {map.Name} zapnuto" : $"○ {map.Name} vypnuto";
+            _message = newValue ? S["TurnedOn", map.Name] : S["TurnedOff", map.Name];
             _isError = false;
         }
         catch (Exception ex) { map.IsEnabled = old; _message = ex.Message; _isError = true; }

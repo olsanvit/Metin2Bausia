@@ -4,31 +4,31 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Itemy ke schválení — Metin2Bausia</PageTitle>
+<PageTitle>@S["ItemsPendingTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Itemy čekající na schválení</h2>
+<h2>@S["ItemsPendingHeading"]</h2>
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else if (!_items.Any())
 {
-    <div class="alert alert-info">Žádné itemy ke schválení.</div>
+    <div class="alert alert-info">@S["NoItemsPending"]</div>
 }
 else
 {
-    <p class="text-muted">Celkem: @_items.Count itemů</p>
+    <p class="text-muted">@S["TotalItems", _items.Count]</p>
     <table class="table table-hover table-sm">
         <thead class="table-dark">
             <tr>
-                <th>Vnum</th>
-                <th>Name</th>
-                <th>Typ</th>
-                <th>Zdroj</th>
-                <th>Confidence</th>
-                <th>Vytvořen</th>
-                <th>Akce</th>
+                <th>@S["ColVnum"]</th>
+                <th>@S["ColName"]</th>
+                <th>@S["Type"]</th>
+                <th>@S["Source"]</th>
+                <th>@S["Confidence"]</th>
+                <th>@S["Created"]</th>
+                <th>@S["Actions"]</th>
             </tr>
         </thead>
         <tbody>
@@ -93,7 +93,7 @@ else
                 "FROM \"Items\" WHERE \"ContentStatus\" = 'pending' AND \"IsDeleted\" = false " +
                 "ORDER BY \"ConfidenceScore\" DESC NULLS LAST, \"CreatedAt\" DESC LIMIT 200")).ToList();
         }
-        catch (Exception ex) { _message = $"Chyba DB: {ex.Message}"; _isError = true; }
+        catch (Exception ex) { _message = S["DbError", ex.Message]; _isError = true; }
         finally { _loading = false; }
     }
 
@@ -109,11 +109,11 @@ else
             await Db.ExecuteAsync(
                 "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Items', @Guid, @Vnum, @Name, 'approved', @op, 'approved', NOW())",
                 new { item.Guid, item.Vnum, item.Name, op });
-            _message = $"✓ Item '{item.Name}' (Vnum {item.Vnum}) schválen.";
+            _message = S["ItemApproved", item.Name, item.Vnum!];
             _isError = false;
             _items.Remove(item);
         }
-        catch (Exception ex) { _message = $"Chyba: {ex.Message}"; _isError = true; }
+        catch (Exception ex) { _message = S["Error", ex.Message]; _isError = true; }
         finally { _processing = null; }
     }
 
@@ -129,11 +129,11 @@ else
             await Db.ExecuteAsync(
                 "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Items', @Guid, @Vnum, @Name, 'rejected', @op, 'rejected', NOW())",
                 new { item.Guid, item.Vnum, item.Name, op });
-            _message = $"✗ Item '{item.Name}' zamítnut.";
+            _message = S["ItemRejected", item.Name];
             _isError = false;
             _items.Remove(item);
         }
-        catch (Exception ex) { _message = $"Chyba: {ex.Message}"; _isError = true; }
+        catch (Exception ex) { _message = S["Error", ex.Message]; _isError = true; }
         finally { _processing = null; }
     }
 }

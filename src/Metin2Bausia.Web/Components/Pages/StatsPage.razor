@@ -4,18 +4,18 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Statistiky — Metin2Bausia</PageTitle>
+<PageTitle>@S["StatsPageTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Statistiky databáze</h2>
+<h2>@S["StatsHeading"]</h2>
 
 @if (_error != null)
 {
-    <div class="alert alert-danger">Chyba DB: @_error</div>
+    <div class="alert alert-danger">@S["DbError", _error]</div>
 }
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else
 {
@@ -23,36 +23,36 @@ else
         <div class="col-6 col-md-3">
             <div class="card text-bg-primary h-100">
                 <div class="card-body">
-                    <div class="card-title small text-white-50">Itemy celkem</div>
+                    <div class="card-title small text-white-50">@S["ItemsTotal"]</div>
                     <div class="fs-2 fw-bold">@_itemTotal</div>
-                    <div class="small text-white-50">@_itemApproved schválených · @_itemEnabled zapnutých</div>
+                    <div class="small text-white-50">@S["ApprovedEnabled", _itemApproved, _itemEnabled]</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card text-bg-danger h-100">
                 <div class="card-body">
-                    <div class="card-title small text-white-50">Mobové celkem</div>
+                    <div class="card-title small text-white-50">@S["MobsTotal"]</div>
                     <div class="fs-2 fw-bold">@_mobTotal</div>
-                    <div class="small text-white-50">@_mobApproved schválených · @_mobEnabled zapnutých</div>
+                    <div class="small text-white-50">@S["ApprovedEnabled", _mobApproved, _mobEnabled]</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card text-bg-success h-100">
                 <div class="card-body">
-                    <div class="card-title small text-white-50">Mapy</div>
+                    <div class="card-title small text-white-50">@S["MapsCard"]</div>
                     <div class="fs-2 fw-bold">@_mapTotal</div>
-                    <div class="small text-white-50">@_mapEnabled zapnutých</div>
+                    <div class="small text-white-50">@S["EnabledCount", _mapEnabled]</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card text-bg-warning h-100">
                 <div class="card-body">
-                    <div class="card-title small text-white-50">Systémy</div>
+                    <div class="card-title small text-white-50">@S["SystemsCard"]</div>
                     <div class="fs-2 fw-bold">@_sysTotal</div>
-                    <div class="small text-white-50">@_sysEnabled zapnutých</div>
+                    <div class="small text-white-50">@S["EnabledCount", _sysEnabled]</div>
                 </div>
             </div>
         </div>
@@ -62,11 +62,11 @@ else
         @* Itemy podle typu *@
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header">⚔️ Itemy podle typu</div>
+                <div class="card-header">@S["ItemsByType"]</div>
                 <div class="card-body p-0">
                     <table class="table table-sm mb-0">
                         <thead class="table-secondary">
-                            <tr><th>Typ</th><th class="text-end">Počet</th><th>Podíl</th></tr>
+                            <tr><th>@S["Type"]</th><th class="text-end">@S["Count"]</th><th>@S["Share"]</th></tr>
                         </thead>
                         <tbody>
                             @{ int itemMax = _itemsByType.FirstOrDefault()?.Count ?? 1; }
@@ -91,11 +91,11 @@ else
         @* Mobové podle ranku *@
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header">👹 Mobové podle ranku</div>
+                <div class="card-header">@S["MobsByRank"]</div>
                 <div class="card-body p-0">
                     <table class="table table-sm mb-0">
                         <thead class="table-secondary">
-                            <tr><th>Rank</th><th class="text-end">Počet</th><th>Podíl</th></tr>
+                            <tr><th>@S["Rank"]</th><th class="text-end">@S["Count"]</th><th>@S["Share"]</th></tr>
                         </thead>
                         <tbody>
                             @{ int mobMax = _mobsByRank.FirstOrDefault()?.Count ?? 1; }
@@ -120,7 +120,7 @@ else
         @* Confidence distribuce itemů *@
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header">📊 Confidence — Itemy</div>
+                <div class="card-header">@S["ConfidenceItems"]</div>
                 <div class="card-body">
                     @{ int totalConf = _itemsByConf.Sum(c => c.Count); }
                     @foreach (var band in _itemsByConf)
@@ -143,7 +143,7 @@ else
         @* Mobové úrovně - rozdělení *@
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header">📊 Mobové — level distribuce</div>
+                <div class="card-header">@S["MobLevelDistribution"]</div>
                 <div class="card-body">
                     @{ int totalMobConf = _mobsByLevel.Sum(c => c.Count); }
                     @foreach (var band in _mobsByLevel)
@@ -228,8 +228,8 @@ else
             _sysEnabled   = tSysEnabled.Result;
             _itemsByType  = tItemsByType.Result.ToList();
             _mobsByRank   = tMobsByRank.Result.ToList();
-            _itemsByConf  = [new("≥80 (vysoká)", tHighConf.Result, "bg-success"), new("50–79 (střední)", tMidConf.Result, "bg-warning"), new("<50 (nízká)", tLowConf.Result, "bg-danger"), new("Neznámá", tNullConf.Result, "bg-secondary")];
-            _mobsByLevel  = [new("Lv.80+ (endgame)", tLvlHigh.Result, "bg-danger"), new("Lv.40-79", tLvlMid.Result, "bg-warning"), new("Lv.1-39", tLvlLow.Result, "bg-success"), new("Neznámý", tLvlNull.Result, "bg-secondary")];
+            _itemsByConf  = [new(S["ConfHigh"], tHighConf.Result, "bg-success"), new(S["ConfMid"], tMidConf.Result, "bg-warning"), new(S["ConfLow"], tLowConf.Result, "bg-danger"), new(S["ConfUnknown"], tNullConf.Result, "bg-secondary")];
+            _mobsByLevel  = [new("Lv.80+ (endgame)", tLvlHigh.Result, "bg-danger"), new("Lv.40-79", tLvlMid.Result, "bg-warning"), new("Lv.1-39", tLvlLow.Result, "bg-success"), new(S["LevelUnknown"], tLvlNull.Result, "bg-secondary")];
         }
         catch (Exception ex) { _error = ex.Message; }
         finally { _loading = false; }

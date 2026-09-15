@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Actions" xml:space="preserve">
+    <value>Akce</value>
+  </data>
+  <data name="AdminTitle" xml:space="preserve">
+    <value>Metin2Bausia Admin</value>
+  </data>
+  <data name="AggressiveSight" xml:space="preserve">
+    <value>Agresivní dohled</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Vše</value>
+  </data>
+  <data name="AllFiles" xml:space="preserve">
+    <value>Všechny soubory</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>Všechny statusy</value>
+  </data>
+  <data name="AllTypes" xml:space="preserve">
+    <value>Všechny typy</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>✓ Schválit</value>
+  </data>
+  <data name="ApprovedEnabled" xml:space="preserve">
+    <value>{0} schválených · {1} zapnutých</value>
+  </data>
+  <data name="Attack" xml:space="preserve">
+    <value>Útok</value>
+  </data>
+  <data name="AttackSpeed" xml:space="preserve">
+    <value>Rychlost útoku</value>
+  </data>
+  <data name="BackToItems" xml:space="preserve">
+    <value>← Zpět na itemy</value>
+  </data>
+  <data name="BackToMaps" xml:space="preserve">
+    <value>← Zpět na mapy</value>
+  </data>
+  <data name="BackToMobs" xml:space="preserve">
+    <value>← Zpět na moby</value>
+  </data>
+  <data name="BackToQuests" xml:space="preserve">
+    <value>← Zpět na questy</value>
+  </data>
+  <data name="BackToSystems" xml:space="preserve">
+    <value>← Zpět na systémy</value>
+  </data>
+  <data name="BadgeError" xml:space="preserve">
+    <value>chyba</value>
+  </data>
+  <data name="BadgeOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="BasicInfo" xml:space="preserve">
+    <value>Základní informace</value>
+  </data>
+  <data name="BlockerLabel" xml:space="preserve">
+    <value>blocker</value>
+  </data>
+  <data name="Bonuses" xml:space="preserve">
+    <value>Bonusy (apply)</value>
+  </data>
+  <data name="BuyPrice" xml:space="preserve">
+    <value>Nákupní cena (buy)</value>
+  </data>
+  <data name="CardItemsApproved" xml:space="preserve">
+    <value>✅ Schváleno itemů</value>
+  </data>
+  <data name="CardItemsPending" xml:space="preserve">
+    <value>📋 Itemy ke schválení</value>
+  </data>
+  <data name="CardManualReview" xml:space="preserve">
+    <value>⚠️ Ruční review</value>
+  </data>
+  <data name="CardMobsPending" xml:space="preserve">
+    <value>👹 Mobové ke schválení</value>
+  </data>
+  <data name="CatCrafting" xml:space="preserve">
+    <value>Crafting (výroba)</value>
+  </data>
+  <data name="CatDrop" xml:space="preserve">
+    <value>Drop systém</value>
+  </data>
+  <data name="CatEconomy" xml:space="preserve">
+    <value>Ekonomika</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
+  <data name="CatEnchant" xml:space="preserve">
+    <value>Enchant (zlepšování)</value>
+  </data>
+  <data name="CatEvent" xml:space="preserve">
+    <value>Eventy</value>
+  </data>
+  <data name="CatGuild" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="CatMount" xml:space="preserve">
+    <value>Mount (mounty)</value>
+  </data>
+  <data name="CatOther" xml:space="preserve">
+    <value>Ostatní</value>
+  </data>
+  <data name="CatPet" xml:space="preserve">
+    <value>Pet (mazlíčci)</value>
+  </data>
+  <data name="CatPvp" xml:space="preserve">
+    <value>PvP</value>
+  </data>
+  <data name="CatQuest" xml:space="preserve">
+    <value>Quest</value>
+  </data>
+  <data name="CatSkill" xml:space="preserve">
+    <value>Dovednosti</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Změnit heslo</value>
+  </data>
+  <data name="ColAgent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="ColChanged" xml:space="preserve">
+    <value>Změněné</value>
+  </data>
+  <data name="ColDuration" xml:space="preserve">
+    <value>Trvání</value>
+  </data>
+  <data name="ColEncoding" xml:space="preserve">
+    <value>Kódování</value>
+  </data>
+  <data name="ColEntity" xml:space="preserve">
+    <value>Entita</value>
+  </data>
+  <data name="ColEntries" xml:space="preserve">
+    <value>Položek</value>
+  </data>
+  <data name="ColFailed" xml:space="preserve">
+    <value>Chybné</value>
+  </data>
+  <data name="ColFile" xml:space="preserve">
+    <value>Soubor</value>
+  </data>
+  <data name="ColHighlights" xml:space="preserve">
+    <value>Highlights</value>
+  </data>
+  <data name="ColIndex" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="ColKind" xml:space="preserve">
+    <value>Druh</value>
+  </data>
+  <data name="ColLeader" xml:space="preserve">
+    <value>Vůdce</value>
+  </data>
+  <data name="ColMaxLevel" xml:space="preserve">
+    <value>Max level</value>
+  </data>
+  <data name="ColMinLevel" xml:space="preserve">
+    <value>Min level</value>
+  </data>
+  <data name="ColMode" xml:space="preserve">
+    <value>Režim</value>
+  </data>
+  <data name="ColName" xml:space="preserve">
+    <value>Název</value>
+  </data>
+  <data name="ColNew" xml:space="preserve">
+    <value>Nové</value>
+  </data>
+  <data name="ColQuestName" xml:space="preserve">
+    <value>Název questu</value>
+  </data>
+  <data name="ColReadiness" xml:space="preserve">
+    <value>Readiness</value>
+  </data>
+  <data name="ColReason" xml:space="preserve">
+    <value>Důvod</value>
+  </data>
+  <data name="ColRecord" xml:space="preserve">
+    <value>Záznam</value>
+  </data>
+  <data name="ColResult" xml:space="preserve">
+    <value>Výsledek</value>
+  </data>
+  <data name="ColSize" xml:space="preserve">
+    <value>Velikost skriptu</value>
+  </data>
+  <data name="ColStarted" xml:space="preserve">
+    <value>Spuštěn</value>
+  </data>
+  <data name="ColVnum" xml:space="preserve">
+    <value>Vnum</value>
+  </data>
+  <data name="CombatStats" xml:space="preserve">
+    <value>Statistiky boje</value>
+  </data>
+  <data name="Complexity" xml:space="preserve">
+    <value>Složitost implementace</value>
+  </data>
+  <data name="ComplexityHigh" xml:space="preserve">
+    <value>Vysoká</value>
+  </data>
+  <data name="ComplexityLow" xml:space="preserve">
+    <value>Nízká</value>
+  </data>
+  <data name="ComplexityMedium" xml:space="preserve">
+    <value>Střední</value>
+  </data>
+  <data name="ConfHigh" xml:space="preserve">
+    <value>≥80 (vysoká)</value>
+  </data>
+  <data name="Confidence" xml:space="preserve">
+    <value>Confidence</value>
+  </data>
+  <data name="ConfidenceItems" xml:space="preserve">
+    <value>📊 Confidence — Itemy</value>
+  </data>
+  <data name="ConfLow" xml:space="preserve">
+    <value>&lt;50 (nízká)</value>
+  </data>
+  <data name="ConfMid" xml:space="preserve">
+    <value>50–79 (střední)</value>
+  </data>
+  <data name="ConfUnknown" xml:space="preserve">
+    <value>Neznámá</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Počet</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Vytvořeno</value>
+  </data>
+  <data name="DashboardTitle" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DataQuality" xml:space="preserve">
+    <value>Kvalita dat</value>
+  </data>
+  <data name="DataSource" xml:space="preserve">
+    <value>Zdroj dat</value>
+  </data>
+  <data name="DbError" xml:space="preserve">
+    <value>Chyba DB: {0}</value>
+  </data>
+  <data name="Defense" xml:space="preserve">
+    <value>Obrana</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Popis</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Vypnuté</value>
+  </data>
+  <data name="DropChance" xml:space="preserve">
+    <value>Šance</value>
+  </data>
+  <data name="DropCount" xml:space="preserve">
+    <value>Počet</value>
+  </data>
+  <data name="DropItem" xml:space="preserve">
+    <value>Předmět</value>
+  </data>
+  <data name="DropKillDrop" xml:space="preserve">
+    <value>Drop po zabití</value>
+  </data>
+  <data name="DropLevelLimit" xml:space="preserve">
+    <value>Limit levelu</value>
+  </data>
+  <data name="DropsNone" xml:space="preserve">
+    <value>Mob nemá žádné dropy.</value>
+  </data>
+  <data name="DropsTitle" xml:space="preserve">
+    <value>Dropy</value>
+  </data>
+  <data name="DropUnresolved" xml:space="preserve">
+    <value>neznámý předmět</value>
+  </data>
+  <data name="DuplicateNote" xml:space="preserve">
+    <value>Skupina byla ve zdrojovém souboru dvakrát — platí první výskyt, druhý je uložen v metadatech.</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Zapnuté</value>
+  </data>
+  <data name="EnabledCount" xml:space="preserve">
+    <value>{0} zapnutých</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Chyba: {0}</value>
+  </data>
+  <data name="Exp" xml:space="preserve">
+    <value>EXP</value>
+  </data>
+  <data name="FinalScore" xml:space="preserve">
+    <value>Final Score</value>
+  </data>
+  <data name="GoldChance" xml:space="preserve">
+    <value>Šance na gold</value>
+  </data>
+  <data name="GoldMinMax" xml:space="preserve">
+    <value>Gold (min–max)</value>
+  </data>
+  <data name="GroupsIntro" xml:space="preserve">
+    <value>Skupiny mobů pro spawny a skupiny předmětů (truhly, bonusy) ze souborů serveru. Kliknutím rozbalíš položky.</value>
+  </data>
+  <data name="GroupsTitle" xml:space="preserve">
+    <value>Skupiny</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>Výška</value>
+  </data>
+  <data name="Implementation" xml:space="preserve">
+    <value>Implementace</value>
+  </data>
+  <data name="InternalName" xml:space="preserve">
+    <value>Název (interní)</value>
+  </data>
+  <data name="IntroDisabledSuffix" xml:space="preserve">
+    <value>vypnuté</value>
+  </data>
+  <data name="ItemApproved" xml:space="preserve">
+    <value>✓ Item '{0}' (Vnum {1}) schválen.</value>
+  </data>
+  <data name="ItemDatabaseIntro" xml:space="preserve">
+    <value>Schválené itemy dostupné ve hře.</value>
+  </data>
+  <data name="ItemDatabaseTitle" xml:space="preserve">
+    <value>Item databáze</value>
+  </data>
+  <data name="ItemDetailTitle" xml:space="preserve">
+    <value>Detail itemu</value>
+  </data>
+  <data name="ItemNotFound" xml:space="preserve">
+    <value>Item nenalezen.</value>
+  </data>
+  <data name="ItemRejected" xml:space="preserve">
+    <value>✗ Item '{0}' zamítnut.</value>
+  </data>
+  <data name="ItemsByType" xml:space="preserve">
+    <value>⚔️ Itemy podle typu</value>
+  </data>
+  <data name="ItemsPendingHeading" xml:space="preserve">
+    <value>Itemy čekající na schválení</value>
+  </data>
+  <data name="ItemsPendingTitle" xml:space="preserve">
+    <value>Itemy ke schválení</value>
+  </data>
+  <data name="ItemsTotal" xml:space="preserve">
+    <value>Itemy celkem</value>
+  </data>
+  <data name="ItemTypeArmor" xml:space="preserve">
+    <value>Brnění (armor)</value>
+  </data>
+  <data name="ItemTypeArrow" xml:space="preserve">
+    <value>Šíp (arrow)</value>
+  </data>
+  <data name="ItemTypeBelt" xml:space="preserve">
+    <value>Pásek (belt)</value>
+  </data>
+  <data name="ItemTypeBoots" xml:space="preserve">
+    <value>Boty (boots)</value>
+  </data>
+  <data name="ItemTypeBow" xml:space="preserve">
+    <value>Luk (bow)</value>
+  </data>
+  <data name="ItemTypeBracelet" xml:space="preserve">
+    <value>Náramek (bracelet)</value>
+  </data>
+  <data name="ItemTypeNecklace" xml:space="preserve">
+    <value>Náhrdelník (necklace)</value>
+  </data>
+  <data name="ItemTypePotion" xml:space="preserve">
+    <value>Lektvar (potion)</value>
+  </data>
+  <data name="ItemTypeQuest" xml:space="preserve">
+    <value>Quest</value>
+  </data>
+  <data name="ItemTypeRing" xml:space="preserve">
+    <value>Prsten (ring)</value>
+  </data>
+  <data name="ItemTypeShield" xml:space="preserve">
+    <value>Štít (shield)</value>
+  </data>
+  <data name="ItemTypeSpecial" xml:space="preserve">
+    <value>Speciální</value>
+  </data>
+  <data name="ItemTypeUnique" xml:space="preserve">
+    <value>Unikátní</value>
+  </data>
+  <data name="ItemTypeWeapon" xml:space="preserve">
+    <value>Zbraň (weapon)</value>
+  </data>
+  <data name="LastAgentRun" xml:space="preserve">
+    <value>Poslední agent run: {0}</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="LevelRange" xml:space="preserve">
+    <value>Level {0}–{1}</value>
+  </data>
+  <data name="LevelUnknown" xml:space="preserve">
+    <value>Neznámý</value>
+  </data>
+  <data name="Limits" xml:space="preserve">
+    <value>Limity</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Načítám...</value>
+  </data>
+  <data name="LoadingStats" xml:space="preserve">
+    <value>Načítám statistiky...</value>
+  </data>
+  <data name="LocaleName" xml:space="preserve">
+    <value>Lokalizovaný název</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Odhlásit</value>
+  </data>
+  <data name="MagicAttack" xml:space="preserve">
+    <value>Mag. útok</value>
+  </data>
+  <data name="MagicDefense" xml:space="preserve">
+    <value>Mag. obrana</value>
+  </data>
+  <data name="ManageItemsIntroHtml" xml:space="preserve">
+    <value>Zapínej/vypínej itemy ve hře. Nové itemy jsou ve výchozím stavu &lt;strong&gt;vypnuté&lt;/strong&gt;.</value>
+  </data>
+  <data name="ManageItemsTitle" xml:space="preserve">
+    <value>Správa itemů</value>
+  </data>
+  <data name="ManageMapsIntro" xml:space="preserve">
+    <value>Zapínej/vypínej přístupnost map.</value>
+  </data>
+  <data name="ManageMapsTitle" xml:space="preserve">
+    <value>Správa map</value>
+  </data>
+  <data name="ManageMobsIntroHtml" xml:space="preserve">
+    <value>Zapínej/vypínej obsah ve hře. Nové záznamy jsou ve výchozím stavu &lt;strong&gt;vypnuté&lt;/strong&gt;.</value>
+  </data>
+  <data name="ManageMobsPageTitle" xml:space="preserve">
+    <value>Správa mobů / NPC / Metinů</value>
+  </data>
+  <data name="ManageMobsTitle" xml:space="preserve">
+    <value>Správa mobů, NPC a Metinů</value>
+  </data>
+  <data name="ManageSystemsIntro" xml:space="preserve">
+    <value>Zapínej/vypínej herní systémy (enchant, alchemy, crafting, pet, mount...).</value>
+  </data>
+  <data name="ManageSystemsPageTitle" xml:space="preserve">
+    <value>Správa systémů</value>
+  </data>
+  <data name="ManageSystemsTitle" xml:space="preserve">
+    <value>Správa herních systémů</value>
+  </data>
+  <data name="MapDetailTitle" xml:space="preserve">
+    <value>Detail mapy</value>
+  </data>
+  <data name="MapDimensions" xml:space="preserve">
+    <value>Rozměry mapy</value>
+  </data>
+  <data name="MapNotFound" xml:space="preserve">
+    <value>Mapa nenalezena.</value>
+  </data>
+  <data name="MapsCard" xml:space="preserve">
+    <value>Mapy</value>
+  </data>
+  <data name="MapType" xml:space="preserve">
+    <value>Typ mapy</value>
+  </data>
+  <data name="MapTypeBoat" xml:space="preserve">
+    <value>Loď (boat)</value>
+  </data>
+  <data name="MapTypeDungeon" xml:space="preserve">
+    <value>Dungeon</value>
+  </data>
+  <data name="MapTypeEmpire" xml:space="preserve">
+    <value>Empire</value>
+  </data>
+  <data name="MapTypeField" xml:space="preserve">
+    <value>Venkovní (field)</value>
+  </data>
+  <data name="MapTypeGuild" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="MapTypePvp" xml:space="preserve">
+    <value>PvP</value>
+  </data>
+  <data name="MarkResolved" xml:space="preserve">
+    <value>Vyřešeno</value>
+  </data>
+  <data name="MaxHp" xml:space="preserve">
+    <value>Max HP</value>
+  </data>
+  <data name="MaxLevelLabel" xml:space="preserve">
+    <value>Max. level</value>
+  </data>
+  <data name="MinLevelLabel" xml:space="preserve">
+    <value>Min. level</value>
+  </data>
+  <data name="MobApproved" xml:space="preserve">
+    <value>✓ Mob '{0}' (Vnum {1}) schválen.</value>
+  </data>
+  <data name="MobDetailTitle" xml:space="preserve">
+    <value>Detail moba</value>
+  </data>
+  <data name="MobLevelDistribution" xml:space="preserve">
+    <value>📊 Mobové — level distribuce</value>
+  </data>
+  <data name="MobNotFound" xml:space="preserve">
+    <value>Mob nenalezen.</value>
+  </data>
+  <data name="MobRejected" xml:space="preserve">
+    <value>✗ Mob '{0}' zamítnut.</value>
+  </data>
+  <data name="MobsByRank" xml:space="preserve">
+    <value>👹 Mobové podle ranku</value>
+  </data>
+  <data name="MobsPendingHeading" xml:space="preserve">
+    <value>Mobové čekající na schválení</value>
+  </data>
+  <data name="MobsPendingTitle" xml:space="preserve">
+    <value>Mobové ke schválení</value>
+  </data>
+  <data name="MobsTotal" xml:space="preserve">
+    <value>Mobové celkem</value>
+  </data>
+  <data name="MobTypeBoss" xml:space="preserve">
+    <value>Boss</value>
+  </data>
+  <data name="MobTypeChest" xml:space="preserve">
+    <value>Truhla</value>
+  </data>
+  <data name="MobTypeMetin" xml:space="preserve">
+    <value>Metin</value>
+  </data>
+  <data name="MobTypeMonster" xml:space="preserve">
+    <value>Příšera</value>
+  </data>
+  <data name="MobTypeNpc" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="MoveSpeed" xml:space="preserve">
+    <value>Rychlost pohybu</value>
+  </data>
+  <data name="MsgOff" xml:space="preserve">
+    <value>○ Vypnuto</value>
+  </data>
+  <data name="MsgOn" xml:space="preserve">
+    <value>✓ Zapnuto</value>
+  </data>
+  <data name="NavDashboard" xml:space="preserve">
+    <value>🏠 Dashboard</value>
+  </data>
+  <data name="NavGroups" xml:space="preserve">
+    <value>🧩 Skupiny</value>
+  </data>
+  <data name="NavItemDatabase" xml:space="preserve">
+    <value>🗄️ Item databáze</value>
+  </data>
+  <data name="NavItems" xml:space="preserve">
+    <value>⚔️ Itemy</value>
+  </data>
+  <data name="NavItemsPending" xml:space="preserve">
+    <value>📋 Itemy (pending)</value>
+  </data>
+  <data name="NavMaps" xml:space="preserve">
+    <value>🗺️ Mapy</value>
+  </data>
+  <data name="NavMobs" xml:space="preserve">
+    <value>👹 Mobové / NPC / Metiny</value>
+  </data>
+  <data name="NavMobsPending" xml:space="preserve">
+    <value>📋 Mobové (pending)</value>
+  </data>
+  <data name="NavQuests" xml:space="preserve">
+    <value>📜 Questy</value>
+  </data>
+  <data name="NavReports" xml:space="preserve">
+    <value>📋 Agent reporty</value>
+  </data>
+  <data name="NavReview" xml:space="preserve">
+    <value>⚠️ Ruční review</value>
+  </data>
+  <data name="NavSectionApproval" xml:space="preserve">
+    <value>SCHVALOVÁNÍ</value>
+  </data>
+  <data name="NavSectionDatabase" xml:space="preserve">
+    <value>DATABÁZE</value>
+  </data>
+  <data name="NavSectionGame" xml:space="preserve">
+    <value>SPRÁVA HRY</value>
+  </data>
+  <data name="NavSectionReports" xml:space="preserve">
+    <value>PŘEHLEDY</value>
+  </data>
+  <data name="NavStats" xml:space="preserve">
+    <value>📊 Statistiky</value>
+  </data>
+  <data name="NavSystems" xml:space="preserve">
+    <value>⚙️ Systémy</value>
+  </data>
+  <data name="NoAgentRuns" xml:space="preserve">
+    <value>Zatím žádné agent runy.</value>
+  </data>
+  <data name="NoApprovedItems" xml:space="preserve">
+    <value>Žádné schválené itemy v databázi.</value>
+  </data>
+  <data name="NoGroups" xml:space="preserve">
+    <value>Žádné skupiny.</value>
+  </data>
+  <data name="NoItemsPending" xml:space="preserve">
+    <value>Žádné itemy ke schválení.</value>
+  </data>
+  <data name="NoMobsPending" xml:space="preserve">
+    <value>Žádní mobové ke schválení.</value>
+  </data>
+  <data name="NoQuests" xml:space="preserve">
+    <value>Žádné questy v databázi.</value>
+  </data>
+  <data name="NoSystems" xml:space="preserve">
+    <value>Žádné systémy v databázi.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Záznam nenalezen.</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Vypnuto</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>Zapnuto</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Původ dat</value>
+  </data>
+  <data name="PricesAttributes" xml:space="preserve">
+    <value>Ceny a atributy</value>
+  </data>
+  <data name="QuestDetailTitle" xml:space="preserve">
+    <value>Detail questu</value>
+  </data>
+  <data name="QuestScript" xml:space="preserve">
+    <value>Skript questu</value>
+  </data>
+  <data name="QuestsIntro" xml:space="preserve">
+    <value>Zapínej a vypínej questy. Server kompiluje questy uvedené v locale_list.</value>
+  </data>
+  <data name="QuestsTitle" xml:space="preserve">
+    <value>Správa questů</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="RankBoss" xml:space="preserve">
+    <value>Boss</value>
+  </data>
+  <data name="RankKing" xml:space="preserve">
+    <value>Král</value>
+  </data>
+  <data name="RankKnight" xml:space="preserve">
+    <value>Rytíř</value>
+  </data>
+  <data name="RankPawn" xml:space="preserve">
+    <value>Pěšák</value>
+  </data>
+  <data name="RankSuperKnight" xml:space="preserve">
+    <value>Super Rytíř</value>
+  </data>
+  <data name="RecentRuns" xml:space="preserve">
+    <value>Posledních 5 agent runů</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>✗ Zamítnout</value>
+  </data>
+  <data name="ReportsHeading" xml:space="preserve">
+    <value>Agent run reporty</value>
+  </data>
+  <data name="ReportsPageTitle" xml:space="preserve">
+    <value>Agent reporty</value>
+  </data>
+  <data name="ReviewEmpty" xml:space="preserve">
+    <value>Fronta je prázdná. Žádné konflikty k řešení.</value>
+  </data>
+  <data name="ReviewHeading" xml:space="preserve">
+    <value>Fronta pro ruční review</value>
+  </data>
+  <data name="ReviewPageTitle" xml:space="preserve">
+    <value>Ruční review</value>
+  </data>
+  <data name="ReviewTotal" xml:space="preserve">
+    <value>Celkem nevyřešených: {0}</value>
+  </data>
+  <data name="RowsLimited" xml:space="preserve">
+    <value>Zobrazeno prvních {0}. Upřesněte filtr.</value>
+  </data>
+  <data name="RunBlocker" xml:space="preserve">
+    <value>· blocker: {0}</value>
+  </data>
+  <data name="RunFailure" xml:space="preserve">
+    <value>selhání</value>
+  </data>
+  <data name="RunNewUpdated" xml:space="preserve">
+    <value>· {0} nových, {1} aktualizovaných</value>
+  </data>
+  <data name="RunSuccess" xml:space="preserve">
+    <value>úspěch</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Uložit změny</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>✓ Uloženo</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Hledat...</value>
+  </data>
+  <data name="SearchDots" xml:space="preserve">
+    <value>Hledat…</value>
+  </data>
+  <data name="SearchName" xml:space="preserve">
+    <value>Hledat název…</value>
+  </data>
+  <data name="SearchNameVnum" xml:space="preserve">
+    <value>Hledat název / vnum…</value>
+  </data>
+  <data name="SellPrice" xml:space="preserve">
+    <value>Prodejní cena (gold)</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Podíl</value>
+  </data>
+  <data name="ShowAllReports" xml:space="preserve">
+    <value>Zobrazit všechny reporty</value>
+  </data>
+  <data name="ShownOf" xml:space="preserve">
+    <value>Zobrazeno: {0} / {1}</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Velikost</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Zdroj</value>
+  </data>
+  <data name="SourceServer" xml:space="preserve">
+    <value>Zdrojový server</value>
+  </data>
+  <data name="SpawnAggressive" xml:space="preserve">
+    <value>agresivní</value>
+  </data>
+  <data name="SpawnCount" xml:space="preserve">
+    <value>Počet</value>
+  </data>
+  <data name="SpawnFile" xml:space="preserve">
+    <value>Soubor</value>
+  </data>
+  <data name="SpawnPosition" xml:space="preserve">
+    <value>Pozice</value>
+  </data>
+  <data name="SpawnRange" xml:space="preserve">
+    <value>Rozsah</value>
+  </data>
+  <data name="SpawnsNone" xml:space="preserve">
+    <value>Mapa nemá žádné spawny.</value>
+  </data>
+  <data name="SpawnsSummary" xml:space="preserve">
+    <value>{0} spawnů v {1} souborech</value>
+  </data>
+  <data name="SpawnsTitle" xml:space="preserve">
+    <value>Spawny</value>
+  </data>
+  <data name="SpawnTarget" xml:space="preserve">
+    <value>Mob / skupina</value>
+  </data>
+  <data name="SpawnTime" xml:space="preserve">
+    <value>Obnova</value>
+  </data>
+  <data name="SpawnType" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="SpawnTypeAnywhere" xml:space="preserve">
+    <value>kdekoliv na mapě</value>
+  </data>
+  <data name="SpawnTypeException" xml:space="preserve">
+    <value>výjimka</value>
+  </data>
+  <data name="SpawnTypeGroup" xml:space="preserve">
+    <value>skupina</value>
+  </data>
+  <data name="SpawnTypeGroupGroup" xml:space="preserve">
+    <value>skupina skupin</value>
+  </data>
+  <data name="SpawnTypeMob" xml:space="preserve">
+    <value>mob</value>
+  </data>
+  <data name="StartNpc" xml:space="preserve">
+    <value>Startovní NPC</value>
+  </data>
+  <data name="StatsHeading" xml:space="preserve">
+    <value>Statistiky databáze</value>
+  </data>
+  <data name="StatsPageTitle" xml:space="preserve">
+    <value>Statistiky</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StatusApproved" xml:space="preserve">
+    <value>Schválené</value>
+  </data>
+  <data name="StatusChanged" xml:space="preserve">
+    <value>Status změněn na: {0}</value>
+  </data>
+  <data name="StatusPending" xml:space="preserve">
+    <value>Pending</value>
+  </data>
+  <data name="SystemDetailTitle" xml:space="preserve">
+    <value>Detail systému</value>
+  </data>
+  <data name="SystemName" xml:space="preserve">
+    <value>Název systému</value>
+  </data>
+  <data name="SystemNotFound" xml:space="preserve">
+    <value>Systém nenalezen.</value>
+  </data>
+  <data name="SystemsCard" xml:space="preserve">
+    <value>Systémy</value>
+  </data>
+  <data name="TabBosses" xml:space="preserve">
+    <value>Bossové</value>
+  </data>
+  <data name="TabMetins" xml:space="preserve">
+    <value>Metiny</value>
+  </data>
+  <data name="TabMobGroup" xml:space="preserve">
+    <value>Skupiny mobů</value>
+  </data>
+  <data name="TabMobGroupGroup" xml:space="preserve">
+    <value>Skupiny skupin</value>
+  </data>
+  <data name="TabMonsters" xml:space="preserve">
+    <value>Monstři</value>
+  </data>
+  <data name="TabNpc" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="TabSpecialItemGroup" xml:space="preserve">
+    <value>Skupiny předmětů</value>
+  </data>
+  <data name="ToggleOff" xml:space="preserve">
+    <value>⊘ Vypnout</value>
+  </data>
+  <data name="ToggleOn" xml:space="preserve">
+    <value>✓ Zapnout</value>
+  </data>
+  <data name="TotalItems" xml:space="preserve">
+    <value>Celkem: {0} itemů</value>
+  </data>
+  <data name="TotalMobs" xml:space="preserve">
+    <value>Celkem: {0} mobů</value>
+  </data>
+  <data name="TurnedOff" xml:space="preserve">
+    <value>○ {0} vypnuto</value>
+  </data>
+  <data name="TurnedOn" xml:space="preserve">
+    <value>✓ {0} zapnuto</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Aktualizováno</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>Hodnoty (value0–5)</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Váha</value>
+  </data>
+  <data name="Width" xml:space="preserve">
+    <value>Šířka</value>
+  </data>
+</root>

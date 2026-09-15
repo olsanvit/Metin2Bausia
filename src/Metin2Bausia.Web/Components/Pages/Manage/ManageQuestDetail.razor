@@ -1,0 +1,120 @@
+@page "/manage/quests/{Guid:guid}"
+@attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@(_quest?.QuestName ?? S["QuestDetailTitle"]) — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/manage/quests" class="btn btn-outline-secondary btn-sm">@S["BackToQuests"]</a>
+    @if (_quest != null)
+    {
+        <span class="badge @ContentLabels.StatusBadge(_quest.ContentStatus)">@_quest.ContentStatus</span>
+        <span class="badge @(_quest.IsEnabled ? "bg-success" : "bg-secondary")">@(_quest.IsEnabled ? S["On"] : S["Off"])</span>
+    }
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_quest == null)
+{
+    <div class="alert alert-danger">@(_error != null ? S["DbError", _error] : S["NotFound"])</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>@_quest.QuestName</strong>
+                    <code class="small">@_quest.FileName</code>
+                </div>
+                <div class="card-body small">
+                    @if (_quest.MinLevel > 0 || _quest.MaxLevel > 0)
+                    { <div>@S["LevelRange", _quest.MinLevel ?? 0, _quest.MaxLevel ?? 0]</div> }
+                    @if (_quest.StartNpcVnum.HasValue)
+                    { <div>@S["StartNpc"]: <code>@_quest.StartNpcVnum</code></div> }
+                    @if (!string.IsNullOrEmpty(_quest.Description))
+                    { <p class="mb-0 mt-2">@_quest.Description</p> }
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>@S["QuestScript"]</strong>
+                    <span class="small text-muted">@_quest.Encoding · @_quest.ScriptLength.ToString("N0")</span>
+                </div>
+                @* Skript jen ke čtení — úpravy questů patří do souborů serveru, kde je kompiluje qc *@
+                <pre class="small mb-0 p-3" style="max-height:70vh;overflow:auto;white-space:pre">@_quest.LuaScript</pre>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-body d-grid gap-2">
+                    <button class="btn @(_quest.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"
+                            @onclick="ToggleEnabledAsync">
+                        @(_quest.IsEnabled ? S["ToggleOff"] : S["ToggleOn"])
+                    </button>
+                    <div class="small text-muted">
+                        @S["Origin"]: @_quest.DataOrigin<br />
+                        @S["Created"]: @_quest.CreatedAt.ToString("dd.MM.yyyy")<br />
+                        @S["Updated"]: @_quest.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+            <div class="small text-muted">GUID: <code class="small">@_quest.Guid</code></div>
+        </div>
+    </div>
+}
+
+@if (_message != null)
+{
+    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok") mt-3">@_message</div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private string? _error;
+    private QuestDetailRow? _quest;
+    private string? _message;
+    private bool _isError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _quest = await Db.QueryFirstOrDefaultAsync<QuestDetailRow>(
+                @"SELECT ""Guid"", ""FileName"", ""QuestName"", ""LocaleName"", ""QuestType"",
+                         ""MinLevel"", ""MaxLevel"", ""StartNpcVnum"", ""LuaScript"", ""Description"",
+                         ""ContentStatus"", ""IsEnabled"", ""DataOrigin"", ""CreatedAt"", ""UpdatedAt"",
+                         coalesce(length(""LuaScript""), 0) AS ""ScriptLength"",
+                         ""Metadata""->>'encoding' AS ""Encoding""
+                  FROM ""Quests"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
+                new { g = Guid });
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _loading = false; }
+    }
+
+    private async Task ToggleEnabledAsync()
+    {
+        if (_quest == null) return;
+        var newVal = !_quest.IsEnabled;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Quests"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newVal, g = _quest.Guid });
+            _quest.IsEnabled = newVal;
+            _message = newVal ? S["TurnedOn", _quest.QuestName] : S["TurnedOff", _quest.QuestName];
+            _isError = false;
+        }
+        catch (Exception ex) { _message = S["Error", ex.Message]; _isError = true; }
+    }
+}

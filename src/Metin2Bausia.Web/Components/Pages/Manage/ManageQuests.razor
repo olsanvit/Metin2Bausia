@@ -1,0 +1,130 @@
+@page "/manage/quests"
+@attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@S["QuestsTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["QuestsTitle"]</h2>
+<p class="text-muted mb-3">@S["QuestsIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">@S["DbError", _error]</div>
+}
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <input class="form-control form-control-sm" style="max-width:240px"
+           placeholder="@S["Search"]" @bind="_search" @bind:event="oninput" />
+    <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
+        <option value="">@S["All"]</option>
+        <option value="true">@S["Enabled"]</option>
+        <option value="false">@S["Disabled"]</option>
+    </select>
+    <span class="text-muted small ms-auto">@S["ShownOf", Filtered.Count(), _quests.Count]</span>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_quests.Count == 0)
+{
+    <div class="alert alert-info">@S["NoQuests"]</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <th style="width:56px">@S["On"]</th>
+                    <th>@S["ColFile"]</th>
+                    <th>@S["ColQuestName"]</th>
+                    <th style="width:90px">@S["ColEncoding"]</th>
+                    <th style="width:110px" class="text-end">@S["ColSize"]</th>
+                    <th style="width:100px">@S["Status"]</th>
+                    <th style="width:50px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var q in Filtered)
+                {
+                    <tr class="@(q.IsEnabled ? "" : "opacity-60")">
+                        <td class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input" type="checkbox"
+                                       checked="@q.IsEnabled"
+                                       @onchange="e => ToggleAsync(q, (bool)e.Value!)" />
+                            </div>
+                        </td>
+                        <td><code class="small">@q.FileName</code></td>
+                        <td>@q.QuestName</td>
+                        <td class="small text-muted">@q.Encoding</td>
+                        <td class="text-end small">@q.ScriptLength.ToString("N0")</td>
+                        <td><span class="badge @ContentLabels.StatusBadge(q.ContentStatus)">@q.ContentStatus</span></td>
+                        <td><a href="/manage/quests/@q.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (_message != null)
+{
+    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok")">@_message</div>
+}
+
+@code {
+    private bool _loading = true;
+    private string? _error;
+    private List<QuestListRow> _quests = [];
+    private string _search = "";
+    private string _filterEnabled = "";
+    private string? _message;
+    private bool _isError;
+
+    private IEnumerable<QuestListRow> Filtered => _quests.Where(q =>
+        (string.IsNullOrEmpty(_search) ||
+            q.QuestName.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+            (q.FileName?.Contains(_search, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+        (string.IsNullOrEmpty(_filterEnabled) || q.IsEnabled.ToString().ToLower() == _filterEnabled));
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Skript se do seznamu nenačítá — některé mají přes 100 kB; délka stačí pro přehled
+            _quests = (await Db.QueryAsync<QuestListRow>(
+                @"SELECT ""Guid"", ""FileName"", ""QuestName"", ""ContentStatus"", ""IsEnabled"",
+                         coalesce(length(""LuaScript""), 0) AS ""ScriptLength"",
+                         ""Metadata""->>'encoding' AS ""Encoding""
+                  FROM ""Quests"" WHERE ""IsDeleted"" = FALSE
+                  ORDER BY ""FileName"" NULLS LAST, ""QuestName""")).ToList();
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _loading = false; }
+    }
+
+    private async Task ToggleAsync(QuestListRow q, bool newValue)
+    {
+        var old = q.IsEnabled;
+        q.IsEnabled = newValue;
+        try
+        {
+            await Db.ExecuteAsync(
+                @"UPDATE ""Quests"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = newValue, g = q.Guid });
+            _message = newValue ? S["TurnedOn", q.QuestName] : S["TurnedOff", q.QuestName];
+            _isError = false;
+        }
+        catch (Exception ex)
+        {
+            q.IsEnabled = old;   // vrátit přepínač, ať UI neukazuje stav, který v DB není
+            _message = S["Error", ex.Message];
+            _isError = true;
+        }
+    }
+}

@@ -258,11 +258,26 @@ export function dedupeFirstWins(groups) {
 
 // ── Mapy ──────────────────────────────────────────────────────────────────────
 
-/** Index map povolených v game.conf (MAP_ALLOW) — určuje IsEnabled importované mapy. */
-export function readMapAllow(confFile) {
-  if (!confFile || !fs.existsSync(confFile)) return new Set();
-  const m = readLatin1(confFile).match(/^\s*MAP_ALLOW\s*[:=]?\s*(.+)$/m);
-  return new Set((m?.[1] ?? "").trim().split(/\s+/).filter(Boolean).map(Number));
+/**
+ * Indexy map, které server opravdu obsluhuje → IsEnabled importované mapy.
+ * Zdrojem je compose herního serveru: mapy jsou rozdělené mezi jádra (ch1_first,
+ * ch1_game1, ch1_game2, game99), takže se berou všechny hodnoty GAME_MAP_ALLOW dohromady.
+ * Starý server/game/conf.cfg zůstává jako záloha, když compose chybí.
+ */
+export function readMapAllow(...files) {
+  const allow = new Set();
+  for (const file of files.flat()) {
+    if (!file || !fs.existsSync(file)) continue;
+    const text = readLatin1(file);
+    for (const m of text.matchAll(/^\s*(?:GAME_)?MAP_ALLOW\s*[:=]?\s*(.+)$/gm)) {
+      for (const n of m[1].trim().split(/\s+/)) {
+        const v = Number(n);
+        if (Number.isInteger(v)) allow.add(v);
+      }
+    }
+    if (allow.size) break;   // první soubor, který něco dal, vyhrává
+  }
+  return allow;
 }
 
 /** data/map/index + Setting.txt + spawn soubory každé mapy → řádky tabulky Maps. */

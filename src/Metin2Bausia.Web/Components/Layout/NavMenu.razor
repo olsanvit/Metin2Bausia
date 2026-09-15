@@ -1,44 +1,50 @@
 <nav class="flex-column">
     <div class="nav-item">
-        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">🏠 Dashboard</NavLink>
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">@S["NavDashboard"]</NavLink>
     </div>
 
-    <div class="nav-section-label">SPRÁVA HRY</div>
+    <div class="nav-section-label">@S["NavSectionGame"]</div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="manage/items">⚔️ Itemy</NavLink>
+        <NavLink class="nav-link" href="manage/items">@S["NavItems"]</NavLink>
     </div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="manage/mobs">👹 Mobové / NPC / Metiny</NavLink>
+        <NavLink class="nav-link" href="manage/mobs">@S["NavMobs"]</NavLink>
     </div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="manage/maps">🗺️ Mapy</NavLink>
+        <NavLink class="nav-link" href="manage/maps">@S["NavMaps"]</NavLink>
     </div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="manage/systems">⚙️ Systémy</NavLink>
-    </div>
-
-    <div class="nav-section-label">SCHVALOVÁNÍ</div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="items">📋 Itemy (pending)</NavLink>
+        <NavLink class="nav-link" href="manage/systems">@S["NavSystems"]</NavLink>
     </div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="mobs">📋 Mobové (pending)</NavLink>
+        <NavLink class="nav-link" href="manage/quests">@S["NavQuests"]</NavLink>
     </div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="review">⚠️ Ruční review</NavLink>
+        <NavLink class="nav-link" href="manage/groups">@S["NavGroups"]</NavLink>
     </div>
 
-    <div class="nav-section-label">DATABÁZE</div>
+    <div class="nav-section-label">@S["NavSectionApproval"]</div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="items/browse">🗄️ Item databáze</NavLink>
+        <NavLink class="nav-link" href="items">@S["NavItemsPending"]</NavLink>
+    </div>
+    <div class="nav-item">
+        <NavLink class="nav-link" href="mobs">@S["NavMobsPending"]</NavLink>
+    </div>
+    <div class="nav-item">
+        <NavLink class="nav-link" href="review">@S["NavReview"]</NavLink>
     </div>
 
-    <div class="nav-section-label">PŘEHLEDY</div>
+    <div class="nav-section-label">@S["NavSectionDatabase"]</div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="stats">📊 Statistiky</NavLink>
+        <NavLink class="nav-link" href="items/browse">@S["NavItemDatabase"]</NavLink>
+    </div>
+
+    <div class="nav-section-label">@S["NavSectionReports"]</div>
+    <div class="nav-item">
+        <NavLink class="nav-link" href="stats">@S["NavStats"]</NavLink>
     </div>
     <div class="nav-item">
-        <NavLink class="nav-link" href="reports">📋 Agent reporty</NavLink>
+        <NavLink class="nav-link" href="reports">@S["NavReports"]</NavLink>
     </div>
     <div style="padding:8px 0 0 4px;">
         <LangSwitcher />

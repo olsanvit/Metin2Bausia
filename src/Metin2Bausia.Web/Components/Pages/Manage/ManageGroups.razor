@@ -1,0 +1,132 @@
+@page "/manage/groups"
+@attribute [Authorize]
+@* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@S["GroupsTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["GroupsTitle"]</h2>
+<p class="text-muted mb-3">@S["GroupsIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">@S["DbError", _error]</div>
+}
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <div class="btn-group btn-group-sm" role="group">
+        @foreach (var (type, key) in Tabs)
+        {
+            <button class="btn @(_tab == type ? "btn-primary" : "btn-outline-secondary")"
+                    @onclick="() => SelectTab(type)">@S[key] <span class="badge bg-light text-dark ms-1">@CountOf(type)</span></button>
+        }
+    </div>
+    <input class="form-control form-control-sm" style="max-width:220px"
+           placeholder="@S["Search"]" @bind="_search" @bind:event="oninput" />
+    <span class="text-muted small ms-auto">@S["ShownOf", Filtered.Count(), CountOf(_tab)]</span>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (!Filtered.Any())
+{
+    <div class="alert alert-info">@S["NoGroups"]</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <th style="width:80px">@S["ColVnum"]</th>
+                    <th>@S["ColName"]</th>
+                    @if (_tab == "mob_group") { <th style="width:90px">@S["ColLeader"]</th> }
+                    @if (_tab == "special_item_group") { <th style="width:90px">@S["ColKind"]</th> }
+                    <th style="width:80px" class="text-end">@S["ColEntries"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var g in Filtered.Take(RowLimit))
+                {
+                    @* Klik rozbalí položky — samostatná detailní stránka by pro pár řádků zdržovala *@
+                    <tr style="cursor:pointer" @onclick="() => ToggleExpand(g.Guid)">
+                        <td><code class="small">@g.GroupVnum</code></td>
+                        <td>
+                            @g.Name
+                            @if (g.HasDuplicates)
+                            { <span class="badge bg-warning text-dark ms-1" title="@S["DuplicateNote"]">⚠</span> }
+                        </td>
+                        @if (_tab == "mob_group") { <td class="small">@g.LeaderVnum</td> }
+                        @if (_tab == "special_item_group") { <td class="small">@g.GroupKind</td> }
+                        <td class="text-end small">@g.Entries.Count</td>
+                    </tr>
+                    @if (_expanded.Contains(g.Guid))
+                    {
+                        <tr>
+                            <td></td>
+                            <td colspan="3">
+                                <table class="table table-sm table-borderless mb-0 small">
+                                    @foreach (var row in g.Entries)
+                                    {
+                                        <tr>@foreach (var cell in row) { <td><code>@cell</code></td> }</tr>
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Filtered.Count() > RowLimit)
+    {
+        <div class="text-center text-muted small mt-2">@S["RowsLimited", RowLimit]</div>
+    }
+}
+
+@code {
+    private const int RowLimit = 500;
+    private static readonly (string Type, string Key)[] Tabs =
+    [
+        ("mob_group", "TabMobGroup"),
+        ("mob_group_group", "TabMobGroupGroup"),
+        ("special_item_group", "TabSpecialItemGroup"),
+    ];
+
+    private bool _loading = true;
+    private string? _error;
+    private List<GroupRow> _groups = [];
+    private string _tab = "mob_group";
+    private string _search = "";
+    private readonly HashSet<Guid> _expanded = [];
+
+    private IEnumerable<GroupRow> Filtered => _groups.Where(g =>
+        g.GroupType == _tab &&
+        (string.IsNullOrEmpty(_search) ||
+            (g.Name?.Contains(_search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            g.GroupVnum.ToString() == _search));
+
+    private int CountOf(string type) => _groups.Count(g => g.GroupType == type);
+
+    private void SelectTab(string type) { _tab = type; _expanded.Clear(); }
+
+    private void ToggleExpand(Guid id) { if (!_expanded.Remove(id)) _expanded.Add(id); }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _groups = (await Db.QueryAsync<GroupRow>(
+                @"SELECT ""Guid"", ""GroupType"", ""GroupVnum"", ""Name"", ""LeaderVnum"", ""GroupKind"",
+                         ""Entries""::text AS ""EntriesJson"",
+                         (""Metadata"" -> 'duplicatesIgnored') IS NOT NULL AS ""HasDuplicates""
+                  FROM ""ContentGroups"" WHERE ""IsDeleted"" = FALSE
+                  ORDER BY ""GroupType"", ""GroupVnum""")).ToList();
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _loading = false; }
+    }
+}

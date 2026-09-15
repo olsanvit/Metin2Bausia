@@ -4,37 +4,37 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Item databáze — Metin2Bausia</PageTitle>
+<PageTitle>@S["ItemDatabaseTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Item databáze <span class="badge bg-secondary fs-6">@_total</span></h2>
-<p class="text-muted mb-3">Schválené itemy dostupné ve hře.</p>
+<h2>@S["ItemDatabaseTitle"] <span class="badge bg-secondary fs-6">@_total</span></h2>
+<p class="text-muted mb-3">@S["ItemDatabaseIntro"]</p>
 
 <div class="d-flex gap-2 align-items-center flex-wrap mb-3">
     <input class="form-control form-control-sm" style="max-width:240px"
-           placeholder="Hledat název / vnum…"
+           placeholder="@S["SearchNameVnum"]"
            @bind="_search" @bind:event="oninput" />
     <select class="form-select form-select-sm" style="max-width:160px" @bind="_typeFilter" @bind:after="ApplyFilter">
-        <option value="">Všechny typy</option>
+        <option value="">@S["AllTypes"]</option>
         @foreach (var t in _types)
         {
             <option value="@t">@ContentLabels.ItemType(t)</option>
         }
     </select>
     <select class="form-select form-select-sm" style="max-width:140px" @bind="_enabledFilter" @bind:after="ApplyFilter">
-        <option value="">Vše</option>
-        <option value="true">Zapnuté</option>
-        <option value="false">Vypnuté</option>
+        <option value="">@S["All"]</option>
+        <option value="true">@S["Enabled"]</option>
+        <option value="false">@S["Disabled"]</option>
     </select>
-    <span class="text-muted small ms-auto">Zobrazeno: @Filtered.Count() / @_items.Count</span>
+    <span class="text-muted small ms-auto">@S["ShownOf", Filtered.Count(), _items.Count]</span>
 </div>
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else if (!_items.Any())
 {
-    <div class="alert alert-info">Žádné schválené itemy v databázi.</div>
+    <div class="alert alert-info">@S["NoApprovedItems"]</div>
 }
 else
 {
@@ -42,12 +42,12 @@ else
         <table class="table table-sm table-hover align-middle">
             <thead class="table-dark sticky-top">
                 <tr>
-                    <th style="width:70px">Vnum</th>
-                    <th>Název</th>
-                    <th style="width:80px">Typ</th>
-                    <th style="width:90px">Confidence</th>
-                    <th style="width:80px">Zapnuto</th>
-                    <th style="width:80px">Zdroj</th>
+                    <th style="width:70px">@S["ColVnum"]</th>
+                    <th>@S["ColName"]</th>
+                    <th style="width:80px">@S["Type"]</th>
+                    <th style="width:90px">@S["Confidence"]</th>
+                    <th style="width:80px">@S["On"]</th>
+                    <th style="width:80px">@S["Source"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +89,7 @@ else
     </div>
     @if (Filtered.Count() > 500)
     {
-        <div class="text-center text-muted small mt-2">Zobrazeno prvních 500. Upřesněte filtr.</div>
+        <div class="text-center text-muted small mt-2">@S["RowsLimited", 500]</div>
     }
 }
 

@@ -4,24 +4,24 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Správa systémů — Metin2Bausia</PageTitle>
+<PageTitle>@S["ManageSystemsPageTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Správa herních systémů</h2>
-<p class="text-muted mb-3">Zapínej/vypínej herní systémy (enchant, alchemy, crafting, pet, mount...).</p>
+<h2>@S["ManageSystemsTitle"]</h2>
+<p class="text-muted mb-3">@S["ManageSystemsIntro"]</p>
 
 <div class="toolbar mb-3 d-flex gap-2 align-items-center">
     <input class="form-control form-control-sm" style="max-width:220px"
-           placeholder="Hledat..." @bind="_search" @bind:event="oninput" />
+           placeholder="@S["SearchDots"]" @bind="_search" @bind:event="oninput" />
     <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
-        <option value="">Vše</option>
-        <option value="true">Zapnuté</option>
-        <option value="false">Vypnuté</option>
+        <option value="">@S["All"]</option>
+        <option value="true">@S["Enabled"]</option>
+        <option value="false">@S["Disabled"]</option>
     </select>
     <span class="text-muted small ms-auto">@Filtered.Count() / @_systems.Count</span>
 </div>
 
-@if (_loading) { <p>Načítám...</p> }
-else if (!_systems.Any()) { <div class="alert alert-info">Žádné systémy v databázi.</div> }
+@if (_loading) { <p>@S["Loading"]</p> }
+else if (!_systems.Any()) { <div class="alert alert-info">@S["NoSystems"]</div> }
 else
 {
     <div class="row g-3">
@@ -91,7 +91,7 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Systems"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = sys.Guid });
-            _message = newValue ? $"✓ {sys.SystemName} zapnuto" : $"○ {sys.SystemName} vypnuto";
+            _message = newValue ? S["TurnedOn", sys.SystemName] : S["TurnedOff", sys.SystemName];
             _isError = false;
         }
         catch (Exception ex) { sys.IsEnabled = old; _message = ex.Message; _isError = true; }

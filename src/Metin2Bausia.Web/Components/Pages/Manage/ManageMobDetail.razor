@@ -5,26 +5,26 @@
 @inject IDbService Db
 @inject NavigationManager Nav
 
-<PageTitle>@(_mob?.Name ?? "Mob detail") — Metin2Bausia</PageTitle>
+<PageTitle>@(_mob?.Name ?? S["MobDetailTitle"]) — Metin2Bausia</PageTitle>
 
 <div class="d-flex align-items-center gap-2 mb-3">
-    <a href="/manage/mobs" class="btn btn-outline-secondary btn-sm">← Zpět na moby</a>
+    <a href="/manage/mobs" class="btn btn-outline-secondary btn-sm">@S["BackToMobs"]</a>
     @if (_mob != null)
     {
         <span class="badge @StatusClass(_mob.ContentStatus)">@_mob.ContentStatus</span>
         <span class="badge @(_mob.IsEnabled ? "bg-success" : "bg-secondary")">
-            @(_mob.IsEnabled ? "Zapnuto" : "Vypnuto")
+            @(_mob.IsEnabled ? S["On"] : S["Off"])
         </span>
     }
 </div>
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else if (_mob == null)
 {
-    <div class="alert alert-danger">Mob nenalezen.</div>
+    <div class="alert alert-danger">@S["MobNotFound"]</div>
 }
 else
 {
@@ -33,50 +33,50 @@ else
             <!-- Základní info -->
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong>Základní informace</strong>
+                    <strong>@S["BasicInfo"]</strong>
                     <code class="small">vnum @_mob.Vnum</code>
                 </div>
                 <div class="card-body">
                     <div class="row g-2 mb-2">
                         <div class="col-md-6">
-                            <label class="form-label small">Název (interní)</label>
+                            <label class="form-label small">@S["InternalName"]</label>
                             <input class="form-control form-control-sm" @bind="_editName" />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Lokalizovaný název</label>
+                            <label class="form-label small">@S["LocaleName"]</label>
                             <input class="form-control form-control-sm" @bind="_editLocaleName" />
                         </div>
                     </div>
                     <div class="row g-2 mb-2">
                         <div class="col-md-4">
-                            <label class="form-label small">Typ</label>
+                            <label class="form-label small">@S["Type"]</label>
                             <select class="form-select form-select-sm" @bind="_editMobType">
                                 <option value="">—</option>
-                                <option value="monster">Příšera</option>
+                                <option value="monster">@S["MobTypeMonster"]</option>
                                 <option value="npc">NPC</option>
                                 <option value="metin">Metin</option>
                                 <option value="boss">Boss</option>
-                                <option value="chest">Truhla</option>
+                                <option value="chest">@S["MobTypeChest"]</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small">Rank</label>
+                            <label class="form-label small">@S["Rank"]</label>
                             <select class="form-select form-select-sm" @bind="_editRank">
                                 <option value="">—</option>
-                                <option value="pawn">Pěšák</option>
-                                <option value="knight">Rytíř</option>
-                                <option value="super_knight">Super Rytíř</option>
+                                <option value="pawn">@S["RankPawn"]</option>
+                                <option value="knight">@S["RankKnight"]</option>
+                                <option value="super_knight">@S["RankSuperKnight"]</option>
                                 <option value="boss">Boss</option>
-                                <option value="king">Král</option>
+                                <option value="king">@S["RankKing"]</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small">Level</label>
+                            <label class="form-label small">@S["Level"]</label>
                             <input class="form-control form-control-sm" type="number" value="@_mob.Level" readonly />
                         </div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label small">Popis</label>
+                        <label class="form-label small">@S["Description"]</label>
                         <textarea class="form-control form-control-sm" rows="3" @bind="_editDescription"></textarea>
                     </div>
                 </div>
@@ -84,39 +84,39 @@ else
 
             <!-- Statistiky -->
             <div class="card mb-3">
-                <div class="card-header"><strong>Statistiky boje</strong></div>
+                <div class="card-header"><strong>@S["CombatStats"]</strong></div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Max HP</div>
+                            <div class="small text-muted">@S["MaxHp"]</div>
                             <div class="fw-bold">@(_mob.MaxHp?.ToString("N0") ?? "—")</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">EXP</div>
+                            <div class="small text-muted">@S["Exp"]</div>
                             <div class="fw-bold">@(_mob.Exp?.ToString("N0") ?? "—")</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Útok</div>
+                            <div class="small text-muted">@S["Attack"]</div>
                             <div class="fw-bold">@(_mob.Atk ?? 0)</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Obrana</div>
+                            <div class="small text-muted">@S["Defense"]</div>
                             <div class="fw-bold">@(_mob.Def ?? 0)</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Mag. útok</div>
+                            <div class="small text-muted">@S["MagicAttack"]</div>
                             <div class="fw-bold">@(_mob.MagicAtk ?? 0)</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Mag. obrana</div>
+                            <div class="small text-muted">@S["MagicDefense"]</div>
                             <div class="fw-bold">@(_mob.MagicDef ?? 0)</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Rychlost útoku</div>
+                            <div class="small text-muted">@S["AttackSpeed"]</div>
                             <div class="fw-bold">@(_mob.AttackSpeed ?? 0)</div>
                         </div>
                         <div class="col-6 col-md-3 text-center">
-                            <div class="small text-muted">Rychlost pohybu</div>
+                            <div class="small text-muted">@S["MoveSpeed"]</div>
                             <div class="fw-bold">@(_mob.MoveSpeed ?? 0)</div>
                         </div>
                     </div>
@@ -124,25 +124,68 @@ else
                     <hr />
                     <div class="row g-2">
                         <div class="col-md-4 text-center">
-                            <div class="small text-muted">Gold (min–max)</div>
+                            <div class="small text-muted">@S["GoldMinMax"]</div>
                             <div class="fw-bold">@(_mob.GoldMin?.ToString("N0") ?? "0") – @(_mob.GoldMax?.ToString("N0") ?? "0")</div>
                         </div>
                         <div class="col-md-4 text-center">
-                            <div class="small text-muted">Šance na gold</div>
+                            <div class="small text-muted">@S["GoldChance"]</div>
                             <div class="fw-bold">@(_mob.GoldDropRate ?? 0) %</div>
                         </div>
                         <div class="col-md-4 text-center">
-                            <div class="small text-muted">Agresivní dohled</div>
+                            <div class="small text-muted">@S["AggressiveSight"]</div>
                             <div class="fw-bold">@(_mob.AggressiveSight ?? 0)</div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            @* Dropy z mob_drop_item.txt — typy kill/limit odkazují item jménem, vnum se proto dohledává *@
+            <div class="card mb-3">
+                <div class="card-header"><strong>@S["DropsTitle"]</strong></div>
+                <div class="card-body p-0">
+                    @if (_drops.Count == 0)
+                    {
+                        <p class="text-muted small m-3">@S["DropsNone"]</p>
+                    }
+                    else
+                    {
+                        @foreach (var g in _drops)
+                        {
+                            <div class="px-3 pt-2 small">
+                                <span class="badge bg-secondary">@g.Type</span>
+                                <span class="text-muted ms-1">@g.Group</span>
+                                @if (!string.IsNullOrEmpty(g.KillDrop)) { <span class="ms-2">@S["DropKillDrop"]: @g.KillDrop</span> }
+                                @if (!string.IsNullOrEmpty(g.LevelLimit)) { <span class="ms-2">@S["DropLevelLimit"]: @g.LevelLimit</span> }
+                            </div>
+                            <table class="table table-sm mb-2">
+                                <thead><tr><th>@S["DropItem"]</th><th class="text-end">@S["DropCount"]</th><th class="text-end">@S["DropChance"]</th></tr></thead>
+                                <tbody>
+                                @foreach (var it in g.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (it.Vnum is int v && _itemNames.TryGetValue(v, out var item))
+                                            { <a href="/manage/items/@item.Guid">@item.Label</a> <code class="small text-muted ms-1">@v</code> }
+                                            else if (it.Vnum is int v2)
+                                            { <code class="small">@v2</code> }
+                                            else
+                                            { <span class="text-muted">@(it.ItemName ?? "?") (@S["DropUnresolved"])</span> }
+                                        </td>
+                                        <td class="text-end">@it.Count</td>
+                                        <td class="text-end">@it.Pct.ToString("0.###") %</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        }
+                    }
+                </div>
+            </div>
+
             @if (_mob.SourceName != null)
             {
                 <div class="card mb-3">
-                    <div class="card-header"><strong>Zdroj dat</strong></div>
+                    <div class="card-header"><strong>@S["DataSource"]</strong></div>
                     <div class="card-body small">
                         <strong>@_mob.SourceName</strong>
                         @if (_mob.SourceUrl != null)
@@ -154,37 +197,37 @@ else
 
         <div class="col-lg-4">
             <div class="card mb-3">
-                <div class="card-header"><strong>Kvalita dat</strong></div>
+                <div class="card-header"><strong>@S["DataQuality"]</strong></div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between small mb-1">
-                        <span>Final Score</span>
+                        <span>@S["FinalScore"]</span>
                         <strong>@(_mob.FinalScore?.ToString("F2") ?? "—")</strong>
                     </div>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span>Confidence</span>
+                        <span>@S["Confidence"]</span>
                         <strong>@(_mob.ConfidenceScore?.ToString("F2") ?? "—")</strong>
                     </div>
                     <hr class="my-2" />
                     <div class="small text-muted">
-                        Vytvořeno: @_mob.CreatedAt.ToString("dd.MM.yyyy")<br />
-                        Aktualizováno: @_mob.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                        @S["Created"]: @_mob.CreatedAt.ToString("dd.MM.yyyy")<br />
+                        @S["Updated"]: @_mob.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
             </div>
 
             <div class="card mb-3">
-                <div class="card-header"><strong>Akce</strong></div>
+                <div class="card-header"><strong>@S["Actions"]</strong></div>
                 <div class="card-body d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">Uložit změny</button>
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]</button>
                     <div class="d-flex gap-1">
                         <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
-                                disabled="@(_mob.ContentStatus == "approved")">✓ Schválit</button>
+                                disabled="@(_mob.ContentStatus == "approved")">@S["Approve"]</button>
                         <button class="btn btn-danger btn-sm flex-fill" @onclick='() => SetStatusAsync("rejected")'
-                                disabled="@(_mob.ContentStatus == "rejected")">✗ Zamítnout</button>
+                                disabled="@(_mob.ContentStatus == "rejected")">@S["Reject"]</button>
                     </div>
                     <button class="btn @(_mob.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"
                             @onclick="ToggleEnabledAsync">
-                        @(_mob.IsEnabled ? "⊘ Vypnout" : "✓ Zapnout")
+                        @(_mob.IsEnabled ? S["ToggleOff"] : S["ToggleOn"])
                     </button>
                 </div>
             </div>
@@ -226,7 +269,8 @@ else
                          ""AttackSpeed"", ""MoveSpeed"", ""Atk"", ""MagicAtk"", ""Def"", ""MagicDef"",
                          ""AggressiveSight"", ""AttackRange"", ""Description"",
                          ""SourceName"", ""SourceUrl"", ""ContentStatus"", ""IsEnabled"",
-                         ""FinalScore"", ""ConfidenceScore"", ""CreatedAt"", ""UpdatedAt""
+                         ""FinalScore"", ""ConfidenceScore"", ""CreatedAt"", ""UpdatedAt"",
+                         ""DropItems""::text AS ""DropItemsJson""
                   FROM ""Mobs"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
                 new { g = Guid });
 
@@ -238,9 +282,26 @@ else
                 _editRank = _mob.Rank;
                 _editDescription = _mob.Description;
             }
+            if (_mob != null) await LoadDropsAsync();
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }
         finally { _loading = false; }
+    }
+
+    private List<DropGroupJson> _drops = [];
+    private Dictionary<int, NameRef> _itemNames = [];
+
+    /// <summary>Dropy jsou jsonb u moba; jména itemů se dotáhnou jedním dotazem, ne po jednom.</summary>
+    private async Task LoadDropsAsync()
+    {
+        _drops = JsonContent.ParseList<DropGroupJson>(_mob?.DropItemsJson);
+        var vnums = _drops.SelectMany(g => g.Items).Where(i => i.Vnum.HasValue).Select(i => i.Vnum!.Value).Distinct().ToArray();
+        if (vnums.Length == 0) return;
+        var refs = await Db.QueryAsync<NameRef>(
+            @"SELECT ""Guid"", ""Vnum"", coalesce(""LocaleName"", ""Name"") AS ""Label""
+              FROM ""Items"" WHERE ""Vnum"" = ANY(@v) AND ""IsDeleted"" = FALSE",
+            new { v = vnums });
+        _itemNames = refs.GroupBy(r => r.Vnum).ToDictionary(g => g.Key, g => g.First());
     }
 
     private async Task SaveAsync()
@@ -258,7 +319,7 @@ else
             _mob.MobType = _editMobType;
             _mob.Rank = _editRank;
             _mob.Description = _editDescription;
-            _msg = "✓ Uloženo";
+            _msg = S["Saved"];
             _isErr = false;
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }
@@ -285,7 +346,7 @@ else
                   VALUES (gen_random_uuid(), 'Mobs', @g, @vnum, @name, @s, @op, @prev, @s, NOW())",
                 new { g = _mob.Guid, vnum = _mob.Vnum, name = _mob.Name, s = status, op, prev });
             _mob.ContentStatus = status;
-            _msg = $"Status: {status}";
+            _msg = S["StatusChanged", status];
             _isErr = false;
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }
@@ -301,7 +362,7 @@ else
                 @"UPDATE ""Mobs"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newVal, g = _mob.Guid });
             _mob.IsEnabled = newVal;
-            _msg = newVal ? "✓ Zapnuto" : "○ Vypnuto";
+            _msg = newVal ? S["MsgOn"] : S["MsgOff"];
             _isErr = false;
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }

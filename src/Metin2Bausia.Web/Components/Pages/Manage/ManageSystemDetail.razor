@@ -5,15 +5,15 @@
 @inject IDbService Db
 @inject NavigationManager Nav
 
-<PageTitle>@(_sys?.SystemName ?? "Systém detail") — Metin2Bausia</PageTitle>
+<PageTitle>@(_sys?.SystemName ?? S["SystemDetailTitle"]) — Metin2Bausia</PageTitle>
 
 <div class="d-flex align-items-center gap-2 mb-3">
-    <a href="/manage/systems" class="btn btn-outline-secondary btn-sm">← Zpět na systémy</a>
+    <a href="/manage/systems" class="btn btn-outline-secondary btn-sm">@S["BackToSystems"]</a>
     @if (_sys != null)
     {
         <span class="badge @StatusClass(_sys.ContentStatus)">@_sys.ContentStatus</span>
         <span class="badge @(_sys.IsEnabled ? "bg-success" : "bg-secondary")">
-            @(_sys.IsEnabled ? "Zapnuto" : "Vypnuto")
+            @(_sys.IsEnabled ? S["On"] : S["Off"])
         </span>
         @if (_sys.Complexity != null)
         {
@@ -24,60 +24,60 @@
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else if (_sys == null)
 {
-    <div class="alert alert-danger">Systém nenalezen.</div>
+    <div class="alert alert-danger">@S["SystemNotFound"]</div>
 }
 else
 {
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="card mb-3">
-                <div class="card-header"><strong>Základní informace</strong></div>
+                <div class="card-header"><strong>@S["BasicInfo"]</strong></div>
                 <div class="card-body">
                     <div class="row g-2 mb-2">
                         <div class="col-md-6">
-                            <label class="form-label small">Název systému</label>
+                            <label class="form-label small">@S["SystemName"]</label>
                             <input class="form-control form-control-sm" @bind="_editName" />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Kategorie</label>
+                            <label class="form-label small">@S["Category"]</label>
                             <select class="form-select form-select-sm" @bind="_editCategory">
                                 <option value="">—</option>
-                                <option value="crafting">Crafting (výroba)</option>
-                                <option value="enchant">Enchant (zlepšování)</option>
-                                <option value="mount">Mount (mounty)</option>
-                                <option value="pet">Pet (mazlíčci)</option>
+                                <option value="crafting">@S["CatCrafting"]</option>
+                                <option value="enchant">@S["CatEnchant"]</option>
+                                <option value="mount">@S["CatMount"]</option>
+                                <option value="pet">@S["CatPet"]</option>
                                 <option value="pvp">PvP</option>
                                 <option value="guild">Guild</option>
                                 <option value="quest">Quest</option>
-                                <option value="economy">Ekonomika</option>
-                                <option value="drop">Drop systém</option>
-                                <option value="event">Eventy</option>
-                                <option value="skill">Dovednosti</option>
-                                <option value="other">Ostatní</option>
+                                <option value="economy">@S["CatEconomy"]</option>
+                                <option value="drop">@S["CatDrop"]</option>
+                                <option value="event">@S["CatEvent"]</option>
+                                <option value="skill">@S["CatSkill"]</option>
+                                <option value="other">@S["CatOther"]</option>
                             </select>
                         </div>
                     </div>
                     <div class="row g-2 mb-2">
                         <div class="col-md-6">
-                            <label class="form-label small">Složitost implementace</label>
+                            <label class="form-label small">@S["Complexity"]</label>
                             <select class="form-select form-select-sm" @bind="_editComplexity">
                                 <option value="">—</option>
-                                <option value="low">Nízká</option>
-                                <option value="medium">Střední</option>
-                                <option value="high">Vysoká</option>
+                                <option value="low">@S["ComplexityLow"]</option>
+                                <option value="medium">@S["ComplexityMedium"]</option>
+                                <option value="high">@S["ComplexityHigh"]</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Zdrojový server</label>
+                            <label class="form-label small">@S["SourceServer"]</label>
                             <input class="form-control form-control-sm" @bind="_editSourceServer" />
                         </div>
                     </div>
                     <div class="mb-2">
-                        <label class="form-label small">Popis</label>
+                        <label class="form-label small">@S["Description"]</label>
                         <textarea class="form-control form-control-sm" rows="3" @bind="_editDescription"></textarea>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ else
             @if (!string.IsNullOrEmpty(_sys.Implementation))
             {
                 <div class="card mb-3">
-                    <div class="card-header"><strong>Implementace</strong></div>
+                    <div class="card-header"><strong>@S["Implementation"]</strong></div>
                     <div class="card-body">
                         <pre class="small mb-0" style="white-space:pre-wrap;">@_sys.Implementation</pre>
                     </div>
@@ -96,7 +96,7 @@ else
             @if (_sys.SourceName != null)
             {
                 <div class="card mb-3">
-                    <div class="card-header"><strong>Zdroj dat</strong></div>
+                    <div class="card-header"><strong>@S["DataSource"]</strong></div>
                     <div class="card-body small">
                         <strong>@_sys.SourceName</strong>
                         @if (_sys.SourceUrl != null)
@@ -108,33 +108,33 @@ else
 
         <div class="col-lg-4">
             <div class="card mb-3">
-                <div class="card-header"><strong>Kvalita dat</strong></div>
+                <div class="card-header"><strong>@S["DataQuality"]</strong></div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between small mb-1">
-                        <span>Final Score</span>
+                        <span>@S["FinalScore"]</span>
                         <strong>@(_sys.FinalScore?.ToString("F2") ?? "—")</strong>
                     </div>
                     <hr class="my-2" />
                     <div class="small text-muted">
-                        Vytvořeno: @_sys.CreatedAt.ToString("dd.MM.yyyy")<br />
-                        Aktualizováno: @_sys.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
+                        @S["Created"]: @_sys.CreatedAt.ToString("dd.MM.yyyy")<br />
+                        @S["Updated"]: @_sys.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
             </div>
 
             <div class="card mb-3">
-                <div class="card-header"><strong>Akce</strong></div>
+                <div class="card-header"><strong>@S["Actions"]</strong></div>
                 <div class="card-body d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">Uložit změny</button>
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]</button>
                     <div class="d-flex gap-1">
                         <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
-                                disabled="@(_sys.ContentStatus == "approved")">✓ Schválit</button>
+                                disabled="@(_sys.ContentStatus == "approved")">@S["Approve"]</button>
                         <button class="btn btn-danger btn-sm flex-fill" @onclick='() => SetStatusAsync("rejected")'
-                                disabled="@(_sys.ContentStatus == "rejected")">✗ Zamítnout</button>
+                                disabled="@(_sys.ContentStatus == "rejected")">@S["Reject"]</button>
                     </div>
                     <button class="btn @(_sys.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"
                             @onclick="ToggleEnabledAsync">
-                        @(_sys.IsEnabled ? "⊘ Vypnout" : "✓ Zapnout")
+                        @(_sys.IsEnabled ? S["ToggleOff"] : S["ToggleOn"])
                     </button>
                 </div>
             </div>
@@ -205,7 +205,7 @@ else
             _sys.Description = _editDescription;
             _sys.Complexity = _editComplexity;
             _sys.SourceServer = _editSourceServer;
-            _msg = "✓ Uloženo";
+            _msg = S["Saved"];
             _isErr = false;
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }
@@ -232,7 +232,7 @@ else
                   VALUES (gen_random_uuid(), 'Systems', @g, @vnum, @name, @s, @op, @prev, @s, NOW())",
                 new { g = _sys.Guid, vnum = (int?)null, name = _sys.SystemName, s = status, op, prev });
             _sys.ContentStatus = status;
-            _msg = $"Status: {status}";
+            _msg = S["StatusChanged", status];
             _isErr = false;
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }
@@ -248,7 +248,7 @@ else
                 @"UPDATE ""Systems"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newVal, g = _sys.Guid });
             _sys.IsEnabled = newVal;
-            _msg = newVal ? "✓ Zapnuto" : "○ Vypnuto";
+            _msg = newVal ? S["MsgOn"] : S["MsgOff"];
             _isErr = false;
         }
         catch (Exception ex) { _msg = ex.Message; _isErr = true; }

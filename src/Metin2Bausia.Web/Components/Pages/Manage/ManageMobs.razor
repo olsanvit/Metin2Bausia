@@ -4,41 +4,41 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Správa mobů / NPC / Metinů — Metin2Bausia</PageTitle>
+<PageTitle>@S["ManageMobsPageTitle"] — Metin2Bausia</PageTitle>
 
-<h2>Správa mobů, NPC a Metinů</h2>
-<p class="text-muted mb-3">Zapínej/vypínej obsah ve hře. Nové záznamy jsou ve výchozím stavu <strong>vypnuté</strong>.</p>
+<h2>@S["ManageMobsTitle"]</h2>
+<p class="text-muted mb-3">@((MarkupString)S["ManageMobsIntroHtml"].Value)</p>
 
 <div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
     <input class="form-control form-control-sm" style="max-width:220px"
-           placeholder="Hledat název / vnum..."
+           placeholder="@S["SearchNameVnum"]"
            @bind="_search" @bind:event="oninput" />
 
     <div class="btn-group btn-group-sm" role="group">
         <button class="btn @(_tab=="all"?"btn-primary":"btn-outline-secondary")"
-                @onclick='() => _tab="all"'>Vše</button>
+                @onclick='() => _tab="all"'>@S["All"]</button>
         <button class="btn @(_tab=="monster"?"btn-danger":"btn-outline-secondary")"
-                @onclick='() => _tab="monster"'>Monstři</button>
+                @onclick='() => _tab="monster"'>@S["TabMonsters"]</button>
         <button class="btn @(_tab=="npc"?"btn-info":"btn-outline-secondary")"
                 @onclick='() => _tab="npc"'>NPC</button>
         <button class="btn @(_tab=="metin"?"btn-warning":"btn-outline-secondary")"
-                @onclick='() => _tab="metin"'>Metiny</button>
+                @onclick='() => _tab="metin"'>@S["TabMetins"]</button>
         <button class="btn @(_tab=="boss"?"btn-dark":"btn-outline-secondary")"
-                @onclick='() => _tab="boss"'>Bossové</button>
+                @onclick='() => _tab="boss"'>@S["TabBosses"]</button>
     </div>
 
     <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
-        <option value="">Vše</option>
-        <option value="true">Zapnuté</option>
-        <option value="false">Vypnuté</option>
+        <option value="">@S["All"]</option>
+        <option value="true">@S["Enabled"]</option>
+        <option value="false">@S["Disabled"]</option>
     </select>
 
-    <span class="text-muted small ms-auto">Zobrazeno: @Filtered.Count() / @_mobs.Count</span>
+    <span class="text-muted small ms-auto">@S["ShownOf", Filtered.Count(), _mobs.Count]</span>
 </div>
 
 @if (_loading)
 {
-    <p>Načítám...</p>
+    <p>@S["Loading"]</p>
 }
 else
 {
@@ -46,13 +46,13 @@ else
         <table class="table table-sm table-hover align-middle">
             <thead class="table-dark sticky-top">
                 <tr>
-                    <th style="width:56px">Zapnuto</th>
-                    <th style="width:70px">Vnum</th>
-                    <th>Název</th>
-                    <th style="width:60px">Level</th>
-                    <th style="width:90px">Typ</th>
-                    <th style="width:90px">Rank</th>
-                    <th style="width:100px">Status</th>
+                    <th style="width:56px">@S["On"]</th>
+                    <th style="width:70px">@S["ColVnum"]</th>
+                    <th>@S["ColName"]</th>
+                    <th style="width:60px">@S["Level"]</th>
+                    <th style="width:90px">@S["Type"]</th>
+                    <th style="width:90px">@S["Rank"]</th>
+                    <th style="width:100px">@S["Status"]</th>
                     <th style="width:50px"></th>
                 </tr>
             </thead>
@@ -144,13 +144,13 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Mobs"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = mob.Guid });
-            _message = newValue ? $"✓ {mob.Name} zapnuto" : $"○ {mob.Name} vypnuto";
+            _message = newValue ? S["TurnedOn", mob.Name ?? ""] : S["TurnedOff", mob.Name ?? ""];
             _isError = false;
         }
         catch (Exception ex)
         {
             mob.IsEnabled = old;
-            _message = $"Chyba: {ex.Message}";
+            _message = S["Error", ex.Message];
             _isError = true;
         }
     }

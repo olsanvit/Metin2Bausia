@@ -4,21 +4,21 @@
 @rendermode InteractiveServer
 @inject IDbService Db
 
-<PageTitle>Dashboard — Metin2Bausia</PageTitle>
+<PageTitle>@S["DashboardTitle"] — Metin2Bausia</PageTitle>
 
 <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="mb-0">Metin2Bausia Admin</h1>
-    <a href="/stats" class="btn btn-outline-secondary btn-sm">📊 Statistiky</a>
+    <h1 class="mb-0">@S["AdminTitle"]</h1>
+    <a href="/stats" class="btn btn-outline-secondary btn-sm">@S["NavStats"]</a>
 </div>
 
 @if (_error != null)
 {
-    <div class="alert alert-danger">Chyba DB: @_error</div>
+    <div class="alert alert-danger">@S["DbError", _error]</div>
 }
 
 @if (_loading)
 {
-    <p>Načítám statistiky...</p>
+    <p>@S["LoadingStats"]</p>
 }
 else
 {
@@ -28,7 +28,7 @@ else
             <a href="/items" class="text-decoration-none">
                 <div class="card @(_pendingItems > 0 ? "text-bg-warning" : "text-bg-light") h-100">
                     <div class="card-body">
-                        <div class="card-title small">📋 Itemy ke schválení</div>
+                        <div class="card-title small">@S["CardItemsPending"]</div>
                         <div class="fs-2 fw-bold">@_pendingItems</div>
                     </div>
                 </div>
@@ -38,7 +38,7 @@ else
             <a href="/mobs" class="text-decoration-none">
                 <div class="card @(_pendingMobs > 0 ? "text-bg-warning" : "text-bg-light") h-100">
                     <div class="card-body">
-                        <div class="card-title small">👹 Mobové ke schválení</div>
+                        <div class="card-title small">@S["CardMobsPending"]</div>
                         <div class="fs-2 fw-bold">@_pendingMobs</div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@ else
             <a href="/items/browse" class="text-decoration-none">
                 <div class="card text-bg-success h-100">
                     <div class="card-body">
-                        <div class="card-title small">✅ Schváleno itemů</div>
+                        <div class="card-title small">@S["CardItemsApproved"]</div>
                         <div class="fs-2 fw-bold">@_approvedItems</div>
                     </div>
                 </div>
@@ -58,7 +58,7 @@ else
             <a href="/review" class="text-decoration-none">
                 <div class="card @(_manualReview > 0 ? "text-bg-danger" : "text-bg-light") h-100">
                     <div class="card-body">
-                        <div class="card-title small">⚠️ Ruční review</div>
+                        <div class="card-title small">@S["CardManualReview"]</div>
                         <div class="fs-2 fw-bold">@_manualReview</div>
                     </div>
                 </div>
@@ -74,31 +74,31 @@ else
         <div class="alert @(isHealthy ? "alert-success" : "alert-danger") d-flex align-items-center gap-2 mb-3">
             <span style="font-size:1.2rem">@(isHealthy ? "✅" : "❌")</span>
             <div>
-                <strong>Poslední agent run: @lastRun.AgentName</strong>
+                <strong>@S["LastAgentRun", lastRun.AgentName]</strong>
                 <span class="ms-2 text-muted small">@lastRun.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
-                — <strong>@(isHealthy ? "úspěch" : "selhání")</strong>
-                <span class="ms-2">· @(lastRun.EntitiesInserted ?? 0) nových, @(lastRun.EntitiesUpdated ?? 0) aktualizovaných</span>
+                — <strong>@(isHealthy ? S["RunSuccess"] : S["RunFailure"])</strong>
+                <span class="ms-2">@S["RunNewUpdated", lastRun.EntitiesInserted ?? 0, lastRun.EntitiesUpdated ?? 0]</span>
                 @if (lastRun.BlockerCategory != null)
                 {
-                    <span class="ms-2">· blocker: <strong>@lastRun.BlockerCategory</strong></span>
+                    <span class="ms-2">· @S["BlockerLabel"]: <strong>@lastRun.BlockerCategory</strong></span>
                 }
             </div>
         </div>
     }
 
-    <h5 class="mb-2">Posledních 5 agent runů</h5>
+    <h5 class="mb-2">@S["RecentRuns"]</h5>
     @if (_recentRuns.Any())
     {
         <table class="table table-sm table-hover">
             <thead class="table-secondary">
                 <tr>
-                    <th>Agent</th>
-                    <th>Výsledek</th>
-                    <th>Spuštěn</th>
-                    <th class="text-end">Nové</th>
-                    <th class="text-end">Změněné</th>
-                    <th class="text-end">Chybné</th>
-                    <th>Highlights</th>
+                    <th>@S["ColAgent"]</th>
+                    <th>@S["ColResult"]</th>
+                    <th>@S["ColStarted"]</th>
+                    <th class="text-end">@S["ColNew"]</th>
+                    <th class="text-end">@S["ColChanged"]</th>
+                    <th class="text-end">@S["ColFailed"]</th>
+                    <th>@S["ColHighlights"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -106,7 +106,7 @@ else
                 {
                     <tr>
                         <td class="fw-semibold">@run.AgentName</td>
-                        <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? "OK" : "chyba")</span></td>
+                        <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? S["BadgeOk"] : S["BadgeError"])</span></td>
                         <td class="text-muted small">@run.CreatedAt.ToString("dd.MM HH:mm")</td>
                         <td class="text-end small">@(run.EntitiesInserted ?? 0)</td>
                         <td class="text-end small">@(run.EntitiesUpdated ?? 0)</td>
@@ -118,11 +118,11 @@ else
                 }
             </tbody>
         </table>
-        <a href="/reports" class="btn btn-outline-secondary btn-sm">Zobrazit všechny reporty</a>
+        <a href="/reports" class="btn btn-outline-secondary btn-sm">@S["ShowAllReports"]</a>
     }
     else
     {
-        <p class="text-muted">Zatím žádné agent runy.</p>
+        <p class="text-muted">@S["NoAgentRuns"]</p>
     }
 }
 

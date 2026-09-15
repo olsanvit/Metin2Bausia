@@ -10,3 +10,7 @@
 @* LangSwitcher v NavMenu se bez tohoto using nevyrenderuje (RZ10012 — bere se jako neznámý HTML element) *@
 @using MercenariesAndBeasts.Infrastructure.Components.Localization
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.Extensions.Localization
+@using Metin2Bausia.Web
+@* Texty stránek jdou přes resx (Resources/SharedResources*.resx) — natvrdo psané texty nejdou přeložit *@
+@inject IStringLocalizer<SharedResources> S

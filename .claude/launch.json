@@ -4,7 +4,13 @@
     {
       "name": "metin2bausia-web",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/Metin2Bausia.Web/Metin2Bausia.Web.csproj", "--urls", "http://localhost:5099"],
+      "runtimeArgs": [
+        "run",
+        "--project",
+        "src/Metin2Bausia.Web/Metin2Bausia.Web.csproj",
+        "--launch-profile",
+        "http"
+      ],
       "port": 5099
     }
   ]
