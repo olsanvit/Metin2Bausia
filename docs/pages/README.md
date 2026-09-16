@@ -35,9 +35,9 @@ Ověřeno buildem (0 chyb, 0 varování) a během aplikace na localhost:5099 —
 | [ItemsBrowse](ItemsBrowse.md) | `/items/browse` | ✅ opraveno 09-12, lokalizováno; kandidát na sloučení s ManageItems |
 | [StatsPage](StatsPage.md) | `/stats` | ✅ opraveno 09-12, lokalizováno |
 | [ManageItems](ManageItems.md) | `/manage/items` | ✅ opraveno 09-12, lokalizováno |
-| [ManageItemDetail](ManageItemDetail.md) | `/manage/items/{guid}` | ✅ lokalizováno, chybí editace hodnot |
+| [ManageItemDetail](ManageItemDetail.md) | `/manage/items/{guid}` | ✅ editace hodnot 09-16, lokalizováno |
 | [ManageMobs](ManageMobs.md) | `/manage/mobs` | ✅ opraveno 09-12, lokalizováno |
-| [ManageMobDetail](ManageMobDetail.md) | `/manage/mobs/{guid}` | ✅ dropy 09-15, lokalizováno |
+| [ManageMobDetail](ManageMobDetail.md) | `/manage/mobs/{guid}` | ✅ dropy 09-15, editace statistik 09-16, lokalizováno |
 | [ManageMaps](ManageMaps.md) | `/manage/maps` | ✅ lokalizováno |
 | [ManageMapDetail](ManageMapDetail.md) | `/manage/maps/{guid}` | ✅ spawny 09-15, lokalizováno |
 | [ManageSystems](ManageSystems.md) | `/manage/systems` | ✅ lokalizováno |
@@ -70,3 +70,11 @@ Mimo `.razor`: `Pages/Account/Login|ChangePassword|Logout.cshtml` (Razor Pages, 
 - Nové klíče přidávat přes `python3 tools/i18n/resx.py klice.json` (`{"Klic": ["česky", "english"]}`) — drží oba soubory v souladu.
 - Úvody s `<strong>` jsou v resx jako HTML a vykreslují se přes `MarkupString`.
 - Build 0 chyb; přepnutí jazyka v prohlížeči neověřeno (vyžaduje přihlášení). `LangSwitcher` nabízí i DE, ale `AddSimpleLocalization` zná jen cs/en.
+
+## Editace hodnot a testy stránek (2026-09-16)
+
+- **Detail itemu** edituje ceny, váhu, velikost, hodnoty limitů a bonusů a `value0`–`value5`. Symbolické typy (`LEVEL`, `APPLY_STR`) zůstávají jen ke čtení — server je čte jako konstanty.
+- **Detail moba** edituje level, HP, EXP, útok, obranu, rychlosti, gold a agresivní dohled.
+- **Ochrana před importem:** uložení přepne `DataOrigin` z `imported` na `manual`; opakovaný import přepisuje jen řádky `imported`, ruční úpravy tedy zůstanou. Detail zobrazuje původ dat a upozornění.
+- **Opravené chyby:** `DetailItem.SubType` byl `int?`, v DB je `text` (`WEAPON_SWORD`) — detail importovaného itemu by nešel načíst. Statistiky padaly, jakmile byla v DB data (`COUNT(*)` je `bigint`, záznamy mají `int`).
+- **Testy** (`src/Metin2Bausia.Tests/AdminPagesTests.cs`): všech 13 stránek adminu a oba detaily se vykreslí s testovacím přihlášeným adminem (`AdminAppFactory`, schéma autentizace jen v testech). Prázdnou DB si test sám naplní migracemi a vzorkem. Lokálně: `ConnectionStrings__Metin2Bausia="Host=localhost;Port=5442;Database=m2b_test;Username=postgres" dotnet test src/Metin2Bausia.Tests/`.

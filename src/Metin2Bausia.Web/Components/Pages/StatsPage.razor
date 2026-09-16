@@ -173,6 +173,7 @@ else
     private int _mapTotal, _mapEnabled;
     private int _sysTotal, _sysEnabled;
 
+    // Count je int kvůli výpočtu podílů; SQL proto přetypovává COUNT(*) (bigint) na int
     private record TypeCount(string? ItemType, int Count);
     private record RankCount(string? Rank, int Count);
     private record Band(string Label, int Count, string Css);
@@ -197,8 +198,8 @@ else
             var tMapEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Maps\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
             var tSysTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsDeleted\"=FALSE");
             var tSysEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
-            var tItemsByType  = Db.QueryAsync<TypeCount>("SELECT \"ItemType\", COUNT(*) AS \"Count\" FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE GROUP BY \"ItemType\" ORDER BY \"Count\" DESC LIMIT 15");
-            var tMobsByRank   = Db.QueryAsync<RankCount>("SELECT \"Rank\", COUNT(*) AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE GROUP BY \"Rank\" ORDER BY \"Count\" DESC");
+            var tItemsByType  = Db.QueryAsync<TypeCount>("SELECT \"ItemType\", COUNT(*)::int AS \"Count\" FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE GROUP BY \"ItemType\" ORDER BY \"Count\" DESC LIMIT 15");
+            var tMobsByRank   = Db.QueryAsync<RankCount>("SELECT \"Rank\", COUNT(*)::int AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE GROUP BY \"Rank\" ORDER BY \"Count\" DESC");
             var tHighConf     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 80 AND \"IsDeleted\"=FALSE");
             var tMidConf      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 50 AND \"ConfidenceScore\" < 80 AND \"IsDeleted\"=FALSE");
             var tLowConf      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" < 50 AND \"ConfidenceScore\" IS NOT NULL AND \"IsDeleted\"=FALSE");

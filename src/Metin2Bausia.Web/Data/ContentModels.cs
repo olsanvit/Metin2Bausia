@@ -118,7 +118,7 @@ public class DetailItem
     public string Name { get; set; } = "";
     public string? LocaleName { get; set; }
     public string? ItemType { get; set; }
-    public int? SubType { get; set; }
+    public string? SubType { get; set; }
     public int? Weight { get; set; }
     public int? Size { get; set; }
     public long? Gold { get; set; }
@@ -137,6 +137,7 @@ public class DetailItem
     public string? Description { get; set; }
     public string? SourceName { get; set; }
     public string? SourceUrl { get; set; }
+    public string? DataOrigin { get; set; }
     public string ContentStatus { get; set; } = "";
     public bool IsEnabled { get; set; }
     public decimal? FinalScore { get; set; }
@@ -172,6 +173,7 @@ public class DetailMob
     public string? Description { get; set; }
     public string? SourceName { get; set; }
     public string? SourceUrl { get; set; }
+    public string? DataOrigin { get; set; }
     public string ContentStatus { get; set; } = "";
     public bool IsEnabled { get; set; }
     public decimal? FinalScore { get; set; }

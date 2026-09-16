@@ -315,6 +315,12 @@
   <data name="GoldChance" xml:space="preserve">
     <value>Gold chance</value>
   </data>
+  <data name="GoldMaxLabel" xml:space="preserve">
+    <value>Gold max</value>
+  </data>
+  <data name="GoldMinLabel" xml:space="preserve">
+    <value>Gold min</value>
+  </data>
   <data name="GoldMinMax" xml:space="preserve">
     <value>Gold (min–max)</value>
   </data>
@@ -470,6 +476,9 @@
   </data>
   <data name="ManageSystemsTitle" xml:space="preserve">
     <value>Game systems</value>
+  </data>
+  <data name="ManualEditNote" xml:space="preserve">
+    <value>Saving marks an imported record as manually edited — re-import will no longer overwrite it.</value>
   </data>
   <data name="MapDetailTitle" xml:space="preserve">
     <value>Map detail</value>
