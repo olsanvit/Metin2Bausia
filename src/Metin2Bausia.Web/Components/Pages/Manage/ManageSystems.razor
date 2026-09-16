@@ -51,18 +51,13 @@ else
     </div>
 }
 
-@if (_message != null)
-{
-    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok") mt-3">@_message</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     private bool _loading = true;
     private List<ManageSystem> _systems = new();
     private string _search = "";
     private string _filterEnabled = "";
-    private string? _message;
-    private bool _isError;
 
     private IEnumerable<ManageSystem> Filtered => _systems.Where(s =>
         (string.IsNullOrEmpty(_search) || s.SystemName.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
@@ -78,7 +73,7 @@ else
                   FROM ""Systems"" WHERE ""IsDeleted"" = FALSE
                   ORDER BY ""IsEnabled"" DESC, ""SystemName"" ASC")).ToList();
         }
-        catch (Exception ex) { _message = ex.Message; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
 
@@ -91,9 +86,8 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Systems"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = sys.Guid });
-            _message = newValue ? S["TurnedOn", sys.SystemName] : S["TurnedOff", sys.SystemName];
-            _isError = false;
+            ShowOk(newValue ? S["TurnedOn", sys.SystemName] : S["TurnedOff", sys.SystemName]);
         }
-        catch (Exception ex) { sys.IsEnabled = old; _message = ex.Message; _isError = true; }
+        catch (Exception ex) { sys.IsEnabled = old; ShowError(ex); }
     }
 }

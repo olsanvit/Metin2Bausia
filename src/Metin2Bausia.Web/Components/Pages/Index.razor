@@ -74,7 +74,7 @@ else
         <div class="alert @(isHealthy ? "alert-success" : "alert-danger") d-flex align-items-center gap-2 mb-3">
             <span style="font-size:1.2rem">@(isHealthy ? "✅" : "❌")</span>
             <div>
-                <strong>@S["LastAgentRun", lastRun.AgentName]</strong>
+                <strong>@S["LastAgentRun", lastRun.AgentName ?? "—"]</strong>
                 <span class="ms-2 text-muted small">@lastRun.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
                 — <strong>@(isHealthy ? S["RunSuccess"] : S["RunFailure"])</strong>
                 <span class="ms-2">@S["RunNewUpdated", lastRun.EntitiesInserted ?? 0, lastRun.EntitiesUpdated ?? 0]</span>
@@ -147,7 +147,7 @@ else
             _recentRuns = (await Db.QueryAsync<AgentRunReport>(
                 "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 5")).ToList();
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 }

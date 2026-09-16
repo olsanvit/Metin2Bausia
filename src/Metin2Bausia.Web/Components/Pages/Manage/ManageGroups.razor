@@ -126,7 +126,7 @@ else
                   FROM ""ContentGroups"" WHERE ""IsDeleted"" = FALSE
                   ORDER BY ""GroupType"", ""GroupVnum""")).ToList();
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 }

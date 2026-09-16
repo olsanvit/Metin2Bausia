@@ -72,10 +72,7 @@ else
     </div>
 }
 
-@if (_message != null)
-{
-    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok")">@_message</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     private bool _loading = true;
@@ -83,8 +80,6 @@ else
     private List<QuestListRow> _quests = [];
     private string _search = "";
     private string _filterEnabled = "";
-    private string? _message;
-    private bool _isError;
 
     private IEnumerable<QuestListRow> Filtered => _quests.Where(q =>
         (string.IsNullOrEmpty(_search) ||
@@ -104,7 +99,7 @@ else
                   FROM ""Quests"" WHERE ""IsDeleted"" = FALSE
                   ORDER BY ""FileName"" NULLS LAST, ""QuestName""")).ToList();
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 
@@ -117,14 +112,12 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Quests"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = q.Guid });
-            _message = newValue ? S["TurnedOn", q.QuestName] : S["TurnedOff", q.QuestName];
-            _isError = false;
+            ShowOk(newValue ? S["TurnedOn", q.QuestName] : S["TurnedOff", q.QuestName]);
         }
         catch (Exception ex)
         {
             q.IsEnabled = old;   // vrátit přepínač, ať UI neukazuje stav, který v DB není
-            _message = S["Error", ex.Message];
-            _isError = true;
+            ShowError(ex);
         }
     }
 }

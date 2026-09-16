@@ -231,7 +231,7 @@ else
             _itemsByConf  = [new(S["ConfHigh"], tHighConf.Result, "bg-success"), new(S["ConfMid"], tMidConf.Result, "bg-warning"), new(S["ConfLow"], tLowConf.Result, "bg-danger"), new(S["ConfUnknown"], tNullConf.Result, "bg-secondary")];
             _mobsByLevel  = [new("Lv.80+ (endgame)", tLvlHigh.Result, "bg-danger"), new("Lv.40-79", tLvlMid.Result, "bg-warning"), new("Lv.1-39", tLvlLow.Result, "bg-success"), new(S["LevelUnknown"], tLvlNull.Result, "bg-secondary")];
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 

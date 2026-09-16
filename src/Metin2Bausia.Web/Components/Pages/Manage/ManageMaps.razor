@@ -60,18 +60,13 @@ else
     </table>
 }
 
-@if (_message != null)
-{
-    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok")">@_message</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     private bool _loading = true;
     private List<ManageMap> _maps = new();
     private string _search = "";
     private string _filterEnabled = "";
-    private string? _message;
-    private bool _isError;
 
     private IEnumerable<ManageMap> Filtered => _maps.Where(m =>
         (string.IsNullOrEmpty(_search) || m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
@@ -88,7 +83,7 @@ else
                   FROM ""Maps"" WHERE ""IsDeleted"" = FALSE
                   ORDER BY ""IsEnabled"" DESC, ""MapIndex"" ASC NULLS LAST")).ToList();
         }
-        catch (Exception ex) { _message = ex.Message; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
 
@@ -101,10 +96,9 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = map.Guid });
-            _message = newValue ? S["TurnedOn", map.Name] : S["TurnedOff", map.Name];
-            _isError = false;
+            ShowOk(newValue ? S["TurnedOn", map.Name] : S["TurnedOff", map.Name]);
         }
-        catch (Exception ex) { map.IsEnabled = old; _message = ex.Message; _isError = true; }
+        catch (Exception ex) { map.IsEnabled = old; ShowError(ex); }
     }
 
     private static string StatusClass(string? s) => s switch

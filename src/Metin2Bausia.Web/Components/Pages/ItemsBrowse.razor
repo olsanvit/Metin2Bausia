@@ -93,6 +93,8 @@ else
     }
 }
 
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
+
 @code {
     private bool _loading = true;
     private int _total;
@@ -130,7 +132,7 @@ else
                   LIMIT 5000")).ToList();
             _types = _items.Where(i => !string.IsNullOrWhiteSpace(i.ItemType)).Select(i => i.ItemType!).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(t => t).ToList();
         }
-        catch { }
+        catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
 

@@ -132,6 +132,9 @@
   <data name="ChangePassword" xml:space="preserve">
     <value>Změnit heslo</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
   <data name="ColAgent" xml:space="preserve">
     <value>Agent</value>
   </data>

@@ -71,7 +71,7 @@ else
             _runs = (await Db.QueryAsync<AgentRunReport>(
                 "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 50")).ToList();
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 

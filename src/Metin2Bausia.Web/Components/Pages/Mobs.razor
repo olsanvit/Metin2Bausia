@@ -57,10 +57,7 @@ else
     </table>
 }
 
-@if (_message != null)
-{
-    <div class="alert @(_isError ? "alert-danger" : "alert-success") mt-2">@_message</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     // Operátor do auditu — jméno přihlášeného uživatele místo natvrdo zapsaného 'admin'
@@ -69,8 +66,6 @@ else
     private bool _loading = true;
     private List<PendingMob> _mobs = new();
     private Guid? _processing;
-    private string? _message;
-    private bool _isError;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,7 +77,7 @@ else
                 "FROM \"Mobs\" WHERE \"ContentStatus\" = 'pending' AND \"IsDeleted\" = false " +
                 "ORDER BY \"ConfidenceScore\" DESC NULLS LAST, \"CreatedAt\" DESC LIMIT 200")).ToList();
         }
-        catch (Exception ex) { _message = S["DbError", ex.Message]; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
 
@@ -98,11 +93,10 @@ else
             await Db.ExecuteAsync(
                 "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Mobs', @Guid, @Vnum, @Name, 'approved', @op, 'approved', NOW())",
                 new { mob.Guid, mob.Vnum, mob.Name, op });
-            _message = S["MobApproved", mob.Name, mob.Vnum!];
-            _isError = false;
+            ShowOk(S["MobApproved", mob.Name, mob.Vnum!]);
             _mobs.Remove(mob);
         }
-        catch (Exception ex) { _message = S["Error", ex.Message]; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _processing = null; }
     }
 
@@ -118,11 +112,10 @@ else
             await Db.ExecuteAsync(
                 "INSERT INTO \"ApprovalLog\" (\"Guid\", \"EntityTable\", \"EntityGuid\", \"EntityVnum\", \"EntityName\", \"Action\", \"Operator\", \"NewStatus\", \"CreatedAt\") VALUES (gen_random_uuid(), 'Mobs', @Guid, @Vnum, @Name, 'rejected', @op, 'rejected', NOW())",
                 new { mob.Guid, mob.Vnum, mob.Name, op });
-            _message = S["MobRejected", mob.Name];
-            _isError = false;
+            ShowOk(S["MobRejected", mob.Name]);
             _mobs.Remove(mob);
         }
-        catch (Exception ex) { _message = S["Error", ex.Message]; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _processing = null; }
     }
 

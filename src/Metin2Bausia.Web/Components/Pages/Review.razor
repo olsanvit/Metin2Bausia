@@ -68,7 +68,7 @@ else
                   FROM ""ManualReviewQueue"" WHERE ""Status"" = 'pending' AND ""IsDeleted"" = FALSE
                   ORDER BY ""CreatedAt"" DESC")).ToList();
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 
@@ -81,6 +81,6 @@ else
                 new { item.Guid });
             _items.Remove(item);
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
     }
 }

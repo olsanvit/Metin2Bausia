@@ -82,10 +82,7 @@ else
     </div>
 }
 
-@if (_message != null)
-{
-    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok")">@_message</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     private bool _loading = true;
@@ -93,8 +90,6 @@ else
     private string _search = "";
     private string _filterEnabled = "";
     private string _filterStatus = "approved";
-    private string? _message;
-    private bool _isError;
 
     private IEnumerable<ManageItem> Filtered => _items.Where(i =>
         (string.IsNullOrEmpty(_search) ||
@@ -117,7 +112,7 @@ else
                   ORDER BY ""IsEnabled"" DESC, ""Vnum"" ASC NULLS LAST
                   LIMIT 2000")).ToList();
         }
-        catch (Exception ex) { _message = ex.Message; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
 
@@ -130,16 +125,14 @@ else
             await Db.ExecuteAsync(
                 @"UPDATE ""Items"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = item.Guid });
-            _message = newValue
+            ShowOk(newValue
                 ? S["TurnedOn", item.Name ?? ""]
-                : S["TurnedOff", item.Name ?? ""];
-            _isError = false;
+                : S["TurnedOff", item.Name ?? ""]);
         }
         catch (Exception ex)
         {
             item.IsEnabled = old;   // rollback UI
-            _message = S["Error", ex.Message];
-            _isError = true;
+            ShowError(ex);
         }
     }
 

@@ -71,10 +71,7 @@ else
     </div>
 }
 
-@if (_message != null)
-{
-    <div class="toast-msg @(_isError ? "toast-err" : "toast-ok") mt-3">@_message</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     [Parameter] public Guid Guid { get; set; }
@@ -82,8 +79,6 @@ else
     private bool _loading = true;
     private string? _error;
     private QuestDetailRow? _quest;
-    private string? _message;
-    private bool _isError;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,7 +93,7 @@ else
                   FROM ""Quests"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
                 new { g = Guid });
         }
-        catch (Exception ex) { _error = ex.Message; }
+        catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
     }
 
@@ -112,9 +107,8 @@ else
                 @"UPDATE ""Quests"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newVal, g = _quest.Guid });
             _quest.IsEnabled = newVal;
-            _message = newVal ? S["TurnedOn", _quest.QuestName] : S["TurnedOff", _quest.QuestName];
-            _isError = false;
+            ShowOk(newVal ? S["TurnedOn", _quest.QuestName] : S["TurnedOff", _quest.QuestName]);
         }
-        catch (Exception ex) { _message = S["Error", ex.Message]; _isError = true; }
+        catch (Exception ex) { ShowError(ex); }
     }
 }

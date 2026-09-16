@@ -18,10 +18,10 @@ Ověřeno buildem (0 chyb, 0 varování) a během aplikace na localhost:5099 —
 
 ## Průřezové problémy (platí pro všechny stránky)
 
-- **Tiché chyby v detailních stránkách:** `catch (Exception ex) { _msg = ... }` bez logování.
-- **Toast** (`.toast-msg`) nikdy nezmizí — chybí timer.
-- **Audit:** `SetStatusAsync` v detailech nenastavuje `ApprovedAt/ApprovedBy/RejectedAt` a nezapisuje `ApprovalLog`.
-- **Export do hry:** MCP `export_item_proto_txt` / `export_mob_proto_txt` ignoruje `IsEnabled` → přepínače na Manage stránkách nemají na hru vliv.
+- ✅ **Tiché chyby** (09-15): stránky dědí `Components/AdminPageBase` (přes `Pages/_Imports.razor`); `ShowError(ex)` / `LogError(ex)` zapíšou výjimku do logu se jménem stránky a operace. Prázdný `catch { }` v ItemsBrowse odstraněn.
+- ✅ **Toast** (09-15): komponenta `Components/Shared/ToastMessage` — úspěch zmizí po 4 s, chyba zůstává do zavření (tlačítko ×). Zobrazí se jen pro nové `ShowOk`/`ShowError` (počítadlo), takže psaní do filtrů hlášku neoživí. Items a Mobs místo `alert` používají stejný toast.
+- ✅ **Audit:** `SetStatusAsync` v detailech zapisuje `ApprovedAt/ApprovedBy/RejectedAt` a `ApprovalLog`.
+- ✅ **Export do hry:** MCP export proto má filtr `onlyEnabled`.
 
 ## Stránky
 

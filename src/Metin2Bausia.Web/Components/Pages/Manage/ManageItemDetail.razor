@@ -207,10 +207,7 @@ else
     </div>
 }
 
-@if (_msg != null)
-{
-    <div class="toast-msg @(_isErr ? "toast-err" : "toast-ok") mt-3">@_msg</div>
-}
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
 
 @code {
     [Parameter] public Guid Guid { get; set; }
@@ -224,8 +221,6 @@ else
     private string? _editLocaleName;
     private string? _editItemType;
     private string? _editDescription;
-    private string? _msg;
-    private bool _isErr;
 
     protected override async Task OnInitializedAsync()
     {
@@ -251,7 +246,7 @@ else
                 _editDescription = _item.Description;
             }
         }
-        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
 
@@ -269,10 +264,9 @@ else
             _item.LocaleName = _editLocaleName;
             _item.ItemType = _editItemType;
             _item.Description = _editDescription;
-            _msg = S["Saved"];
-            _isErr = false;
+            ShowOk(S["Saved"]);
         }
-        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        catch (Exception ex) { ShowError(ex); }
     }
 
     private async Task SetStatusAsync(string status)
@@ -296,10 +290,9 @@ else
                   VALUES (gen_random_uuid(), 'Items', @g, @vnum, @name, @s, @op, @prev, @s, NOW())",
                 new { g = _item.Guid, vnum = _item.Vnum, name = _item.Name, s = status, op, prev });
             _item.ContentStatus = status;
-            _msg = S["StatusChanged", status];
-            _isErr = false;
+            ShowOk(S["StatusChanged", status]);
         }
-        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        catch (Exception ex) { ShowError(ex); }
     }
 
     private async Task ToggleEnabledAsync()
@@ -312,10 +305,9 @@ else
                 @"UPDATE ""Items"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newVal, g = _item.Guid });
             _item.IsEnabled = newVal;
-            _msg = newVal ? S["MsgOn"] : S["MsgOff"];
-            _isErr = false;
+            ShowOk(newVal ? S["MsgOn"] : S["MsgOff"]);
         }
-        catch (Exception ex) { _msg = ex.Message; _isErr = true; }
+        catch (Exception ex) { ShowError(ex); }
     }
 
     private static string StatusClass(string? s) => s switch

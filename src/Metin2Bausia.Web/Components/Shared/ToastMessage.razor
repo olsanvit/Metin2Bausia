@@ -1,0 +1,62 @@
+@implements IDisposable
+
+@if (_visible && !string.IsNullOrEmpty(Text))
+{
+    <div class="toast-msg @(IsError ? "toast-err" : "toast-ok")" role="status">
+        @Text
+        <button type="button" class="btn-close btn-close-white btn-sm ms-2 align-middle" aria-label="@S["Close"]" @onclick="Hide"></button>
+    </div>
+}
+
+@code {
+    /// <summary>Text hlášky; zobrazí se jen při změně <see cref="Stamp"/>.</summary>
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public bool IsError { get; set; }
+    [Parameter] public int Stamp { get; set; }
+
+    private static readonly TimeSpan OkTimeout = TimeSpan.FromSeconds(4);
+    private int _shownStamp;
+    private bool _visible;
+    private CancellationTokenSource? _cts;
+
+    protected override void OnParametersSet()
+    {
+        // Rodič se překresluje i při psaní do filtrů — hláška se ukáže jen pro nové ShowOk/ShowError
+        if (Stamp == _shownStamp) return;
+        _shownStamp = Stamp;
+        _visible = true;
+        CancelTimer();
+        // Chyby zůstávají do zavření — samy zmizelá chyba se snadno přehlédne
+        if (!IsError)
+        {
+            _cts = new CancellationTokenSource();
+            _ = HideLaterAsync(_cts.Token);
+        }
+    }
+
+    private async Task HideLaterAsync(CancellationToken ct)
+    {
+        try
+        {
+            await Task.Delay(OkTimeout, ct);
+            _visible = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private void Hide()
+    {
+        CancelTimer();
+        _visible = false;
+    }
+
+    private void CancelTimer()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = null;
+    }
+
+    public void Dispose() => CancelTimer();
+}
