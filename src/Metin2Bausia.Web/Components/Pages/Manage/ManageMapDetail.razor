@@ -363,7 +363,7 @@ else
         try
         {
             await Db.ExecuteAsync(
-                @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""IsEnabledLocked"" = TRUE, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newVal, g = _map.Guid });
             _map.IsEnabled = newVal;
             ShowOk(newVal ? S["MsgOn"] : S["MsgOff"]);

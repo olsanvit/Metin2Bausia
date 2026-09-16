@@ -5,7 +5,7 @@
 // Test ověřuje celý řetěz importér + exportér na reálných datech, ne na vzorku.
 //
 // Herní data jsou v .gitignore (proprietární), takže bez nich se test přeskočí.
-// Spuštění: node --test tools/gamefiles-import/
+// Spuštění: node --test tools/gamefiles-import/roundtrip.test.mjs
 // ============================================================
 
 import { test } from "node:test";

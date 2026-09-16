@@ -13,7 +13,7 @@ src/Metin2Bausia.Tests/    smoke testy (NENÍ v .sln)
 src/SharedServices/        git submodul (ThemeService, lokalizace, UI komponenty)
 mcp/                       MT2 MCP server (Node) + proto-format.js (formát proto souborů)
 tools/gamefiles-import/    import herních dat do DB + round-trip test
-database/postgres/         migrace 01–05 (schéma management DB)
+database/postgres/         migrace 01–06 (schéma management DB)
 database/import/generated/ vygenerované importní SQL — v .gitignore, NECOMMITOVAT
 server/                    herní server: src/ (upstream), deploy/ (upstream), docker/ (náš compose)
 docs/pages/                dokumentace všech 15 stránek
@@ -34,7 +34,7 @@ export LC_ALL=en_US.UTF-8
   -l ~/.local/share/metin2bausia-pg18/server.log -o "-p 5442 -k /tmp -c listen_addresses=localhost" -w start
 ```
 
-Naplnění daty: migrace `database/postgres/0{1,2,3,4,5}_*.sql`, pak
+Naplnění daty: migrace `database/postgres/0{1,2,3,4,5,6}_*.sql`, pak
 `node tools/gamefiles-import/import.mjs` a vygenerované SQL z `database/import/generated/`.
 
 ## Nasazení
@@ -68,3 +68,8 @@ Naplnění daty: migrace `database/postgres/0{1,2,3,4,5}_*.sql`, pak
   ověřuje ho `node --test tools/gamefiles-import/roundtrip.test.mjs`.
 - **Duplicity ve zdrojových datech:** server bere první výskyt (`std::map::insert`) — import taky.
 - **Dropy typu `kill`/`limit`** odkazují item jménem, ne vnumem.
+- **Opakovaný import** přepisuje jen řádky `DataOrigin='imported'`; uložení v detailu je přepne na `manual`.
+  `IsEnabled` import převezme, jen když admin řádek ručně nepřepnul (`IsEnabledLocked`).
+- **Testy stránek** potřebují DB: `ConnectionStrings__Metin2Bausia="Host=localhost;Port=5442;Database=m2b_test;Username=postgres" dotnet test src/Metin2Bausia.Tests/`.
+  Prázdnou DB naplní migracemi sám; do existující `m2b_test` je novou migraci nutné nahrát ručně.
+- **Node 26** nebere u `node --test` adresář — zadávat soubor `tools/gamefiles-import/roundtrip.test.mjs`.

@@ -60,9 +60,24 @@ public class AdminPagesTests(AdminAppFactory factory) : IClassFixture<AdminAppFa
         html.Should().NotMatchRegex("<input[^>]*readonly", "bojové statistiky už nejsou jen ke čtení");
     }
 
-    private async Task<string> GetOkHtml(string url)
+    [Theory]
+    [InlineData("cs", "Správa itemů")]
+    [InlineData("en", "Item management")]
+    [InlineData("de", "Item-Verwaltung")]
+    public async Task ManageItems_RendersInSelectedLanguage(string culture, string title)
     {
-        var response = await _client.GetAsync(url);
+        // Stejná cookie, kterou nastavuje /set-culture z LangSwitcheru
+        var html = await GetOkHtml("/manage/items", $".AspNetCore.Culture=c={culture}|uic={culture}");
+
+        html.Should().Contain($"<html lang=\"{culture}\"");
+        html.Should().Contain(title);
+    }
+
+    private async Task<string> GetOkHtml(string url, string? cookie = null)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        if (cookie != null) request.Headers.Add("Cookie", cookie);
+        var response = await _client.SendAsync(request);
         ((int)response.StatusCode).Should().Be(200, $"GET {url}");
         // Blazor kóduje diakritiku v HTML (í → &#xED;) — porovnává se dekódovaný text
         return WebUtility.HtmlDecode(await response.Content.ReadAsStringAsync());

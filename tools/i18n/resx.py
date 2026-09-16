@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 # ============================================================
-# Doplní klíče do Resources/SharedResources.resx (čeština) a .en.resx (angličtina).
+# Doplní klíče do Resources/SharedResources.resx (čeština), .en.resx (angličtina) a .de.resx (němčina).
 #
 # Proč skript: stránky mají přes 200 textů a každý musí být v obou souborech se stejným
 # klíčem — ruční úpravy dvou XML souborů vedou k chybějícím překladům. Existující klíče
 # se zachovají, nové se přidají, hodnoty z parametru přepíšou stávající.
 #
-# Použití: python3 tools/i18n/resx.py <soubor.json>   (json: {"Klic": ["česky", "english"], ...})
+# Použití: python3 tools/i18n/resx.py <soubor.json>   (json: {"Klic": ["česky", "english", "deutsch"], ...})
+# Chybějící nebo null hodnota nechá stávající překlad beze změny — jde tak doplnit jen jeden jazyk.
 # ============================================================
 import json, sys, re, os
 from xml.sax.saxutils import escape
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "..", "src", "Metin2Bausia.Web", "Resources")
-FILES = {"cs": "SharedResources.resx", "en": "SharedResources.en.resx"}
+FILES = {"cs": "SharedResources.resx", "en": "SharedResources.en.resx", "de": "SharedResources.de.resx"}
 
 HEADER = """<?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -50,6 +51,7 @@ for idx, (lang, name) in enumerate(FILES.items()):
     path = os.path.join(ROOT, name)
     entries = read(path)
     for key, values in new.items():
-        entries[key] = values[idx]
+        if idx < len(values) and values[idx] is not None:
+            entries[key] = values[idx]
     write(path, entries)
     print(f"{name}: {len(entries)} klíčů")

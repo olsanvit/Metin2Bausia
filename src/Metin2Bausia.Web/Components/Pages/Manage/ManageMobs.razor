@@ -137,7 +137,7 @@ else
         try
         {
             await Db.ExecuteAsync(
-                @"UPDATE ""Mobs"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                @"UPDATE ""Mobs"" SET ""IsEnabled"" = @v, ""IsEnabledLocked"" = TRUE, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = mob.Guid });
             ShowOk(newValue ? S["TurnedOn", mob.Name ?? ""] : S["TurnedOff", mob.Name ?? ""]);
         }

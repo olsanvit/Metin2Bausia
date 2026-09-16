@@ -94,7 +94,7 @@ else
         try
         {
             await Db.ExecuteAsync(
-                @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                @"UPDATE ""Maps"" SET ""IsEnabled"" = @v, ""IsEnabledLocked"" = TRUE, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = map.Guid });
             ShowOk(newValue ? S["TurnedOn", map.Name] : S["TurnedOff", map.Name]);
         }

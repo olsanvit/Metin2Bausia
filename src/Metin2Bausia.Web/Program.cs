@@ -1,3 +1,4 @@
+using System.Globalization;
 using Metin2Bausia.Web.Services;
 using MercenariesAndBeasts.Infrastructure.Localization;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -42,6 +43,14 @@ builder.Services.AddSingleton<ConnectionStateService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, AppCircuitHandler>();
 builder.Services.AddGlobalErrorNotifications();
 builder.Services.AddSimpleLocalization();
+// SharedServices podporuje jen cs/en a sdílí ho víc projektů; LangSwitcher nabízí i DE,
+// proto se seznam jazyků rozšiřuje až tady (Configure běží po tom ze SharedServices)
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var cultures = new[] { "cs", "en", "de" }.Select(CultureInfo.GetCultureInfo).ToList();
+    options.SupportedCultures = cultures;
+    options.SupportedUICultures = cultures;
+});
 
 var app = builder.Build();
 

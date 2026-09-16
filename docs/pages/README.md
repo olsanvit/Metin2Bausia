@@ -69,7 +69,7 @@ Mimo `.razor`: `Pages/Account/Login|ChangePassword|Logout.cshtml` (Razor Pages, 
 - Všech 18 stránek, `NavMenu` i `MainLayout` jdou přes `@S["Klic"]` (`IStringLocalizer<SharedResources>` z `_Imports.razor`); texty v `Resources/SharedResources.resx` (cs) a `.en.resx`, 294 klíčů.
 - Nové klíče přidávat přes `python3 tools/i18n/resx.py klice.json` (`{"Klic": ["česky", "english"]}`) — drží oba soubory v souladu.
 - Úvody s `<strong>` jsou v resx jako HTML a vykreslují se přes `MarkupString`.
-- Build 0 chyb; přepnutí jazyka v prohlížeči neověřeno (vyžaduje přihlášení). `LangSwitcher` nabízí i DE, ale `AddSimpleLocalization` zná jen cs/en.
+- Build 0 chyb. Němčina doplněna 09-16 (viz níže).
 
 ## Editace hodnot a testy stránek (2026-09-16)
 
@@ -78,3 +78,9 @@ Mimo `.razor`: `Pages/Account/Login|ChangePassword|Logout.cshtml` (Razor Pages, 
 - **Ochrana před importem:** uložení přepne `DataOrigin` z `imported` na `manual`; opakovaný import přepisuje jen řádky `imported`, ruční úpravy tedy zůstanou. Detail zobrazuje původ dat a upozornění.
 - **Opravené chyby:** `DetailItem.SubType` byl `int?`, v DB je `text` (`WEAPON_SWORD`) — detail importovaného itemu by nešel načíst. Statistiky padaly, jakmile byla v DB data (`COUNT(*)` je `bigint`, záznamy mají `int`).
 - **Testy** (`src/Metin2Bausia.Tests/AdminPagesTests.cs`): všech 13 stránek adminu a oba detaily se vykreslí s testovacím přihlášeným adminem (`AdminAppFactory`, schéma autentizace jen v testech). Prázdnou DB si test sám naplní migracemi a vzorkem. Lokálně: `ConnectionStrings__Metin2Bausia="Host=localhost;Port=5442;Database=m2b_test;Username=postgres" dotnet test src/Metin2Bausia.Tests/`.
+
+## Němčina a zapínání při importu (2026-09-16)
+
+- **Němčina:** `Resources/SharedResources.de.resx` (298 klíčů), `Program.cs` rozšiřuje podporované jazyky na cs/en/de (SharedServices zná jen cs/en a sdílí ho víc projektů). `<html lang>` se řídí zvoleným jazykem. Test `ManageItems_RendersInSelectedLanguage` ověřuje všechny tři jazyky přes cookie z `/set-culture`. `tools/i18n/resx.py` přijímá třetí hodnotu (de); `null` nechá stávající překlad.
+- **IsEnabled při opakovaném importu:** migrace `06_is_enabled_locked.sql` přidává `IsEnabledLocked` (Items, Mobs, Maps, Quests, ContentGroups). Přepínač v adminu řádek zamkne; import převezme zapnutí ze serverových souborů (`MAP_ALLOW`, `locale_list`) jen u nezamčených řádků. Ověřeno na lokální DB: zamčený vypnutý item zůstal vypnutý, nezamčený se znovu zapnul.
+- **Produkce:** migrace 06 se musí nahrát spolu s 05 před importem na QNAP.

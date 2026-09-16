@@ -110,7 +110,7 @@ else
         try
         {
             await Db.ExecuteAsync(
-                @"UPDATE ""Quests"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                @"UPDATE ""Quests"" SET ""IsEnabled"" = @v, ""IsEnabledLocked"" = TRUE, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newValue, g = q.Guid });
             ShowOk(newValue ? S["TurnedOn", q.QuestName] : S["TurnedOff", q.QuestName]);
         }

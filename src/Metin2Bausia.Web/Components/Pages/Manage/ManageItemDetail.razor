@@ -344,7 +344,7 @@ else
         try
         {
             await Db.ExecuteAsync(
-                @"UPDATE ""Items"" SET ""IsEnabled"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                @"UPDATE ""Items"" SET ""IsEnabled"" = @v, ""IsEnabledLocked"" = TRUE, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
                 new { v = newVal, g = _item.Guid });
             _item.IsEnabled = newVal;
             ShowOk(newVal ? S["MsgOn"] : S["MsgOff"]);

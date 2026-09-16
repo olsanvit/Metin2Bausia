@@ -1,0 +1,909 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Actions" xml:space="preserve">
+    <value>Aktionen</value>
+  </data>
+  <data name="AdminTitle" xml:space="preserve">
+    <value>Metin2Bausia Admin</value>
+  </data>
+  <data name="AggressiveSight" xml:space="preserve">
+    <value>Aggressionsreichweite</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="AllFiles" xml:space="preserve">
+    <value>Alle Dateien</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>Alle Status</value>
+  </data>
+  <data name="AllTypes" xml:space="preserve">
+    <value>Alle Typen</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>✓ Freigeben</value>
+  </data>
+  <data name="ApprovedEnabled" xml:space="preserve">
+    <value>{0} freigegeben · {1} aktiviert</value>
+  </data>
+  <data name="Attack" xml:space="preserve">
+    <value>Angriff</value>
+  </data>
+  <data name="AttackSpeed" xml:space="preserve">
+    <value>Angriffsgeschwindigkeit</value>
+  </data>
+  <data name="BackToItems" xml:space="preserve">
+    <value>← Zurück zu den Items</value>
+  </data>
+  <data name="BackToMaps" xml:space="preserve">
+    <value>← Zurück zu den Karten</value>
+  </data>
+  <data name="BackToMobs" xml:space="preserve">
+    <value>← Zurück zu den Mobs</value>
+  </data>
+  <data name="BackToQuests" xml:space="preserve">
+    <value>← Zurück zu den Quests</value>
+  </data>
+  <data name="BackToSystems" xml:space="preserve">
+    <value>← Zurück zu den Systemen</value>
+  </data>
+  <data name="BadgeError" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="BadgeOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="BasicInfo" xml:space="preserve">
+    <value>Grundinformationen</value>
+  </data>
+  <data name="BlockerLabel" xml:space="preserve">
+    <value>Blocker</value>
+  </data>
+  <data name="Bonuses" xml:space="preserve">
+    <value>Boni (apply)</value>
+  </data>
+  <data name="BuyPrice" xml:space="preserve">
+    <value>Kaufpreis</value>
+  </data>
+  <data name="CardItemsApproved" xml:space="preserve">
+    <value>✅ Freigegebene Items</value>
+  </data>
+  <data name="CardItemsPending" xml:space="preserve">
+    <value>📋 Items zur Freigabe</value>
+  </data>
+  <data name="CardManualReview" xml:space="preserve">
+    <value>⚠️ Manuelle Prüfung</value>
+  </data>
+  <data name="CardMobsPending" xml:space="preserve">
+    <value>👹 Mobs zur Freigabe</value>
+  </data>
+  <data name="CatCrafting" xml:space="preserve">
+    <value>Herstellung</value>
+  </data>
+  <data name="CatDrop" xml:space="preserve">
+    <value>Drop-System</value>
+  </data>
+  <data name="CatEconomy" xml:space="preserve">
+    <value>Wirtschaft</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
+  <data name="CatEnchant" xml:space="preserve">
+    <value>Verzauberung</value>
+  </data>
+  <data name="CatEvent" xml:space="preserve">
+    <value>Events</value>
+  </data>
+  <data name="CatGuild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="CatMount" xml:space="preserve">
+    <value>Reittiere</value>
+  </data>
+  <data name="CatOther" xml:space="preserve">
+    <value>Sonstiges</value>
+  </data>
+  <data name="CatPet" xml:space="preserve">
+    <value>Haustiere</value>
+  </data>
+  <data name="CatPvp" xml:space="preserve">
+    <value>PvP</value>
+  </data>
+  <data name="CatQuest" xml:space="preserve">
+    <value>Quest</value>
+  </data>
+  <data name="CatSkill" xml:space="preserve">
+    <value>Fertigkeiten</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="ColAgent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="ColChanged" xml:space="preserve">
+    <value>Geändert</value>
+  </data>
+  <data name="ColDuration" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="ColEncoding" xml:space="preserve">
+    <value>Kodierung</value>
+  </data>
+  <data name="ColEntity" xml:space="preserve">
+    <value>Entität</value>
+  </data>
+  <data name="ColEntries" xml:space="preserve">
+    <value>Einträge</value>
+  </data>
+  <data name="ColFailed" xml:space="preserve">
+    <value>Fehlerhaft</value>
+  </data>
+  <data name="ColFile" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="ColHighlights" xml:space="preserve">
+    <value>Highlights</value>
+  </data>
+  <data name="ColIndex" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="ColKind" xml:space="preserve">
+    <value>Art</value>
+  </data>
+  <data name="ColLeader" xml:space="preserve">
+    <value>Anführer</value>
+  </data>
+  <data name="ColMaxLevel" xml:space="preserve">
+    <value>Max. Level</value>
+  </data>
+  <data name="ColMinLevel" xml:space="preserve">
+    <value>Min. Level</value>
+  </data>
+  <data name="ColMode" xml:space="preserve">
+    <value>Modus</value>
+  </data>
+  <data name="ColName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColNew" xml:space="preserve">
+    <value>Neu</value>
+  </data>
+  <data name="ColQuestName" xml:space="preserve">
+    <value>Questname</value>
+  </data>
+  <data name="ColReadiness" xml:space="preserve">
+    <value>Bereitschaft</value>
+  </data>
+  <data name="ColReason" xml:space="preserve">
+    <value>Grund</value>
+  </data>
+  <data name="ColRecord" xml:space="preserve">
+    <value>Datensatz</value>
+  </data>
+  <data name="ColResult" xml:space="preserve">
+    <value>Ergebnis</value>
+  </data>
+  <data name="ColSize" xml:space="preserve">
+    <value>Skriptgröße</value>
+  </data>
+  <data name="ColStarted" xml:space="preserve">
+    <value>Gestartet</value>
+  </data>
+  <data name="ColVnum" xml:space="preserve">
+    <value>Vnum</value>
+  </data>
+  <data name="CombatStats" xml:space="preserve">
+    <value>Kampfwerte</value>
+  </data>
+  <data name="Complexity" xml:space="preserve">
+    <value>Implementierungsaufwand</value>
+  </data>
+  <data name="ComplexityHigh" xml:space="preserve">
+    <value>Hoch</value>
+  </data>
+  <data name="ComplexityLow" xml:space="preserve">
+    <value>Niedrig</value>
+  </data>
+  <data name="ComplexityMedium" xml:space="preserve">
+    <value>Mittel</value>
+  </data>
+  <data name="ConfHigh" xml:space="preserve">
+    <value>≥80 (hoch)</value>
+  </data>
+  <data name="Confidence" xml:space="preserve">
+    <value>Konfidenz</value>
+  </data>
+  <data name="ConfidenceItems" xml:space="preserve">
+    <value>📊 Konfidenz — Items</value>
+  </data>
+  <data name="ConfLow" xml:space="preserve">
+    <value>&lt;50 (niedrig)</value>
+  </data>
+  <data name="ConfMid" xml:space="preserve">
+    <value>50–79 (mittel)</value>
+  </data>
+  <data name="ConfUnknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Anzahl</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Erstellt</value>
+  </data>
+  <data name="DashboardTitle" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DataQuality" xml:space="preserve">
+    <value>Datenqualität</value>
+  </data>
+  <data name="DataSource" xml:space="preserve">
+    <value>Datenquelle</value>
+  </data>
+  <data name="DbError" xml:space="preserve">
+    <value>Datenbankfehler: {0}</value>
+  </data>
+  <data name="Defense" xml:space="preserve">
+    <value>Verteidigung</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="DropChance" xml:space="preserve">
+    <value>Chance</value>
+  </data>
+  <data name="DropCount" xml:space="preserve">
+    <value>Anzahl</value>
+  </data>
+  <data name="DropItem" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="DropKillDrop" xml:space="preserve">
+    <value>Kill-Drop</value>
+  </data>
+  <data name="DropLevelLimit" xml:space="preserve">
+    <value>Levelgrenze</value>
+  </data>
+  <data name="DropsNone" xml:space="preserve">
+    <value>Dieser Mob hat keine Drops.</value>
+  </data>
+  <data name="DropsTitle" xml:space="preserve">
+    <value>Drops</value>
+  </data>
+  <data name="DropUnresolved" xml:space="preserve">
+    <value>unbekanntes Item</value>
+  </data>
+  <data name="DuplicateNote" xml:space="preserve">
+    <value>Die Gruppe kommt in der Quelldatei doppelt vor — verwendet wird das erste Vorkommen, das zweite steht in den Metadaten.</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
+  <data name="EnabledCount" xml:space="preserve">
+    <value>{0} aktiviert</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Fehler: {0}</value>
+  </data>
+  <data name="Exp" xml:space="preserve">
+    <value>EXP</value>
+  </data>
+  <data name="FinalScore" xml:space="preserve">
+    <value>Gesamtwertung</value>
+  </data>
+  <data name="GoldChance" xml:space="preserve">
+    <value>Gold-Chance</value>
+  </data>
+  <data name="GoldMaxLabel" xml:space="preserve">
+    <value>Gold max.</value>
+  </data>
+  <data name="GoldMinLabel" xml:space="preserve">
+    <value>Gold min.</value>
+  </data>
+  <data name="GoldMinMax" xml:space="preserve">
+    <value>Gold (min.–max.)</value>
+  </data>
+  <data name="GroupsIntro" xml:space="preserve">
+    <value>Mob-Gruppen für Spawns und Item-Gruppen (Truhen, Boni) aus den Serverdateien. Klick auf eine Zeile zeigt die Einträge.</value>
+  </data>
+  <data name="GroupsTitle" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>Höhe</value>
+  </data>
+  <data name="Implementation" xml:space="preserve">
+    <value>Implementierung</value>
+  </data>
+  <data name="InternalName" xml:space="preserve">
+    <value>Name (intern)</value>
+  </data>
+  <data name="IntroDisabledSuffix" xml:space="preserve">
+    <value>deaktiviert</value>
+  </data>
+  <data name="ItemApproved" xml:space="preserve">
+    <value>✓ Item '{0}' (Vnum {1}) freigegeben.</value>
+  </data>
+  <data name="ItemDatabaseIntro" xml:space="preserve">
+    <value>Freigegebene Items, die im Spiel verfügbar sind.</value>
+  </data>
+  <data name="ItemDatabaseTitle" xml:space="preserve">
+    <value>Item-Datenbank</value>
+  </data>
+  <data name="ItemDetailTitle" xml:space="preserve">
+    <value>Item-Detail</value>
+  </data>
+  <data name="ItemNotFound" xml:space="preserve">
+    <value>Item nicht gefunden.</value>
+  </data>
+  <data name="ItemRejected" xml:space="preserve">
+    <value>✗ Item '{0}' abgelehnt.</value>
+  </data>
+  <data name="ItemsByType" xml:space="preserve">
+    <value>⚔️ Items nach Typ</value>
+  </data>
+  <data name="ItemsPendingHeading" xml:space="preserve">
+    <value>Items, die auf Freigabe warten</value>
+  </data>
+  <data name="ItemsPendingTitle" xml:space="preserve">
+    <value>Items zur Freigabe</value>
+  </data>
+  <data name="ItemsTotal" xml:space="preserve">
+    <value>Items gesamt</value>
+  </data>
+  <data name="ItemTypeArmor" xml:space="preserve">
+    <value>Rüstung</value>
+  </data>
+  <data name="ItemTypeArrow" xml:space="preserve">
+    <value>Pfeil</value>
+  </data>
+  <data name="ItemTypeBelt" xml:space="preserve">
+    <value>Gürtel</value>
+  </data>
+  <data name="ItemTypeBoots" xml:space="preserve">
+    <value>Stiefel</value>
+  </data>
+  <data name="ItemTypeBow" xml:space="preserve">
+    <value>Bogen</value>
+  </data>
+  <data name="ItemTypeBracelet" xml:space="preserve">
+    <value>Armband</value>
+  </data>
+  <data name="ItemTypeNecklace" xml:space="preserve">
+    <value>Halskette</value>
+  </data>
+  <data name="ItemTypePotion" xml:space="preserve">
+    <value>Trank</value>
+  </data>
+  <data name="ItemTypeQuest" xml:space="preserve">
+    <value>Quest</value>
+  </data>
+  <data name="ItemTypeRing" xml:space="preserve">
+    <value>Ring</value>
+  </data>
+  <data name="ItemTypeShield" xml:space="preserve">
+    <value>Schild</value>
+  </data>
+  <data name="ItemTypeSpecial" xml:space="preserve">
+    <value>Spezial</value>
+  </data>
+  <data name="ItemTypeUnique" xml:space="preserve">
+    <value>Einzigartig</value>
+  </data>
+  <data name="ItemTypeWeapon" xml:space="preserve">
+    <value>Waffe</value>
+  </data>
+  <data name="LastAgentRun" xml:space="preserve">
+    <value>Letzter Agent-Lauf: {0}</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="LevelRange" xml:space="preserve">
+    <value>Level {0}–{1}</value>
+  </data>
+  <data name="LevelUnknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="Limits" xml:space="preserve">
+    <value>Beschränkungen</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Wird geladen...</value>
+  </data>
+  <data name="LoadingStats" xml:space="preserve">
+    <value>Statistiken werden geladen...</value>
+  </data>
+  <data name="LocaleName" xml:space="preserve">
+    <value>Lokalisierter Name</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="MagicAttack" xml:space="preserve">
+    <value>Magischer Angriff</value>
+  </data>
+  <data name="MagicDefense" xml:space="preserve">
+    <value>Magische Verteidigung</value>
+  </data>
+  <data name="ManageItemsIntroHtml" xml:space="preserve">
+    <value>Items im Spiel aktivieren oder deaktivieren. Neue Items sind standardmäßig &lt;strong&gt;deaktiviert&lt;/strong&gt;.</value>
+  </data>
+  <data name="ManageItemsTitle" xml:space="preserve">
+    <value>Item-Verwaltung</value>
+  </data>
+  <data name="ManageMapsIntro" xml:space="preserve">
+    <value>Zugang zu Karten aktivieren oder deaktivieren.</value>
+  </data>
+  <data name="ManageMapsTitle" xml:space="preserve">
+    <value>Kartenverwaltung</value>
+  </data>
+  <data name="ManageMobsIntroHtml" xml:space="preserve">
+    <value>Inhalte im Spiel aktivieren oder deaktivieren. Neue Einträge sind standardmäßig &lt;strong&gt;deaktiviert&lt;/strong&gt;.</value>
+  </data>
+  <data name="ManageMobsPageTitle" xml:space="preserve">
+    <value>Mob- / NPC- / Metin-Verwaltung</value>
+  </data>
+  <data name="ManageMobsTitle" xml:space="preserve">
+    <value>Mobs, NPCs und Metins</value>
+  </data>
+  <data name="ManageSystemsIntro" xml:space="preserve">
+    <value>Spielsysteme aktivieren oder deaktivieren (Verzauberung, Alchemie, Herstellung, Haustiere, Reittiere...).</value>
+  </data>
+  <data name="ManageSystemsPageTitle" xml:space="preserve">
+    <value>Systemverwaltung</value>
+  </data>
+  <data name="ManageSystemsTitle" xml:space="preserve">
+    <value>Spielsysteme</value>
+  </data>
+  <data name="ManualEditNote" xml:space="preserve">
+    <value>Beim Speichern wird ein importierter Datensatz als manuell bearbeitet markiert — ein erneuter Import überschreibt ihn dann nicht mehr.</value>
+  </data>
+  <data name="MapDetailTitle" xml:space="preserve">
+    <value>Karten-Detail</value>
+  </data>
+  <data name="MapDimensions" xml:space="preserve">
+    <value>Kartengröße</value>
+  </data>
+  <data name="MapNotFound" xml:space="preserve">
+    <value>Karte nicht gefunden.</value>
+  </data>
+  <data name="MapsCard" xml:space="preserve">
+    <value>Karten</value>
+  </data>
+  <data name="MapType" xml:space="preserve">
+    <value>Kartentyp</value>
+  </data>
+  <data name="MapTypeBoat" xml:space="preserve">
+    <value>Boot</value>
+  </data>
+  <data name="MapTypeDungeon" xml:space="preserve">
+    <value>Dungeon</value>
+  </data>
+  <data name="MapTypeEmpire" xml:space="preserve">
+    <value>Reich</value>
+  </data>
+  <data name="MapTypeField" xml:space="preserve">
+    <value>Außengebiet</value>
+  </data>
+  <data name="MapTypeGuild" xml:space="preserve">
+    <value>Gilde</value>
+  </data>
+  <data name="MapTypePvp" xml:space="preserve">
+    <value>PvP</value>
+  </data>
+  <data name="MarkResolved" xml:space="preserve">
+    <value>Erledigt</value>
+  </data>
+  <data name="MaxHp" xml:space="preserve">
+    <value>Max. HP</value>
+  </data>
+  <data name="MaxLevelLabel" xml:space="preserve">
+    <value>Max. Level</value>
+  </data>
+  <data name="MinLevelLabel" xml:space="preserve">
+    <value>Min. Level</value>
+  </data>
+  <data name="MobApproved" xml:space="preserve">
+    <value>✓ Mob '{0}' (Vnum {1}) freigegeben.</value>
+  </data>
+  <data name="MobDetailTitle" xml:space="preserve">
+    <value>Mob-Detail</value>
+  </data>
+  <data name="MobLevelDistribution" xml:space="preserve">
+    <value>📊 Mobs — Levelverteilung</value>
+  </data>
+  <data name="MobNotFound" xml:space="preserve">
+    <value>Mob nicht gefunden.</value>
+  </data>
+  <data name="MobRejected" xml:space="preserve">
+    <value>✗ Mob '{0}' abgelehnt.</value>
+  </data>
+  <data name="MobsByRank" xml:space="preserve">
+    <value>👹 Mobs nach Rang</value>
+  </data>
+  <data name="MobsPendingHeading" xml:space="preserve">
+    <value>Mobs, die auf Freigabe warten</value>
+  </data>
+  <data name="MobsPendingTitle" xml:space="preserve">
+    <value>Mobs zur Freigabe</value>
+  </data>
+  <data name="MobsTotal" xml:space="preserve">
+    <value>Mobs gesamt</value>
+  </data>
+  <data name="MobTypeBoss" xml:space="preserve">
+    <value>Boss</value>
+  </data>
+  <data name="MobTypeChest" xml:space="preserve">
+    <value>Truhe</value>
+  </data>
+  <data name="MobTypeMetin" xml:space="preserve">
+    <value>Metin</value>
+  </data>
+  <data name="MobTypeMonster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="MobTypeNpc" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="MoveSpeed" xml:space="preserve">
+    <value>Bewegungsgeschwindigkeit</value>
+  </data>
+  <data name="MsgOff" xml:space="preserve">
+    <value>○ Deaktiviert</value>
+  </data>
+  <data name="MsgOn" xml:space="preserve">
+    <value>✓ Aktiviert</value>
+  </data>
+  <data name="NavDashboard" xml:space="preserve">
+    <value>🏠 Dashboard</value>
+  </data>
+  <data name="NavGroups" xml:space="preserve">
+    <value>🧩 Gruppen</value>
+  </data>
+  <data name="NavItemDatabase" xml:space="preserve">
+    <value>🗄️ Item-Datenbank</value>
+  </data>
+  <data name="NavItems" xml:space="preserve">
+    <value>⚔️ Items</value>
+  </data>
+  <data name="NavItemsPending" xml:space="preserve">
+    <value>📋 Items (offen)</value>
+  </data>
+  <data name="NavMaps" xml:space="preserve">
+    <value>🗺️ Karten</value>
+  </data>
+  <data name="NavMobs" xml:space="preserve">
+    <value>👹 Mobs / NPCs / Metins</value>
+  </data>
+  <data name="NavMobsPending" xml:space="preserve">
+    <value>📋 Mobs (offen)</value>
+  </data>
+  <data name="NavQuests" xml:space="preserve">
+    <value>📜 Quests</value>
+  </data>
+  <data name="NavReports" xml:space="preserve">
+    <value>📋 Agent-Berichte</value>
+  </data>
+  <data name="NavReview" xml:space="preserve">
+    <value>⚠️ Manuelle Prüfung</value>
+  </data>
+  <data name="NavSectionApproval" xml:space="preserve">
+    <value>FREIGABE</value>
+  </data>
+  <data name="NavSectionDatabase" xml:space="preserve">
+    <value>DATENBANK</value>
+  </data>
+  <data name="NavSectionGame" xml:space="preserve">
+    <value>SPIELVERWALTUNG</value>
+  </data>
+  <data name="NavSectionReports" xml:space="preserve">
+    <value>ÜBERSICHTEN</value>
+  </data>
+  <data name="NavStats" xml:space="preserve">
+    <value>📊 Statistiken</value>
+  </data>
+  <data name="NavSystems" xml:space="preserve">
+    <value>⚙️ Systeme</value>
+  </data>
+  <data name="NoAgentRuns" xml:space="preserve">
+    <value>Noch keine Agent-Läufe.</value>
+  </data>
+  <data name="NoApprovedItems" xml:space="preserve">
+    <value>Keine freigegebenen Items in der Datenbank.</value>
+  </data>
+  <data name="NoGroups" xml:space="preserve">
+    <value>Keine Gruppen.</value>
+  </data>
+  <data name="NoItemsPending" xml:space="preserve">
+    <value>Keine Items zur Freigabe.</value>
+  </data>
+  <data name="NoMobsPending" xml:space="preserve">
+    <value>Keine Mobs zur Freigabe.</value>
+  </data>
+  <data name="NoQuests" xml:space="preserve">
+    <value>Keine Quests in der Datenbank.</value>
+  </data>
+  <data name="NoSystems" xml:space="preserve">
+    <value>Keine Systeme in der Datenbank.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Datensatz nicht gefunden.</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Deaktiviert</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>Aktiviert</value>
+  </data>
+  <data name="Origin" xml:space="preserve">
+    <value>Datenherkunft</value>
+  </data>
+  <data name="PricesAttributes" xml:space="preserve">
+    <value>Preise und Attribute</value>
+  </data>
+  <data name="QuestDetailTitle" xml:space="preserve">
+    <value>Quest-Detail</value>
+  </data>
+  <data name="QuestScript" xml:space="preserve">
+    <value>Quest-Skript</value>
+  </data>
+  <data name="QuestsIntro" xml:space="preserve">
+    <value>Quests aktivieren oder deaktivieren. Der Server kompiliert die in locale_list aufgeführten Quests.</value>
+  </data>
+  <data name="QuestsTitle" xml:space="preserve">
+    <value>Questverwaltung</value>
+  </data>
+  <data name="Rank" xml:space="preserve">
+    <value>Rang</value>
+  </data>
+  <data name="RankBoss" xml:space="preserve">
+    <value>Boss</value>
+  </data>
+  <data name="RankKing" xml:space="preserve">
+    <value>König</value>
+  </data>
+  <data name="RankKnight" xml:space="preserve">
+    <value>Ritter</value>
+  </data>
+  <data name="RankPawn" xml:space="preserve">
+    <value>Bauer</value>
+  </data>
+  <data name="RankSuperKnight" xml:space="preserve">
+    <value>Superritter</value>
+  </data>
+  <data name="RecentRuns" xml:space="preserve">
+    <value>Letzte 5 Agent-Läufe</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>✗ Ablehnen</value>
+  </data>
+  <data name="ReportsHeading" xml:space="preserve">
+    <value>Agent-Laufberichte</value>
+  </data>
+  <data name="ReportsPageTitle" xml:space="preserve">
+    <value>Agent-Berichte</value>
+  </data>
+  <data name="ReviewEmpty" xml:space="preserve">
+    <value>Die Warteschlange ist leer. Keine Konflikte zu lösen.</value>
+  </data>
+  <data name="ReviewHeading" xml:space="preserve">
+    <value>Warteschlange für manuelle Prüfung</value>
+  </data>
+  <data name="ReviewPageTitle" xml:space="preserve">
+    <value>Manuelle Prüfung</value>
+  </data>
+  <data name="ReviewTotal" xml:space="preserve">
+    <value>Offen gesamt: {0}</value>
+  </data>
+  <data name="RowsLimited" xml:space="preserve">
+    <value>Es werden die ersten {0} angezeigt. Bitte Filter eingrenzen.</value>
+  </data>
+  <data name="RunBlocker" xml:space="preserve">
+    <value>· Blocker: {0}</value>
+  </data>
+  <data name="RunFailure" xml:space="preserve">
+    <value>Fehlschlag</value>
+  </data>
+  <data name="RunNewUpdated" xml:space="preserve">
+    <value>· {0} neu, {1} aktualisiert</value>
+  </data>
+  <data name="RunSuccess" xml:space="preserve">
+    <value>Erfolg</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Änderungen speichern</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>✓ Gespeichert</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Suchen...</value>
+  </data>
+  <data name="SearchDots" xml:space="preserve">
+    <value>Suchen…</value>
+  </data>
+  <data name="SearchName" xml:space="preserve">
+    <value>Name suchen…</value>
+  </data>
+  <data name="SearchNameVnum" xml:space="preserve">
+    <value>Name / Vnum suchen…</value>
+  </data>
+  <data name="SellPrice" xml:space="preserve">
+    <value>Verkaufspreis (Gold)</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Anteil</value>
+  </data>
+  <data name="ShowAllReports" xml:space="preserve">
+    <value>Alle Berichte anzeigen</value>
+  </data>
+  <data name="ShownOf" xml:space="preserve">
+    <value>Angezeigt: {0} / {1}</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Quelle</value>
+  </data>
+  <data name="SourceServer" xml:space="preserve">
+    <value>Quellserver</value>
+  </data>
+  <data name="SpawnAggressive" xml:space="preserve">
+    <value>aggressiv</value>
+  </data>
+  <data name="SpawnCount" xml:space="preserve">
+    <value>Anzahl</value>
+  </data>
+  <data name="SpawnFile" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="SpawnPosition" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="SpawnRange" xml:space="preserve">
+    <value>Bereich</value>
+  </data>
+  <data name="SpawnsNone" xml:space="preserve">
+    <value>Diese Karte hat keine Spawns.</value>
+  </data>
+  <data name="SpawnsSummary" xml:space="preserve">
+    <value>{0} Spawns in {1} Dateien</value>
+  </data>
+  <data name="SpawnsTitle" xml:space="preserve">
+    <value>Spawns</value>
+  </data>
+  <data name="SpawnTarget" xml:space="preserve">
+    <value>Mob / Gruppe</value>
+  </data>
+  <data name="SpawnTime" xml:space="preserve">
+    <value>Respawn</value>
+  </data>
+  <data name="SpawnType" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="SpawnTypeAnywhere" xml:space="preserve">
+    <value>überall auf der Karte</value>
+  </data>
+  <data name="SpawnTypeException" xml:space="preserve">
+    <value>Ausnahme</value>
+  </data>
+  <data name="SpawnTypeGroup" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="SpawnTypeGroupGroup" xml:space="preserve">
+    <value>Gruppe von Gruppen</value>
+  </data>
+  <data name="SpawnTypeMob" xml:space="preserve">
+    <value>Mob</value>
+  </data>
+  <data name="StartNpc" xml:space="preserve">
+    <value>Start-NPC</value>
+  </data>
+  <data name="StatsHeading" xml:space="preserve">
+    <value>Datenbankstatistik</value>
+  </data>
+  <data name="StatsPageTitle" xml:space="preserve">
+    <value>Statistiken</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StatusApproved" xml:space="preserve">
+    <value>Freigegeben</value>
+  </data>
+  <data name="StatusChanged" xml:space="preserve">
+    <value>Status geändert auf: {0}</value>
+  </data>
+  <data name="StatusPending" xml:space="preserve">
+    <value>Offen</value>
+  </data>
+  <data name="SystemDetailTitle" xml:space="preserve">
+    <value>System-Detail</value>
+  </data>
+  <data name="SystemName" xml:space="preserve">
+    <value>Systemname</value>
+  </data>
+  <data name="SystemNotFound" xml:space="preserve">
+    <value>System nicht gefunden.</value>
+  </data>
+  <data name="SystemsCard" xml:space="preserve">
+    <value>Systeme</value>
+  </data>
+  <data name="TabBosses" xml:space="preserve">
+    <value>Bosse</value>
+  </data>
+  <data name="TabMetins" xml:space="preserve">
+    <value>Metins</value>
+  </data>
+  <data name="TabMobGroup" xml:space="preserve">
+    <value>Mob-Gruppen</value>
+  </data>
+  <data name="TabMobGroupGroup" xml:space="preserve">
+    <value>Gruppen von Gruppen</value>
+  </data>
+  <data name="TabMonsters" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="TabNpc" xml:space="preserve">
+    <value>NPCs</value>
+  </data>
+  <data name="TabSpecialItemGroup" xml:space="preserve">
+    <value>Item-Gruppen</value>
+  </data>
+  <data name="ToggleOff" xml:space="preserve">
+    <value>⊘ Deaktivieren</value>
+  </data>
+  <data name="ToggleOn" xml:space="preserve">
+    <value>✓ Aktivieren</value>
+  </data>
+  <data name="TotalItems" xml:space="preserve">
+    <value>Gesamt: {0} Items</value>
+  </data>
+  <data name="TotalMobs" xml:space="preserve">
+    <value>Gesamt: {0} Mobs</value>
+  </data>
+  <data name="TurnedOff" xml:space="preserve">
+    <value>○ {0} deaktiviert</value>
+  </data>
+  <data name="TurnedOn" xml:space="preserve">
+    <value>✓ {0} aktiviert</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Aktualisiert</value>
+  </data>
+  <data name="Values" xml:space="preserve">
+    <value>Werte (value0–5)</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Gewicht</value>
+  </data>
+  <data name="Width" xml:space="preserve">
+    <value>Breite</value>
+  </data>
+</root>
