@@ -20,6 +20,13 @@
     </CascadingAuthenticationState>
     @* blazor.web.js patří k MapRazorComponents/AddInteractiveServerRenderMode; starší blazor.server.js by circuit nenavázal a @onclick by nefungovalo *@
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        // Enhanced navigation zachová zaškrtnutý checkbox — bez tohoto by mobilní menu zůstalo otevřené přes novou stránku
+        Blazor.addEventListener('enhancedload', () => {
+            const toggle = document.getElementById('nav-toggle');
+            if (toggle) toggle.checked = false;
+        });
+    </script>
 </body>
 </html>
 

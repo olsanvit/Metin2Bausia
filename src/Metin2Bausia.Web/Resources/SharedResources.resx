@@ -522,6 +522,9 @@
   <data name="MaxLevelLabel" xml:space="preserve">
     <value>Max. level</value>
   </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menu</value>
+  </data>
   <data name="MinLevelLabel" xml:space="preserve">
     <value>Min. level</value>
   </data>

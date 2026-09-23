@@ -2,20 +2,24 @@
 @attribute [Authorize]
 
 <div class="page">
+    @* Mobilní menu bez JS: layout je SSR, @onclick by tu nereagoval — stav drží skrytý checkbox *@
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" tabindex="-1" />
+    <label for="nav-toggle" class="nav-backdrop"></label>
     <div class="sidebar">
         <NavMenu />
     </div>
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-3 px-md-4">
+            <label for="nav-toggle" class="nav-toggle-btn" title="@S["Menu"]" aria-label="@S["Menu"]">☰</label>
             <AuthorizeView>
                 <Authorized>
-                    <span class="text-muted me-3">@context.User.Identity?.Name</span>
+                    <span class="text-muted me-3 d-none d-sm-inline">@context.User.Identity?.Name</span>
                     <a href="/account/change-password" class="btn-logout me-2">@S["ChangePassword"]</a>
                     <a href="/account/logout" class="btn-logout">@S["Logout"]</a>
                 </Authorized>
             </AuthorizeView>
         </div>
-        <article class="content px-4">
+        <article class="content px-3 px-md-4">
             @Body
         </article>
     </main>

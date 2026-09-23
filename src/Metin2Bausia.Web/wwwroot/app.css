@@ -1,11 +1,21 @@
 /* Metin2Bausia Admin CSS */
 html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+}
+
+/* Stránka má přesně výšku okna a scrolluje jen .content — sidebar a horní lišta zůstávají na místě.
+   Dřív min-height: 100vh nechalo stránku růst a posouvalo se celé body i s menu. */
+body {
+    margin: 0;
+    overflow: hidden;
 }
 
 .page {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;   /* mobilní prohlížeče: bez lišty adresy, jinak by spodek obsahu byl schovaný */
+    overflow: hidden;
 }
 
 .sidebar {
@@ -13,6 +23,7 @@ html, body {
     background: #1a1a2e;
     padding: 1rem 0;
     flex-shrink: 0;
+    overflow-y: auto;   /* dlouhé menu na nízkém displeji scrolluje samo, ne se stránkou */
 }
 
 .sidebar .nav-link {
@@ -29,7 +40,10 @@ html, body {
 
 main {
     flex: 1;
-    overflow: auto;
+    min-width: 0;   /* bez toho by široká tabulka roztáhla main přes okraj okna */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .top-row {
@@ -39,10 +53,15 @@ main {
     height: 3rem;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .content {
-    padding: 1.5rem;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
 }
 
 code {
@@ -96,3 +115,46 @@ code {
 
 /* Sticky thead */
 .sticky-top { position: sticky; top: 0; z-index: 10; }
+
+/* ── Mobil: sidebar jako vysouvací menu (checkbox #nav-toggle v MainLayout) ── */
+.nav-toggle,
+.nav-toggle-btn,
+.nav-backdrop { display: none; }
+
+@media (max-width: 767.98px) {
+    .nav-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.4rem;
+        line-height: 1;
+        margin-right: 0.75rem;
+        padding: 0 0.25rem;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1050;
+        transform: translateX(-100%);
+        transition: transform .2s ease;
+    }
+
+    .nav-toggle:checked ~ .sidebar { transform: none; }
+
+    .nav-toggle:checked ~ .nav-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        background: rgba(0, 0, 0, .4);
+    }
+
+    .content {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}

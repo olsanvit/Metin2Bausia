@@ -161,26 +161,28 @@ else
                                 @if (!string.IsNullOrEmpty(g.KillDrop)) { <span class="ms-2">@S["DropKillDrop"]: @g.KillDrop</span> }
                                 @if (!string.IsNullOrEmpty(g.LevelLimit)) { <span class="ms-2">@S["DropLevelLimit"]: @g.LevelLimit</span> }
                             </div>
-                            <table class="table table-sm mb-2">
-                                <thead><tr><th>@S["DropItem"]</th><th class="text-end">@S["DropCount"]</th><th class="text-end">@S["DropChance"]</th></tr></thead>
-                                <tbody>
-                                @foreach (var it in g.Items)
-                                {
-                                    <tr>
-                                        <td>
-                                            @if (it.Vnum is int v && _itemNames.TryGetValue(v, out var item))
-                                            { <a href="/manage/items/@item.Guid">@item.Label</a> <code class="small text-muted ms-1">@v</code> }
-                                            else if (it.Vnum is int v2)
-                                            { <code class="small">@v2</code> }
-                                            else
-                                            { <span class="text-muted">@(it.ItemName ?? "?") (@S["DropUnresolved"])</span> }
-                                        </td>
-                                        <td class="text-end">@it.Count</td>
-                                        <td class="text-end">@it.Pct.ToString("0.###") %</td>
-                                    </tr>
-                                }
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-2">
+                                    <thead><tr><th>@S["DropItem"]</th><th class="text-end">@S["DropCount"]</th><th class="text-end">@S["DropChance"]</th></tr></thead>
+                                    <tbody>
+                                    @foreach (var it in g.Items)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @if (it.Vnum is int v && _itemNames.TryGetValue(v, out var item))
+                                                { <a href="/manage/items/@item.Guid">@item.Label</a> <code class="small text-muted ms-1">@v</code> }
+                                                else if (it.Vnum is int v2)
+                                                { <code class="small">@v2</code> }
+                                                else
+                                                { <span class="text-muted">@(it.ItemName ?? "?") (@S["DropUnresolved"])</span> }
+                                            </td>
+                                            <td class="text-end">@it.Count</td>
+                                            <td class="text-end">@it.Pct.ToString("0.###") %</td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                     }
                 </div>

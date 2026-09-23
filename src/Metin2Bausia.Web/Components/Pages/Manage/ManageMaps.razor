@@ -9,7 +9,7 @@
 <h2>@S["ManageMapsTitle"]</h2>
 <p class="text-muted mb-3">@S["ManageMapsIntro"]</p>
 
-<div class="toolbar mb-3 d-flex gap-2 align-items-center">
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
     <input class="form-control form-control-sm" style="max-width:220px"
            placeholder="@S["SearchName"]" @bind="_search" @bind:event="oninput" />
     <select class="form-select form-select-sm" style="max-width:140px" @bind="_filterEnabled">
@@ -23,41 +23,43 @@
 @if (_loading) { <p>@S["Loading"]</p> }
 else
 {
-    <table class="table table-sm table-hover align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th style="width:56px">@S["On"]</th>
-                <th style="width:70px">Index</th>
-                <th>@S["ColName"]</th>
-                <th style="width:80px">@S["ColMinLevel"]</th>
-                <th style="width:80px">@S["ColMaxLevel"]</th>
-                <th style="width:100px">@S["Status"]</th>
-                <th style="width:50px"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var map in Filtered)
-            {
-                <tr class="@(map.IsEnabled ? "" : "opacity-60")">
-                    <td class="text-center">
-                        <div class="form-check form-switch d-flex justify-content-center">
-                            <input class="form-check-input" type="checkbox"
-                                   checked="@map.IsEnabled"
-                                   @onchange="e => ToggleAsync(map, (bool)e.Value!)" />
-                        </div>
-                    </td>
-                    <td><code class="small">@map.MapIndex</code></td>
-                    <td><strong>@map.Name</strong>
-                        @if (map.LocaleName != null) { <small class="text-muted"> (@map.LocaleName)</small> }
-                    </td>
-                    <td class="text-muted small">@map.MinLevel</td>
-                    <td class="text-muted small">@map.MaxLevel</td>
-                    <td><span class="badge @StatusClass(map.ContentStatus)">@map.ContentStatus</span></td>
-                    <td><a href="/manage/maps/@map.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:56px">@S["On"]</th>
+                    <th style="width:70px">Index</th>
+                    <th>@S["ColName"]</th>
+                    <th style="width:80px">@S["ColMinLevel"]</th>
+                    <th style="width:80px">@S["ColMaxLevel"]</th>
+                    <th style="width:100px">@S["Status"]</th>
+                    <th style="width:50px"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var map in Filtered)
+                {
+                    <tr class="@(map.IsEnabled ? "" : "opacity-60")">
+                        <td class="text-center">
+                            <div class="form-check form-switch d-flex justify-content-center">
+                                <input class="form-check-input" type="checkbox"
+                                       checked="@map.IsEnabled"
+                                       @onchange="e => ToggleAsync(map, (bool)e.Value!)" />
+                            </div>
+                        </td>
+                        <td><code class="small">@map.MapIndex</code></td>
+                        <td><strong>@map.Name</strong>
+                            @if (map.LocaleName != null) { <small class="text-muted"> (@map.LocaleName)</small> }
+                        </td>
+                        <td class="text-muted small">@map.MinLevel</td>
+                        <td class="text-muted small">@map.MaxLevel</td>
+                        <td><span class="badge @StatusClass(map.ContentStatus)">@map.ContentStatus</span></td>
+                        <td><a href="/manage/maps/@map.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 <ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />

@@ -23,39 +23,41 @@ else if (!_runs.Any())
 }
 else
 {
-    <table class="table table-sm table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>@S["ColAgent"]</th>
-                <th>@S["ColMode"]</th>
-                <th>@S["ColReadiness"]</th>
-                <th>@S["ColResult"]</th>
-                <th>@S["ColStarted"]</th>
-                <th>@S["ColDuration"]</th>
-                <th class="text-end">@S["ColNew"]</th>
-                <th class="text-end">@S["ColChanged"]</th>
-                <th class="text-end">@S["ColFailed"]</th>
-                <th>@S["ColHighlights"]</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var run in _runs)
-            {
+    <div class="table-responsive">
+        <table class="table table-sm table-hover">
+            <thead class="table-dark">
                 <tr>
-                    <td>@run.AgentName</td>
-                    <td class="small text-muted">@run.RunMode</td>
-                    <td><span class="badge @(run.ReadinessStatus == "ready" ? "bg-success" : "bg-secondary")">@run.ReadinessStatus</span></td>
-                    <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? S["BadgeOk"] : S["BadgeError"])</span></td>
-                    <td>@run.CreatedAt.ToString("dd.MM.yy HH:mm")</td>
-                    <td>@Duration(run)</td>
-                    <td class="text-end">@run.EntitiesInserted</td>
-                    <td class="text-end">@run.EntitiesUpdated</td>
-                    <td class="text-end">@run.EntitiesFailed</td>
-                    <td><small class="text-muted">@TruncateHighlights(run.Highlights)</small></td>
+                    <th>@S["ColAgent"]</th>
+                    <th>@S["ColMode"]</th>
+                    <th>@S["ColReadiness"]</th>
+                    <th>@S["ColResult"]</th>
+                    <th>@S["ColStarted"]</th>
+                    <th>@S["ColDuration"]</th>
+                    <th class="text-end">@S["ColNew"]</th>
+                    <th class="text-end">@S["ColChanged"]</th>
+                    <th class="text-end">@S["ColFailed"]</th>
+                    <th>@S["ColHighlights"]</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var run in _runs)
+                {
+                    <tr>
+                        <td>@run.AgentName</td>
+                        <td class="small text-muted">@run.RunMode</td>
+                        <td><span class="badge @(run.ReadinessStatus == "ready" ? "bg-success" : "bg-secondary")">@run.ReadinessStatus</span></td>
+                        <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? S["BadgeOk"] : S["BadgeError"])</span></td>
+                        <td>@run.CreatedAt.ToString("dd.MM.yy HH:mm")</td>
+                        <td>@Duration(run)</td>
+                        <td class="text-end">@run.EntitiesInserted</td>
+                        <td class="text-end">@run.EntitiesUpdated</td>
+                        <td class="text-end">@run.EntitiesFailed</td>
+                        <td><small class="text-muted">@TruncateHighlights(run.Highlights)</small></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {

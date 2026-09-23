@@ -19,48 +19,50 @@ else if (!_items.Any())
 else
 {
     <p class="text-muted">@S["TotalItems", _items.Count]</p>
-    <table class="table table-hover table-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>@S["ColVnum"]</th>
-                <th>@S["ColName"]</th>
-                <th>@S["Type"]</th>
-                <th>@S["Source"]</th>
-                <th>@S["Confidence"]</th>
-                <th>@S["Created"]</th>
-                <th>@S["Actions"]</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _items)
-            {
-                <tr class="@(_processing == item.Guid ? "table-secondary" : "")">
-                    <td><code>@item.Vnum</code></td>
-                    <td><strong>@item.Name</strong>@if (item.LocaleName != null) { <small class="text-muted"> (@item.LocaleName)</small> }</td>
-                    <td>@ContentLabels.ItemType(item.ItemType)</td>
-                    <td>
-                        @if (item.SourceUrl != null)
-                        {
-                            <a href="@item.SourceUrl" target="_blank" class="text-truncate d-inline-block" style="max-width:120px">@item.SourceName</a>
-                        }
-                        else { <span>@item.SourceName</span> }
-                    </td>
-                    <td>
-                        <span class="badge @(item.ConfidenceScore >= 80 ? "bg-success" : item.ConfidenceScore >= 50 ? "bg-warning text-dark" : "bg-danger")">
-                            @item.ConfidenceScore
-                        </span>
-                    </td>
-                    <td>@item.CreatedAt.ToString("dd.MM.yy")</td>
-                    <td>
-                        <button class="btn btn-sm btn-success me-1" disabled="@(_processing != null)"
-                                @onclick="() => ApproveAsync(item)">✓</button>
-                        <button class="btn btn-sm btn-danger" disabled="@(_processing != null)"
-                                @onclick="() => RejectAsync(item)">✗</button>
-                    </td>
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>@S["ColVnum"]</th>
+                    <th>@S["ColName"]</th>
+                    <th>@S["Type"]</th>
+                    <th>@S["Source"]</th>
+                    <th>@S["Confidence"]</th>
+                    <th>@S["Created"]</th>
+                    <th>@S["Actions"]</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in _items)
+                {
+                    <tr class="@(_processing == item.Guid ? "table-secondary" : "")">
+                        <td><code>@item.Vnum</code></td>
+                        <td><strong>@item.Name</strong>@if (item.LocaleName != null) { <small class="text-muted"> (@item.LocaleName)</small> }</td>
+                        <td>@ContentLabels.ItemType(item.ItemType)</td>
+                        <td>
+                            @if (item.SourceUrl != null)
+                            {
+                                <a href="@item.SourceUrl" target="_blank" class="text-truncate d-inline-block" style="max-width:120px">@item.SourceName</a>
+                            }
+                            else { <span>@item.SourceName</span> }
+                        </td>
+                        <td>
+                            <span class="badge @(item.ConfidenceScore >= 80 ? "bg-success" : item.ConfidenceScore >= 50 ? "bg-warning text-dark" : "bg-danger")">
+                                @item.ConfidenceScore
+                            </span>
+                        </td>
+                        <td>@item.CreatedAt.ToString("dd.MM.yy")</td>
+                        <td>
+                            <button class="btn btn-sm btn-success me-1" disabled="@(_processing != null)"
+                                    @onclick="() => ApproveAsync(item)">✓</button>
+                            <button class="btn btn-sm btn-danger" disabled="@(_processing != null)"
+                                    @onclick="() => RejectAsync(item)">✗</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 <ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />

@@ -19,42 +19,44 @@ else if (!_mobs.Any())
 else
 {
     <p class="text-muted">@S["TotalMobs", _mobs.Count]</p>
-    <table class="table table-hover table-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>@S["ColVnum"]</th>
-                <th>@S["ColName"]</th>
-                <th>@S["Level"]</th>
-                <th>@S["Rank"]</th>
-                <th>@S["Source"]</th>
-                <th>@S["Confidence"]</th>
-                <th>@S["Actions"]</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var mob in _mobs)
-            {
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <thead class="table-dark">
                 <tr>
-                    <td><code>@mob.Vnum</code></td>
-                    <td><strong>@mob.Name</strong>@if (mob.LocaleName != null) { <small class="text-muted"> (@mob.LocaleName)</small> }</td>
-                    <td>@mob.Level</td>
-                    <td>@ContentLabels.Rank(mob.Rank)</td>
-                    <td>@mob.SourceName</td>
-                    <td>
-                        <span class="badge @(mob.ConfidenceScore >= 80 ? "bg-success" : mob.ConfidenceScore >= 50 ? "bg-warning text-dark" : "bg-danger")">
-                            @mob.ConfidenceScore
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-success me-1" disabled="@(_processing != null)"
-                                @onclick="() => ApproveAsync(mob)">✓</button>
-                        <button class="btn btn-sm btn-danger" disabled="@(_processing != null)"
-                                @onclick="() => RejectAsync(mob)">✗</button>
-                    </td>
+                    <th>@S["ColVnum"]</th>
+                    <th>@S["ColName"]</th>
+                    <th>@S["Level"]</th>
+                    <th>@S["Rank"]</th>
+                    <th>@S["Source"]</th>
+                    <th>@S["Confidence"]</th>
+                    <th>@S["Actions"]</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var mob in _mobs)
+                {
+                    <tr>
+                        <td><code>@mob.Vnum</code></td>
+                        <td><strong>@mob.Name</strong>@if (mob.LocaleName != null) { <small class="text-muted"> (@mob.LocaleName)</small> }</td>
+                        <td>@mob.Level</td>
+                        <td>@ContentLabels.Rank(mob.Rank)</td>
+                        <td>@mob.SourceName</td>
+                        <td>
+                            <span class="badge @(mob.ConfidenceScore >= 80 ? "bg-success" : mob.ConfidenceScore >= 50 ? "bg-warning text-dark" : "bg-danger")">
+                                @mob.ConfidenceScore
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-success me-1" disabled="@(_processing != null)"
+                                    @onclick="() => ApproveAsync(mob)">✓</button>
+                            <button class="btn btn-sm btn-danger" disabled="@(_processing != null)"
+                                    @onclick="() => RejectAsync(mob)">✗</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 <ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />

@@ -24,33 +24,35 @@ else if (!_items.Any())
 else
 {
     <p class="text-muted">@S["ReviewTotal", _items.Count]</p>
-    <table class="table table-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>@S["ColEntity"]</th>
-                <th>@S["ColReason"]</th>
-                <th>@S["ColRecord"]</th>
-                <th>@S["Created"]</th>
-                <th>@S["Actions"]</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _items)
-            {
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead class="table-dark">
                 <tr>
-                    <td><code>@item.EntityTable</code></td>
-                    <td><span class="badge bg-warning text-dark">@item.Reason</span></td>
-                    <td><code class="small">@(item.EntityGuid?.ToString()[..8] ?? "—")</code></td>
-                    <td>@item.CreatedAt.ToString("dd.MM.yy")</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ResolveAsync(item)">
-                            @S["MarkResolved"]
-                        </button>
-                    </td>
+                    <th>@S["ColEntity"]</th>
+                    <th>@S["ColReason"]</th>
+                    <th>@S["ColRecord"]</th>
+                    <th>@S["Created"]</th>
+                    <th>@S["Actions"]</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in _items)
+                {
+                    <tr>
+                        <td><code>@item.EntityTable</code></td>
+                        <td><span class="badge bg-warning text-dark">@item.Reason</span></td>
+                        <td><code class="small">@(item.EntityGuid?.ToString()[..8] ?? "—")</code></td>
+                        <td>@item.CreatedAt.ToString("dd.MM.yy")</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-secondary" @onclick="() => ResolveAsync(item)">
+                                @S["MarkResolved"]
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {

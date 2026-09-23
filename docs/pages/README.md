@@ -84,3 +84,11 @@ Mimo `.razor`: `Pages/Account/Login|ChangePassword|Logout.cshtml` (Razor Pages, 
 - **Němčina:** `Resources/SharedResources.de.resx` (298 klíčů), `Program.cs` rozšiřuje podporované jazyky na cs/en/de (SharedServices zná jen cs/en a sdílí ho víc projektů). `<html lang>` se řídí zvoleným jazykem. Test `ManageItems_RendersInSelectedLanguage` ověřuje všechny tři jazyky přes cookie z `/set-culture`. `tools/i18n/resx.py` přijímá třetí hodnotu (de); `null` nechá stávající překlad.
 - **IsEnabled při opakovaném importu:** migrace `06_is_enabled_locked.sql` přidává `IsEnabledLocked` (Items, Mobs, Maps, Quests, ContentGroups). Přepínač v adminu řádek zamkne; import převezme zapnutí ze serverových souborů (`MAP_ALLOW`, `locale_list`) jen u nezamčených řádků. Ověřeno na lokální DB: zamčený vypnutý item zůstal vypnutý, nezamčený se znovu zapnul.
 - **Produkce:** migrace 06 se musí nahrát spolu s 05 před importem na QNAP.
+
+## Responzivita a scrollování (2026-09-23)
+
+- **Scrolluje jen obsah.** `.page` má výšku okna (`100dvh`), `main` je sloupcový flex a `.content` jediný `overflow: auto`. Dřív `min-height: 100vh` nechalo růst celou stránku, takže se sidebar i horní lišta odsouvaly pryč.
+- **Sidebar** má vlastní `overflow-y` (dlouhé menu na nízkém okně) a `main` `min-width: 0`, aby široká tabulka neroztáhla layout přes okno.
+- **Mobil pod 768 px:** sidebar je vysouvací menu s tlačítkem ☰ v horní liště, ovládané skrytým checkboxem `#nav-toggle` (layout je SSR, `@onclick` tu nefunguje). Klik mimo menu ho zavře; po enhanced navigaci ho zavírá skript v `App.razor`.
+- **Tabulky:** všech 15 tabulek je v `table-responsive`, posouvají se vodorovně samy, ne obsah. Toolbary v ManageMaps a ManageSystems mají `flex-wrap`.
+- **Ověřeno v prohlížeči** na vykreslených stránkách (15 stránek × 1280/768/375 px): `body` se neposouvá svisle ani vodorovně, `.content` scrolluje svisle, horní lišta zůstává nahoře, sidebar je na mobilu zasunutý a otevírá i zavírá se. Přihlašovací stránka (vlastní styly, `app.css` nenačítá) je na 375 px bez přetečení.

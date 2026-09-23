@@ -89,35 +89,37 @@ else
     <h5 class="mb-2">@S["RecentRuns"]</h5>
     @if (_recentRuns.Any())
     {
-        <table class="table table-sm table-hover">
-            <thead class="table-secondary">
-                <tr>
-                    <th>@S["ColAgent"]</th>
-                    <th>@S["ColResult"]</th>
-                    <th>@S["ColStarted"]</th>
-                    <th class="text-end">@S["ColNew"]</th>
-                    <th class="text-end">@S["ColChanged"]</th>
-                    <th class="text-end">@S["ColFailed"]</th>
-                    <th>@S["ColHighlights"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var run in _recentRuns)
-                {
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead class="table-secondary">
                     <tr>
-                        <td class="fw-semibold">@run.AgentName</td>
-                        <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? S["BadgeOk"] : S["BadgeError"])</span></td>
-                        <td class="text-muted small">@run.CreatedAt.ToString("dd.MM HH:mm")</td>
-                        <td class="text-end small">@(run.EntitiesInserted ?? 0)</td>
-                        <td class="text-end small">@(run.EntitiesUpdated ?? 0)</td>
-                        <td class="text-end small">@(run.EntitiesFailed ?? 0)</td>
-                        <td class="text-muted small" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                            @run.Highlights
-                        </td>
+                        <th>@S["ColAgent"]</th>
+                        <th>@S["ColResult"]</th>
+                        <th>@S["ColStarted"]</th>
+                        <th class="text-end">@S["ColNew"]</th>
+                        <th class="text-end">@S["ColChanged"]</th>
+                        <th class="text-end">@S["ColFailed"]</th>
+                        <th>@S["ColHighlights"]</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var run in _recentRuns)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@run.AgentName</td>
+                            <td><span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">@(run.Success == true ? S["BadgeOk"] : S["BadgeError"])</span></td>
+                            <td class="text-muted small">@run.CreatedAt.ToString("dd.MM HH:mm")</td>
+                            <td class="text-end small">@(run.EntitiesInserted ?? 0)</td>
+                            <td class="text-end small">@(run.EntitiesUpdated ?? 0)</td>
+                            <td class="text-end small">@(run.EntitiesFailed ?? 0)</td>
+                            <td class="text-muted small" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                                @run.Highlights
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
         <a href="/reports" class="btn btn-outline-secondary btn-sm">@S["ShowAllReports"]</a>
     }
     else
