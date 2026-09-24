@@ -71,15 +71,6 @@ code {
     border-radius: 3px;
 }
 
-/* Navbar sekce labels */
-.nav-section-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: .08em;
-    color: #666;
-    text-transform: uppercase;
-    padding: 0.8rem 1rem 0.2rem;
-}
 
 /* Logout tlačítko v top-row */
 .btn-logout {

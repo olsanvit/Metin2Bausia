@@ -11,13 +11,8 @@
     <main>
         <div class="top-row px-3 px-md-4">
             <label for="nav-toggle" class="nav-toggle-btn" title="@S["Menu"]" aria-label="@S["Menu"]">☰</label>
-            <AuthorizeView>
-                <Authorized>
-                    <span class="text-muted me-3 d-none d-sm-inline">@context.User.Identity?.Name</span>
-                    <a href="/account/change-password" class="btn-logout me-2">@S["ChangePassword"]</a>
-                    <a href="/account/logout" class="btn-logout">@S["Logout"]</a>
-                </Authorized>
-            </AuthorizeView>
+            @* Uživatel, odhlášení i změna hesla jsou v navbaru (UserNavRow) — tady by byly podruhé *@
+            <span class="fw-semibold text-muted">@S["AdminTitle"]</span>
         </div>
         <article class="content px-3 px-md-4">
             @Body

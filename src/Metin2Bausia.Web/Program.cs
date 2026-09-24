@@ -22,7 +22,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddHealthChecks();
+// /health pinkne DB; connection string se tu jmenuje Metin2Bausia, ne výchozí DefaultConnection
+builder.Services.AddSharedHealthChecks("Metin2Bausia");
 builder.Services.AddRazorPages();   // pro Login Razor Page (POST + HttpContext)
 
 // Admin přihlašovací údaje + MustChangePassword flag

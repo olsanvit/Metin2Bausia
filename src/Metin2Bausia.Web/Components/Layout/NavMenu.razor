@@ -1,52 +1,66 @@
 <nav class="flex-column">
-    <div class="nav-item">
+    <div class="nav-item px-3">
         <NavLink class="nav-link" href="" Match="NavLinkMatch.All">@S["NavDashboard"]</NavLink>
     </div>
 
-    <div class="nav-section-label">@S["NavSectionGame"]</div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="manage/items">@S["NavItems"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="manage/mobs">@S["NavMobs"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="manage/maps">@S["NavMaps"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="manage/systems">@S["NavSystems"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="manage/quests">@S["NavQuests"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="manage/groups">@S["NavGroups"]</NavLink>
+    <NavSection Label="@S["NavSectionGame"]">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/items">@S["NavItems"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/mobs">@S["NavMobs"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/maps">@S["NavMaps"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/systems">@S["NavSystems"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/quests">@S["NavQuests"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/groups">@S["NavGroups"]</NavLink>
+        </div>
+    </NavSection>
+
+    <NavSection Label="@S["NavSectionApproval"]">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="items">@S["NavItemsPending"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="mobs">@S["NavMobsPending"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="review">@S["NavReview"]</NavLink>
+        </div>
+    </NavSection>
+
+    <NavSection Label="@S["NavSectionDatabase"]">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="items/browse">@S["NavItemDatabase"]</NavLink>
+        </div>
+    </NavSection>
+
+    <NavSection Label="@S["NavSectionReports"]">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="stats">@S["NavStats"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="reports">@S["NavReports"]</NavLink>
+        </div>
+    </NavSection>
+
+    @* Jméno uživatele a odhlášení patří na konec navbaru; na mobilu jsou dostupné po otevření menu *@
+    <UserNavRow LogoutHref="/account/logout" LogoutLabel="@S["Logout"]" />
+
+    <div class="nav-item px-3">
+        <a class="nav-link" href="/account/change-password">
+            <i class="bi bi-key me-2"></i>@S["ChangePassword"]
+        </a>
     </div>
 
-    <div class="nav-section-label">@S["NavSectionApproval"]</div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="items">@S["NavItemsPending"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="mobs">@S["NavMobsPending"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="review">@S["NavReview"]</NavLink>
-    </div>
-
-    <div class="nav-section-label">@S["NavSectionDatabase"]</div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="items/browse">@S["NavItemDatabase"]</NavLink>
-    </div>
-
-    <div class="nav-section-label">@S["NavSectionReports"]</div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="stats">@S["NavStats"]</NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink class="nav-link" href="reports">@S["NavReports"]</NavLink>
-    </div>
-    <div style="padding:8px 0 0 4px;">
+    <div style="padding:8px 0 0 16px;">
         <LangSwitcher />
     </div>
 </nav>
