@@ -28,9 +28,10 @@ Správa a provoz Metin2 private serveru (TMP4). Blazor Server admin aplikace pro
 - Testy: 20 (13 stránek, 2 detaily, 3 jazyky, 2 smoke) — potřebují PostgreSQL, viz CLAUDE.md
 - CI: GitHub Actions na push/PR
 
-### Neaplikováno na produkci
-- Migrace 05+06 nebyly nahrány (QNAP v RAID resyncu)
-- Import herních dat nebyl spuštěn na produkci
+### Produkce (2026-09-24)
+- DB přesunuta na sdílený `pg16` (mt2-postgres byl smazán), vlastní role `metin2bausia`
+- Migrace 01–06 nahrány, import hotový: 5743 items, 1334 mobů, 65 map, 284 questů, 1298 skupin
+- Deploy proběhl, `/health` vrací 200 Healthy; kontejner je zase zastavený (`restart=no`)
 
 ### TODO
 - ManageSystemDetail — sekce Files není implementována
@@ -69,7 +70,7 @@ tools/
 
 ## Klíčová architektura
 
-- **DB:** PostgreSQL 18 (management), MySQL 5.5 (herní DB v Docker)
+- **DB:** PostgreSQL — lokálně 18 (port 5442), produkce sdílený `pg16` na QNAPu; MySQL 5.5 (herní DB v Docker)
 - **ORM:** Dapper (ne EF Core) přes `IDbService` / `DbService`
 - **Auth:** Cookie auth — single admin, žádné role, whitelist
 - **SharedServices:** ThemeService, ConnectionStateService, IStringLocalizer

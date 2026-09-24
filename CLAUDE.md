@@ -23,7 +23,7 @@ docs/pages/                dokumentace všech 15 stránek
 
 | Prostředí | Připojení |
 |---|---|
-| Produkce | kontejner `mt2-postgres` na QNAPu, síť appnet, **zvenku bez portu** (jen přes `docker exec`) |
+| Produkce | sdílený kontejner `pg16` na QNAPu (síť appnet, PostgreSQL 16), databáze `Metin2Bausia`, vlastní role `metin2bausia`; přístup přes `docker exec pg16 psql -U roundnet -d Metin2Bausia` |
 | Lokálně | PostgreSQL 18 (Homebrew), port **5442**, data v `~/.local/share/metin2bausia-pg18` |
 
 Start lokální databáze (bez `LC_ALL` postmaster na macOS spadne):
@@ -42,7 +42,7 @@ Naplnění daty: migrace `database/postgres/0{1,2,3,4,5,6}_*.sql`, pak
 - Produkční kontejner **`metin2bausia`** = `aspnet:10.0` + publish složka
   `/share/Public/BlazorMetin2Bausia/publish`, port 5023. **Ne** compose z repa.
 - Deploy: `~/deploy-to-qnap.sh metin2bausia` (rsync + restart kontejneru).
-- **Projekt je záměrně vypnutý** (`restart=no`), dokud ho uživatel nespustí.
+- **Projekt je záměrně vypnutý** (`restart=no`), dokud ho uživatel nespustí. Deploy skript kontejner restartuje — po ověření `/health` ho zase zastavit.
 - `appsettings.Production.json` je na QNAPu zdroj pravdy (`KEEP_REMOTE_PROD_CFG=1`), necommituje se.
 
 ## Pravidla
