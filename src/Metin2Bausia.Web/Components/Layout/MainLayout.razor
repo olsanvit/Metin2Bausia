@@ -15,7 +15,7 @@
 
             @* Jazyk i uživatelské menu reagují na klik, ale layout je SSR — proto samostatné interaktivní ostrůvky *@
             <div class="ms-auto d-flex align-items-center gap-2">
-                <LangSwitcher @rendermode="InteractiveServer" />
+                <span class="d-none d-sm-inline-flex"><LangSwitcher @rendermode="InteractiveServer" /></span>
                 <AuthorizeView>
                     <Authorized>
                         <AvatarDropdown @rendermode="InteractiveServer"

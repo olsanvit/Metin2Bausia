@@ -170,7 +170,7 @@ code {
         color: inherit;
     }
 
-    .list-card__main  { flex: 1; min-width: 0; }
+    .list-card__main  { flex: 1; min-width: 0; color: inherit; text-decoration: none; }
     .list-card__title { font-weight: 600; overflow-wrap: anywhere; }
     .list-card__meta  { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; margin-top: .25rem; }
 }

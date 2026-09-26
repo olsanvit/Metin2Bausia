@@ -55,6 +55,11 @@
             <NavLink class="nav-link" href="reports">@S["NavReports"]</NavLink>
         </div>
     </NavSection>
+
+    @* Na úzkém displeji se přepínač jazyka do horní lišty nevejde, bydlí tedy tady *@
+    <div class="d-sm-none px-2 pt-2">
+        <LangSwitcher @rendermode="InteractiveServer" />
+    </div>
 </nav>
 
 @code {
