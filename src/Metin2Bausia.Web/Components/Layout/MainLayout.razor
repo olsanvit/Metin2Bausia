@@ -11,8 +11,21 @@
     <main>
         <div class="top-row px-3 px-md-4">
             <label for="nav-toggle" class="nav-toggle-btn" title="@S["Menu"]" aria-label="@S["Menu"]">☰</label>
-            @* Uživatel, odhlášení i změna hesla jsou v navbaru (UserNavRow) — tady by byly podruhé *@
-            <span class="fw-semibold text-muted">@S["AdminTitle"]</span>
+            <a href="/" class="fw-semibold text-decoration-none text-body">@S["AdminTitle"]</a>
+
+            @* Jazyk i uživatelské menu reagují na klik, ale layout je SSR — proto samostatné interaktivní ostrůvky *@
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <LangSwitcher @rendermode="InteractiveServer" />
+                <AuthorizeView>
+                    <Authorized>
+                        <AvatarDropdown @rendermode="InteractiveServer"
+                                        UserName="@(context.User.Identity?.Name ?? "?")"
+                                        ProfileHref=""
+                                        SettingsHref="/account/change-password"
+                                        LogoutHref="/account/logout" />
+                    </Authorized>
+                </AuthorizeView>
+            </div>
         </div>
         <article class="content px-3 px-md-4">
             @Body

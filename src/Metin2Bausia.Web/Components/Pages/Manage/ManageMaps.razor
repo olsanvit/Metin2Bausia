@@ -23,13 +23,13 @@
 @if (_loading) { <p>@S["Loading"]</p> }
 else
 {
-    <div class="table-responsive">
+    <div class="table-responsive list-table">
         <table class="table table-sm table-hover align-middle">
             <thead class="table-dark">
                 <tr>
                     <th style="width:56px">@S["On"]</th>
-                    <th style="width:70px">Index</th>
-                    <th>@S["ColName"]</th>
+                    <SortableHeader Field="Index" Label="@S["ColIndex"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <SortableHeader Field="Name" Label="@S["ColName"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
                     <th style="width:80px">@S["ColMinLevel"]</th>
                     <th style="width:80px">@S["ColMaxLevel"]</th>
                     <th style="width:100px">@S["Status"]</th>
@@ -37,7 +37,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var map in Filtered)
+                @foreach (var map in Sorted)
                 {
                     <tr class="@(map.IsEnabled ? "" : "opacity-60")">
                         <td class="text-center">
@@ -60,6 +60,29 @@ else
             </tbody>
         </table>
     </div>
+
+    @* Mobil: místo posouvání do strany karty pod sebou *@
+    <div class="list-cards">
+        @foreach (var map in Sorted)
+        {
+            <div class="list-card @(map.IsEnabled ? "" : "opacity-60")">
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox"
+                           checked="@map.IsEnabled"
+                           @onchange="e => ToggleAsync(map, (bool)e.Value!)" />
+                </div>
+                <a class="list-card__main" href="/manage/maps/@map.Guid">
+                    <div class="list-card__title">@(map.LocaleName ?? map.Name)</div>
+                    <div class="list-card__meta">
+                        <code class="small">@map.MapIndex</code>
+                        <span class="badge bg-light text-dark">@S["Level"] @map.MinLevel–@map.MaxLevel</span>
+                        <span class="badge @StatusClass(map.ContentStatus)">@map.ContentStatus</span>
+                    </div>
+                </a>
+                <span class="text-muted">›</span>
+            </div>
+        }
+    </div>
 }
 
 <ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
@@ -69,10 +92,17 @@ else
     private List<ManageMap> _maps = new();
     private string _search = "";
     private string _filterEnabled = "";
+    private string _sortBy = "Index";
+    private bool _asc = true;
 
     private IEnumerable<ManageMap> Filtered => _maps.Where(m =>
         (string.IsNullOrEmpty(_search) || m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
         (string.IsNullOrEmpty(_filterEnabled) || m.IsEnabled.ToString().ToLower() == _filterEnabled));
+
+    private IEnumerable<ManageMap> Sorted =>
+        _sortBy == "Name"
+            ? (_asc ? Filtered.OrderBy(m => m.LocaleName ?? m.Name) : Filtered.OrderByDescending(m => m.LocaleName ?? m.Name))
+            : (_asc ? Filtered.OrderBy(m => m.MapIndex) : Filtered.OrderByDescending(m => m.MapIndex));
 
     protected override async Task OnInitializedAsync()
     {

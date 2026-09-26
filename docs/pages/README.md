@@ -32,9 +32,8 @@ Ověřeno buildem (0 chyb, 0 varování) a během aplikace na localhost:5099 —
 | [Mobs](Mobs.md) | `/mobs` | ✅ opraveno 09-12, lokalizováno |
 | [Review](Review.md) | `/review` | ✅ opraveno 09-12, lokalizováno |
 | [Reports](Reports.md) | `/reports` | ✅ opraveno 09-12, lokalizováno |
-| [ItemsBrowse](ItemsBrowse.md) | `/items/browse` | ✅ opraveno 09-12, lokalizováno; kandidát na sloučení s ManageItems |
 | [StatsPage](StatsPage.md) | `/stats` | ✅ opraveno 09-12, lokalizováno |
-| [ManageItems](ManageItems.md) | `/manage/items` | ✅ opraveno 09-12, lokalizováno |
+| [ManageItems](ManageItems.md) | `/manage/items`, `/items/browse` | ✅ 09-26 sloučeno s ItemsBrowse, lokalizováno |
 | [ManageItemDetail](ManageItemDetail.md) | `/manage/items/{guid}` | ✅ editace hodnot 09-16, lokalizováno |
 | [ManageMobs](ManageMobs.md) | `/manage/mobs` | ✅ opraveno 09-12, lokalizováno |
 | [ManageMobDetail](ManageMobDetail.md) | `/manage/mobs/{guid}` | ✅ dropy 09-15, editace statistik 09-16, lokalizováno |
@@ -92,3 +91,13 @@ Mimo `.razor`: `Pages/Account/Login|ChangePassword|Logout.cshtml` (Razor Pages, 
 - **Mobil pod 768 px:** sidebar je vysouvací menu s tlačítkem ☰ v horní liště, ovládané skrytým checkboxem `#nav-toggle` (layout je SSR, `@onclick` tu nefunguje). Klik mimo menu ho zavře; po enhanced navigaci ho zavírá skript v `App.razor`.
 - **Tabulky:** všech 15 tabulek je v `table-responsive`, posouvají se vodorovně samy, ne obsah. Toolbary v ManageMaps a ManageSystems mají `flex-wrap`.
 - **Ověřeno v prohlížeči** na vykreslených stránkách (15 stránek × 1280/768/375 px): `body` se neposouvá svisle ani vodorovně, `.content` scrolluje svisle, horní lišta zůstává nahoře, sidebar je na mobilu zasunutý a otevírá i zavírá se. Přihlašovací stránka (vlastní styly, `app.css` nenačítá) je na 375 px bez přetečení.
+
+## Navigace (2026-09-26)
+
+Uživatel schválil variantu A z návrhu:
+
+- **Boční menu** má čtyři sekce (`NavSection` ze SharedServices): Přehled (Dashboard, Statistiky), Herní obsah (Itemy, Mobové, Mapy, Questy, Skupiny, Systémy), Schvalování (Itemy, Mobové, Ruční review — s živými počty z DB), Provoz (Agent reporty).
+- **Horní lišta** nese název aplikace jako odkaz na dashboard, přepínač jazyka a `AvatarDropdown` (změna hesla, odhlášení).
+- **Interaktivní ostrůvky:** `LangSwitcher` a `AvatarDropdown` mají `@rendermode="InteractiveServer"`. Layout je SSR, takže jejich `@onclick` do té doby nereagoval — **přepínání jazyka klikem dosud nefungovalo vůbec**.
+- **ItemsBrowse sloučena do ManageItems**; `/items/browse` zůstává jako druhá routa, aby staré odkazy fungovaly.
+- **Nezařazeno:** `ThemePicker` (potřebuje Bootstrap JS a odkaz na CSS je v SSR části, takže by se téma projevilo až po reloadu), globální hledání a stránka Export do hry.

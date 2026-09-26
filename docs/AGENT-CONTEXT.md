@@ -35,7 +35,6 @@ Správa a provoz Metin2 private serveru (TMP4). Blazor Server admin aplikace pro
 
 ### TODO
 - ManageSystemDetail — sekce Files není implementována
-- `/items/browse` — kandidát na sloučení s ManageItems
 
 ---
 

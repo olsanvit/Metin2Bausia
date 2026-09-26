@@ -42,6 +42,7 @@ builder.Services.AddSingleton<IDbService>(sp =>
 builder.Services.AddSingleton<ThemeService>(_ => new ThemeService(builder.Configuration));
 builder.Services.AddSingleton<ConnectionStateService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, AppCircuitHandler>();
+builder.Services.AddScoped<SharedServices.Services.UiLibraryService>();
 builder.Services.AddGlobalErrorNotifications();
 builder.Services.AddSimpleLocalization();
 // SharedServices podporuje jen cs/en a sdílí ho víc projektů; LangSwitcher nabízí i DE,

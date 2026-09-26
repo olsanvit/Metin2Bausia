@@ -35,13 +35,13 @@ else if (_quests.Count == 0)
 }
 else
 {
-    <div class="table-responsive">
+    <div class="table-responsive list-table">
         <table class="table table-sm table-hover align-middle">
             <thead class="table-dark sticky-top">
                 <tr>
                     <th style="width:56px">@S["On"]</th>
-                    <th>@S["ColFile"]</th>
-                    <th>@S["ColQuestName"]</th>
+                    <SortableHeader Field="File" Label="@S["ColFile"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <SortableHeader Field="Name" Label="@S["ColQuestName"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
                     <th style="width:90px">@S["ColEncoding"]</th>
                     <th style="width:110px" class="text-end">@S["ColSize"]</th>
                     <th style="width:100px">@S["Status"]</th>
@@ -49,7 +49,7 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var q in Filtered)
+                @foreach (var q in Sorted)
                 {
                     <tr class="@(q.IsEnabled ? "" : "opacity-60")">
                         <td class="text-center">
@@ -70,6 +70,29 @@ else
             </tbody>
         </table>
     </div>
+
+    @* Mobil: karty místo sedmi sloupců *@
+    <div class="list-cards">
+        @foreach (var q in Sorted)
+        {
+            <div class="list-card @(q.IsEnabled ? "" : "opacity-60")">
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox"
+                           checked="@q.IsEnabled"
+                           @onchange="e => ToggleAsync(q, (bool)e.Value!)" />
+                </div>
+                <a class="list-card__main" href="/manage/quests/@q.Guid">
+                    <div class="list-card__title">@q.QuestName</div>
+                    <div class="list-card__meta">
+                        <code class="small">@q.FileName</code>
+                        <span class="badge bg-light text-dark">@q.Encoding</span>
+                        <span class="badge @ContentLabels.StatusBadge(q.ContentStatus)">@q.ContentStatus</span>
+                    </div>
+                </a>
+                <span class="text-muted">›</span>
+            </div>
+        }
+    </div>
 }
 
 <ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
@@ -80,12 +103,19 @@ else
     private List<QuestListRow> _quests = [];
     private string _search = "";
     private string _filterEnabled = "";
+    private string _sortBy = "File";
+    private bool _asc = true;
 
     private IEnumerable<QuestListRow> Filtered => _quests.Where(q =>
         (string.IsNullOrEmpty(_search) ||
             q.QuestName.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
             (q.FileName?.Contains(_search, StringComparison.OrdinalIgnoreCase) ?? false)) &&
         (string.IsNullOrEmpty(_filterEnabled) || q.IsEnabled.ToString().ToLower() == _filterEnabled));
+
+    private IEnumerable<QuestListRow> Sorted =>
+        _sortBy == "Name"
+            ? (_asc ? Filtered.OrderBy(q => q.QuestName) : Filtered.OrderByDescending(q => q.QuestName))
+            : (_asc ? Filtered.OrderBy(q => q.FileName) : Filtered.OrderByDescending(q => q.FileName));
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,7 +1,14 @@
+@inject IDbService Db
+
 <nav class="flex-column">
-    <div class="nav-item px-3">
-        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">@S["NavDashboard"]</NavLink>
-    </div>
+    <NavSection Label="@S["NavSectionOverview"]">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">@S["NavDashboard"]</NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="stats">@S["NavStats"]</NavLink>
+        </div>
+    </NavSection>
 
     <NavSection Label="@S["NavSectionGame"]">
         <div class="nav-item px-3">
@@ -14,53 +21,65 @@
             <NavLink class="nav-link" href="manage/maps">@S["NavMaps"]</NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="manage/systems">@S["NavSystems"]</NavLink>
-        </div>
-        <div class="nav-item px-3">
             <NavLink class="nav-link" href="manage/quests">@S["NavQuests"]</NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="manage/groups">@S["NavGroups"]</NavLink>
         </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="manage/systems">@S["NavSystems"]</NavLink>
+        </div>
     </NavSection>
 
+    @* Počty ukazují, kde něco čeká — bez nich se musí proklikat každá fronta zvlášť *@
     <NavSection Label="@S["NavSectionApproval"]">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="items">@S["NavItemsPending"]</NavLink>
+            <NavLink class="nav-link d-flex justify-content-between align-items-center" href="items">
+                @S["NavItemsPending"] @Badge(_pendingItems)
+            </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="mobs">@S["NavMobsPending"]</NavLink>
+            <NavLink class="nav-link d-flex justify-content-between align-items-center" href="mobs">
+                @S["NavMobsPending"] @Badge(_pendingMobs)
+            </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="review">@S["NavReview"]</NavLink>
+            <NavLink class="nav-link d-flex justify-content-between align-items-center" href="review">
+                @S["NavReview"] @Badge(_manualReview)
+            </NavLink>
         </div>
     </NavSection>
 
-    <NavSection Label="@S["NavSectionDatabase"]">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="items/browse">@S["NavItemDatabase"]</NavLink>
-        </div>
-    </NavSection>
-
-    <NavSection Label="@S["NavSectionReports"]">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="stats">@S["NavStats"]</NavLink>
-        </div>
+    <NavSection Label="@S["NavSectionOperations"]">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="reports">@S["NavReports"]</NavLink>
         </div>
     </NavSection>
-
-    @* Jméno uživatele a odhlášení patří na konec navbaru; na mobilu jsou dostupné po otevření menu *@
-    <UserNavRow LogoutHref="/account/logout" LogoutLabel="@S["Logout"]" />
-
-    <div class="nav-item px-3">
-        <a class="nav-link" href="/account/change-password">
-            <i class="bi bi-key me-2"></i>@S["ChangePassword"]
-        </a>
-    </div>
-
-    <div style="padding:8px 0 0 16px;">
-        <LangSwitcher />
-    </div>
 </nav>
+
+@code {
+    private int _pendingItems, _pendingMobs, _manualReview;
+
+    private static RenderFragment? Badge(int count) => count == 0 ? null : builder =>
+    {
+        builder.OpenElement(0, "span");
+        builder.AddAttribute(1, "class", "badge bg-warning text-dark ms-2");
+        builder.AddContent(2, count);
+        builder.CloseElement();
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Nedostupná DB nesmí shodit navigaci — bez počtů je menu pořád použitelné
+            _pendingItems = await Db.QueryFirstOrDefaultAsync<int>(
+                @"SELECT COUNT(*) FROM ""Items"" WHERE ""ContentStatus"" = 'pending' AND ""IsDeleted"" = FALSE");
+            _pendingMobs = await Db.QueryFirstOrDefaultAsync<int>(
+                @"SELECT COUNT(*) FROM ""Mobs"" WHERE ""ContentStatus"" = 'pending' AND ""IsDeleted"" = FALSE");
+            _manualReview = await Db.QueryFirstOrDefaultAsync<int>(
+                @"SELECT COUNT(*) FROM ""ManualReviewQueue"" WHERE ""Status"" = 'pending' AND ""IsDeleted"" = FALSE");
+        }
+        catch { }
+    }
+}

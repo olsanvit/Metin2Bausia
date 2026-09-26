@@ -149,3 +149,41 @@ code {
         padding-bottom: 1rem;
     }
 }
+
+/* ── Seznamy: tabulka na desktopu, karty na mobilu ──────────────────────────
+   Sedm sloupců se do 375 px nevejde a vodorovný posun schová název řádku,
+   proto se pod 768 px tabulka skryje a stejná data se vykreslí jako karty. */
+.list-cards { display: none; }
+
+@media (max-width: 767.98px) {
+    .list-table  { display: none; }
+    .list-cards  { display: flex; flex-direction: column; gap: .5rem; }
+
+    .list-card {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .6rem .75rem;
+        border: 1px solid var(--bs-border-color, #dee2e6);
+        border-radius: .5rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .list-card__main  { flex: 1; min-width: 0; }
+    .list-card__title { font-weight: 600; overflow-wrap: anywhere; }
+    .list-card__meta  { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; margin-top: .25rem; }
+}
+
+/* Filtry: na mobilu schované pod rozbalovátkem, nad 768 px normální součást lišty.
+   <details> zvládne rozbalení bez JS — stránky jsou interaktivní, ale layout ne. */
+details.filters > summary { list-style: none; cursor: pointer; }
+details.filters > summary::-webkit-details-marker { display: none; }
+details.filters[open] > .filters__body { margin-top: .5rem; }
+
+@media (min-width: 768px) {
+    details.filters { display: contents; }
+    details.filters > summary { display: none; }
+    /* Obsah musí být vidět i se zavřeným <details> — prohlížeč ho jinak schová */
+    details.filters:not([open]) > .filters__body { display: flex !important; }
+}

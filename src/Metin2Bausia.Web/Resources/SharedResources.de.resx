@@ -309,6 +309,9 @@
   <data name="Exp" xml:space="preserve">
     <value>EXP</value>
   </data>
+  <data name="Filters" xml:space="preserve">
+    <value>Filter</value>
+  </data>
   <data name="FinalScore" xml:space="preserve">
     <value>Gesamtwertung</value>
   </data>
@@ -620,6 +623,12 @@
   </data>
   <data name="NavSectionGame" xml:space="preserve">
     <value>SPIELVERWALTUNG</value>
+  </data>
+  <data name="NavSectionOperations" xml:space="preserve">
+    <value>BETRIEB</value>
+  </data>
+  <data name="NavSectionOverview" xml:space="preserve">
+    <value>ÜBERSICHT</value>
   </data>
   <data name="NavSectionReports" xml:space="preserve">
     <value>ÜBERSICHTEN</value>

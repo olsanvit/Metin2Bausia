@@ -13,7 +13,6 @@ Popis: Hlavní správa itemů — zapínání/vypínání itemů ve hře (`IsEna
 - `ManageItem.ItemType` je `int?`, sloupec `text` → načtení padá.
 - `ItemTypeName()` mapuje čísla (1 = Zbraň, 3 = Prsten…) — neodpovídá DB ani StatsPage.
 - Filtr statusu nemá volbu `rejected` / `needs_review`.
-- Hledání neprohledává `LocaleName` (ItemsBrowse ano).
 - **Zapnutí nemá efekt na hru:** export proto souborů v MCP `IsEnabled` nefiltruje.
 - Lze zapnout i `pending`/`rejected` item — chybí pravidlo „zapnout lze jen approved".
 - Toast nezmizí.
@@ -27,4 +26,4 @@ Popis: Hlavní správa itemů — zapínání/vypínání itemů ve hře (`IsEna
 ## Brainstorming poznámky
 - Filtr „bez ikony", „bez lokalizace", podle vnum rozsahu
 - Indikátor „změněno od posledního exportu" (porovnání `UpdatedAt` s `ProtoFiles.DeployedAt`)
-- Tahle stránka + ItemsBrowse + Items (pending) = 3 pohledy na stejnou tabulku → zvážit jednu stránku s taby Pending / Schválené / Vše
+- 2026-09-26: ItemsBrowse sloučena sem (`/items/browse` je druhá routa). Samostatnou frontou zůstává jen Items (pending).
