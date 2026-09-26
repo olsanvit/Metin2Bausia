@@ -161,7 +161,7 @@ else
                                 @if (!string.IsNullOrEmpty(g.KillDrop)) { <span class="ms-2">@S["DropKillDrop"]: @g.KillDrop</span> }
                                 @if (!string.IsNullOrEmpty(g.LevelLimit)) { <span class="ms-2">@S["DropLevelLimit"]: @g.LevelLimit</span> }
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive list-table">
                                 <table class="table table-sm mb-2">
                                     <thead><tr><th>@S["DropItem"]</th><th class="text-end">@S["DropCount"]</th><th class="text-end">@S["DropChance"]</th></tr></thead>
                                     <tbody>
@@ -183,6 +183,42 @@ else
                                     </tbody>
                                 </table>
                             </div>
+
+                            @* Tři sloupce se na mobilu nevejdou — z řádku se stává karta s jménem a metadaty *@
+                            <div class="list-cards px-3 pb-2">
+                                @foreach (var it in g.Items)
+                                {
+                                    <div class="list-card">
+                                        @if (it.Vnum is int cv && _itemNames.TryGetValue(cv, out var citem))
+                                        {
+                                            <a class="list-card__main" href="/manage/items/@citem.Guid">
+                                                <div class="list-card__title">@citem.Label</div>
+                                                <div class="list-card__meta">
+                                                    <code class="small">@cv</code>
+                                                    <span class="badge bg-light text-dark">@S["DropCount"] @it.Count</span>
+                                                    <span class="badge bg-light text-dark">@it.Pct.ToString("0.###") %</span>
+                                                </div>
+                                            </a>
+                                            <span class="text-muted">›</span>
+                                        }
+                                        else
+                                        {
+                                            <div class="list-card__main">
+                                                <div class="list-card__title">
+                                                    @if (it.Vnum is int cv2)
+                                                    { <code class="small">@cv2</code> }
+                                                    else
+                                                    { <span class="text-muted">@(it.ItemName ?? "?") (@S["DropUnresolved"])</span> }
+                                                </div>
+                                                <div class="list-card__meta">
+                                                    <span class="badge bg-light text-dark">@S["DropCount"] @it.Count</span>
+                                                    <span class="badge bg-light text-dark">@it.Pct.ToString("0.###") %</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
                         }
                     }
                 </div>
@@ -190,20 +226,21 @@ else
 
             @if (_mob.SourceName != null)
             {
-                <div class="card mb-3">
-                    <div class="card-header"><strong>@S["DataSource"]</strong></div>
+                @* Na mobilu sbalené — kouká se sem zřídka a zbytečně prodlužovalo stránku *@
+                <details class="card mb-3 collapsible">
+                    <summary class="card-header"><strong>@S["DataSource"]</strong></summary>
                     <div class="card-body small">
                         <strong>@_mob.SourceName</strong>
                         @if (_mob.SourceUrl != null)
                         { <a href="@_mob.SourceUrl" target="_blank" class="ms-2">@_mob.SourceUrl</a> }
                     </div>
-                </div>
+                </details>
             }
         </div>
 
         <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["DataQuality"]</strong></div>
+            <details class="card mb-3 collapsible">
+                <summary class="card-header"><strong>@S["DataQuality"]</strong></summary>
                 <div class="card-body">
                     <div class="d-flex justify-content-between small mb-1">
                         <span>@S["FinalScore"]</span>
@@ -219,13 +256,14 @@ else
                         @S["Updated"]: @_mob.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
-            </div>
+            </details>
 
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["Actions"]</strong></div>
+            @* Akce musí být po ruce i uprostřed dlouhého formuláře — dřív byly na mobilu až úplně dole *@
+            <div class="card mb-3 detail-actions">
+                <div class="card-header d-none d-lg-block"><strong>@S["Actions"]</strong></div>
                 <div class="card-body d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]</button>
-                    <div class="small text-muted">@S["Origin"]: <code>@(_mob.DataOrigin ?? "—")</code><br />@S["ManualEditNote"]</div>
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]@(IsDirty ? " •" : "")</button>
+                    <div class="small text-muted d-none d-lg-block">@S["Origin"]: <code>@(_mob.DataOrigin ?? "—")</code><br />@S["ManualEditNote"]</div>
                     <div class="d-flex gap-1">
                         <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
                                 disabled="@(_mob.ContentStatus == "approved")">@S["Approve"]</button>
@@ -259,6 +297,17 @@ else
     private string? _editMobType;
     private string? _editRank;
     private string? _editDescription;
+    private string _snapshot = "";
+
+    // Porovnání proti stavu po načtení — jinak není poznat, že odchod ze stránky zahodí úpravy
+    private string Snapshot() => string.Join('|',
+        _editName, _editLocaleName, _editMobType, _editRank, _editDescription,
+        _mob?.Level, _mob?.MaxHp, _mob?.Exp,
+        _mob?.Atk, _mob?.Def, _mob?.MagicAtk, _mob?.MagicDef,
+        _mob?.AttackSpeed, _mob?.MoveSpeed,
+        _mob?.GoldMin, _mob?.GoldMax, _mob?.GoldDropRate, _mob?.AggressiveSight);
+
+    private bool IsDirty => _mob != null && Snapshot() != _snapshot;
 
     protected override async Task OnInitializedAsync()
     {
@@ -283,6 +332,7 @@ else
                 _editMobType = _mob.MobType;
                 _editRank = _mob.Rank;
                 _editDescription = _mob.Description;
+                _snapshot = Snapshot();
             }
             if (_mob != null) await LoadDropsAsync();
         }
@@ -335,6 +385,7 @@ else
             _mob.MobType = _editMobType;
             _mob.Rank = _editRank;
             _mob.Description = _editDescription;
+            _snapshot = Snapshot();
             ShowOk(S["Saved"]);
         }
         catch (Exception ex) { ShowError(ex); }

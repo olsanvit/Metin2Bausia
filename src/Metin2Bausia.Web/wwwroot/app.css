@@ -222,7 +222,7 @@ details.filters[open] > .filters__body { margin-top: .5rem; }
     .detail-actions .card-body > button:last-of-type { flex: 1 1 35%; }
 
     /* Aby přilepená lišta nepřekrývala konec formuláře */
-    .content { padding-bottom: 6.5rem; }
+    .content { padding-bottom: 7.5rem; }
 }
 
 /* Karta jako rozbalovátko — na desktopu vždy otevřená */

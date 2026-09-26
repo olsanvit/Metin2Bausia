@@ -13,7 +13,7 @@ Popis: Detail jednoho itemu — editace základních údajů, zobrazení cen/lim
 - `SetStatusAsync` nenastavuje `ApprovedAt/ApprovedBy/RejectedAt/RejectedReason` a nezapisuje `ApprovalLog` → schválení z detailu nemá audit.
 - Value0–5, limity, bonusy, `Weight`, `Size`, `Gold`, `Buy` jsou jen ke čtení — přitom právě ty definují item ve hře.
 - `SubType`, `AntiFlags`, `Flags`, `WearFlags`, `ImmuneFlags`, `IconFile`, `ModelFile`, `SummonMobVnum` se vůbec nezobrazují.
-- Neuložené změny se při odchodu tiše ztratí.
+- Neuložené změny se při odchodu tiše ztratí — tlačítko Uložit je sice označí tečkou, ale odchod ze stránky nic nehlídá.
 - `@inject NavigationManager Nav` se nepoužívá.
 
 ## Návrhy na vylepšení 💡
