@@ -187,3 +187,50 @@ details.filters[open] > .filters__body { margin-top: .5rem; }
     /* Obsah musí být vidět i se zavřeným <details> — prohlížeč ho jinak schová */
     details.filters:not([open]) > .filters__body { display: flex !important; }
 }
+
+/* ── Detailní stránky: akce po ruce, vedlejší karty sbalené na mobilu ────────
+   Pravý sloupec se pod 992 px řadí až za celý formulář, takže uložení bylo
+   na konci dlouhého scrollu. */
+@media (min-width: 992px) {
+    .detail-actions { position: sticky; top: 1rem; }
+}
+
+@media (max-width: 991.98px) {
+    .detail-actions {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1030;
+        margin: 0;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, .15);
+    }
+
+    /* Tři tlačítka pod sebou zabírala 130 px ze 760 — do dvou řad se vejdou v 80 */
+    .detail-actions .card-body {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: .4rem;
+        padding: .5rem .75rem;
+    }
+
+    .detail-actions .card-body > button:first-of-type { flex: 1 1 100%; }
+    .detail-actions .card-body > .d-flex          { flex: 1 1 58%; }
+    .detail-actions .card-body > button:last-of-type { flex: 1 1 35%; }
+
+    /* Aby přilepená lišta nepřekrývala konec formuláře */
+    .content { padding-bottom: 6.5rem; }
+}
+
+/* Karta jako rozbalovátko — na desktopu vždy otevřená */
+details.collapsible > summary { cursor: pointer; list-style: none; }
+details.collapsible > summary::-webkit-details-marker { display: none; }
+details.collapsible > summary::after { content: " ▾"; float: right; opacity: .6; }
+
+@media (min-width: 768px) {
+    details.collapsible > summary::after { content: none; }
+    details.collapsible:not([open]) > *:not(summary) { display: block !important; }
+}

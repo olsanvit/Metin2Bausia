@@ -171,21 +171,22 @@ else
             <!-- Zdroj -->
             @if (_item.SourceName != null)
             {
-                <div class="card mb-3">
-                    <div class="card-header"><strong>@S["DataSource"]</strong></div>
+                @* Na mobilu sbalené — kouká se sem zřídka a zbytečně prodlužovalo stránku *@
+                <details class="card mb-3 collapsible">
+                    <summary class="card-header"><strong>@S["DataSource"]</strong></summary>
                     <div class="card-body small">
                         <strong>@_item.SourceName</strong>
                         @if (_item.SourceUrl != null)
                         { <a href="@_item.SourceUrl" target="_blank" class="ms-2">@_item.SourceUrl</a> }
                     </div>
-                </div>
+                </details>
             }
         </div>
 
         <div class="col-lg-4">
             <!-- Skóre -->
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["DataQuality"]</strong></div>
+            <details class="card mb-3 collapsible">
+                <summary class="card-header"><strong>@S["DataQuality"]</strong></summary>
                 <div class="card-body">
                     <div class="d-flex justify-content-between small mb-1">
                         <span>@S["FinalScore"]</span>
@@ -201,14 +202,16 @@ else
                         @S["Updated"]: @_item.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
-            </div>
+            </details>
 
-            <!-- Akce -->
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["Actions"]</strong></div>
+            @* Akce musí být po ruce i uprostřed dlouhého formuláře — dřív byly na mobilu až úplně dole *@
+            <div class="card mb-3 detail-actions">
+                <div class="card-header d-none d-lg-block"><strong>@S["Actions"]</strong></div>
                 <div class="card-body d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]</button>
-                    <div class="small text-muted">@S["Origin"]: <code>@(_item.DataOrigin ?? "—")</code><br />@S["ManualEditNote"]</div>
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">
+                        @S["Save"]@(IsDirty ? " •" : "")
+                    </button>
+                    <div class="small text-muted d-none d-lg-block">@S["Origin"]: <code>@(_item.DataOrigin ?? "—")</code><br />@S["ManualEditNote"]</div>
 
                     <div class="d-flex gap-1">
                         <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
@@ -247,6 +250,7 @@ else
     private string? _editLocaleName;
     private string? _editItemType;
     private string? _editDescription;
+    private string _snapshot = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -270,11 +274,22 @@ else
                 _editLocaleName = _item.LocaleName;
                 _editItemType = _item.ItemType;
                 _editDescription = _item.Description;
+                _snapshot = Snapshot();
             }
         }
         catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
     }
+
+    // Porovnání proti stavu po načtení — jinak není poznat, že odchod ze stránky zahodí úpravy
+    private string Snapshot() => string.Join('|',
+        _editName, _editLocaleName, _editItemType, _editDescription,
+        _item?.Gold, _item?.Buy, _item?.Weight, _item?.Size,
+        _item?.LimitValue0, _item?.LimitValue1,
+        _item?.ApplyValue0, _item?.ApplyValue1, _item?.ApplyValue2,
+        _item?.Value0, _item?.Value1, _item?.Value2, _item?.Value3, _item?.Value4, _item?.Value5);
+
+    private bool IsDirty => _item != null && Snapshot() != _snapshot;
 
     private async Task SaveAsync()
     {
@@ -306,6 +321,7 @@ else
             _item.LocaleName = _editLocaleName;
             _item.ItemType = _editItemType;
             _item.Description = _editDescription;
+            _snapshot = Snapshot();
             ShowOk(S["Saved"]);
         }
         catch (Exception ex) { ShowError(ex); }
