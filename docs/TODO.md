@@ -3,7 +3,17 @@
 Otevřené úkoly mimo hotový responzivní redesign (stav k 27. 9. 2026, `3024ab5`).
 Ověřeno proti kódu, ne jen přepsáno ze starších poznámek.
 
-## Editory obsahu — největší přínos
+## Pořadí podle priority (zadal Vítek 27. 9.)
+
+1. Editor dropů a spawnů
+2. ThemePicker — mění téma až po reloadu
+3. Globální hledání
+4. Export do hry
+5. Patcher `net9.0-windows` → `net10.0-windows`
+
+Ostatní položky níž jsou pod touto pětkou.
+
+## 1. Editory obsahu
 
 - [ ] **Editor dropů moba** (`ManageMobDetail.razor`) — dropy se dnes jen zobrazují.
       Řádky: vnum s našeptáváním ze schválených itemů, počet, šance %, validace existence vnum.
