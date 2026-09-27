@@ -3,6 +3,7 @@ Route: /manage/items/{Guid:guid}
 Popis: Detail jednoho itemu — editace základních údajů, zobrazení cen/limitů/bonusů/hodnot, změna statusu a zapnutí.
 
 ## Hotovo ✅
+- Schvalování zapisuje `ApprovedAt`/`ApprovedBy` i řádek do `ApprovalLog`
 - Načtení plného záznamu (vnum, typ, subtyp, váha, velikost, ceny, limity 0–1, apply 0–2, value 0–5, popis, zdroj, skóre)
 - Editace: název, lokalizovaný název, typ (dropdown textových hodnot), popis → „Uložit změny"
 - Karty limitů a bonusů (zobrazí se jen když existují), value0–5 v mřížce
@@ -10,7 +11,6 @@ Popis: Detail jednoho itemu — editace základních údajů, zobrazení cen/lim
 - `ItemType` je správně `string` (na rozdíl od list stránek)
 
 ## Chybí / Rozpracováno ⚠️
-- `SetStatusAsync` nenastavuje `ApprovedAt/ApprovedBy/RejectedAt/RejectedReason` a nezapisuje `ApprovalLog` → schválení z detailu nemá audit.
 - Value0–5, limity, bonusy, `Weight`, `Size`, `Gold`, `Buy` jsou jen ke čtení — přitom právě ty definují item ve hře.
 - `SubType`, `AntiFlags`, `Flags`, `WearFlags`, `ImmuneFlags`, `IconFile`, `ModelFile`, `SummonMobVnum` se vůbec nezobrazují.
 - Neuložené změny se při odchodu tiše ztratí — tlačítko Uložit je sice označí tečkou, ale odchod ze stránky nic nehlídá.

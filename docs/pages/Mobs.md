@@ -3,6 +3,7 @@ Route: /mobs
 Popis: Fronta mobů / NPC / metinů nasbíraných agentem, čekajících na schválení.
 
 ## Hotovo ✅
+- Schválení i zamítnutí zapisují řádek do `ApprovalLog`
 - Pod 768 px karty místo tabulky; schvalovací tlačítka mají 44 px dotykovou plochu
 - Tabulka max 200 pending mobů (vnum, jméno, level, rank, zdroj, confidence)
 - ✓ / ✗ na řádku, zápis do `ApprovalLog` při schválení
@@ -12,7 +13,6 @@ Popis: Fronta mobů / NPC / metinů nasbíraných agentem, čekajících na schv
 ## Chybí / Rozpracováno ⚠️
 - **Schválení padá:** stejná chyba jako Items — `ApprovalAt`/`ApprovalBy` místo `ApprovedAt`/`ApprovedBy`.
 - **Načtení padá:** `PendingMob.Rank` je `int?`, sloupec je `text` (`pawn|knight|boss|king`) → výjimka. `RankLabel()` mapuje čísla, takže i po opravě typu by ukazoval „?".
-- Zamítnutí nezapisuje `ApprovalLog`.
 - Chybí sloupec typu (monster/npc/metin), odkaz na zdroj (`SourceUrl` se nenačítá), `_processing` se nevizualizuje (Items má šedý řádek, Mobs ne).
 
 ## Návrhy na vylepšení 💡

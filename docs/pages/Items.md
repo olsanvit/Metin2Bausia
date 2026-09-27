@@ -3,6 +3,7 @@ Route: /items
 Popis: Fronta itemů, které AI agent nasbíral (`ContentStatus = 'pending'`) a čekají na schválení/zamítnutí.
 
 ## Hotovo ✅
+- Schválení i zamítnutí zapisují řádek do `ApprovalLog`
 - Pod 768 px karty místo tabulky; schvalovací tlačítka mají 44 px dotykovou plochu
 - Tabulka max 200 pending itemů seřazená podle `ConfidenceScore` a data
 - Barevný badge confidence (≥80 / ≥50 / <50), odkaz na zdroj
@@ -13,7 +14,6 @@ Popis: Fronta itemů, které AI agent nasbíral (`ContentStatus = 'pending'`) a 
 ## Chybí / Rozpracováno ⚠️
 - **Schválení padá:** UPDATE zapisuje `"ApprovalAt"` a `"ApprovalBy"`, schéma má `"ApprovedAt"` a `"ApprovedBy"` → `column does not exist`.
 - **Načtení padá:** `PendingItem.ItemType` je `int?`, sloupec je `text` → Dapper výjimka → stránka ukáže chybu DB.
-- Zamítnutí nezapisuje `ApprovalLog` (schválení ano) — nekonzistentní audit.
 - Důvod zamítnutí natvrdo `manual_reject`, nelze zadat.
 - Žádné potvrzení akce, žádné undo.
 - `ApprovalBy` natvrdo `'admin'` místo jména přihlášeného uživatele.

@@ -3,6 +3,7 @@ Route: /manage/maps/{Guid:guid}
 Popis: Detail mapy — editace názvu/typu/popisu, rozměry a levelový rozsah, náhled, akce schválení a zapnutí.
 
 ## Hotovo ✅
+- Schvalování zapisuje `ApprovedAt`/`ApprovedBy` i řádek do `ApprovalLog`
 - Načtení záznamu (index, typ, rozměry, min/max level, popis, náhled, zdroj, skóre)
 - Editace: název, lokalizovaný název, typ mapy (field/dungeon/pvp/guild/empire/boat), popis
 - Náhledový obrázek (`PreviewImageUrl`), pokud existuje
@@ -15,7 +16,6 @@ Popis: Detail mapy — editace názvu/typu/popisu, rozměry a levelový rozsah, 
 - **Spawny se jen zobrazují, needitují** — editor spawnů chybí.
 - `MapFiles`, `BaseX/BaseY`, `CellScale` chybí.
 - Min/max level je v UI dvakrát (editační řádek readonly + karta rozměrů) a ani jednou nejde upravit.
-- Audit problém jako ostatní detaily (`SetStatusAsync` bez `ApprovedAt` a `ApprovalLog`).
 - Zapnutí se nepropisuje do herního serveru (viz ManageMaps.md — `MAP_ALLOW` v `server/game/conf.cfg`).
 
 ## Návrhy na vylepšení 💡
