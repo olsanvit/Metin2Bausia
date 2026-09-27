@@ -89,7 +89,7 @@ else
     <h5 class="mb-2">@S["RecentRuns"]</h5>
     @if (_recentRuns.Any())
     {
-        <div class="table-responsive">
+        <div class="table-responsive list-table">
             <table class="table table-sm table-hover">
                 <thead class="table-secondary">
                     <tr>
@@ -120,7 +120,35 @@ else
                 </tbody>
             </table>
         </div>
-        <a href="/reports" class="btn btn-outline-secondary btn-sm">@S["ShowAllReports"]</a>
+
+        @* Sedm sloupců se na mobil nevejde — běh se skládá na kartu, highlights se zalomí celé *@
+        <div class="list-cards">
+            @foreach (var run in _recentRuns)
+            {
+                <div class="list-card">
+                    <div class="list-card__main">
+                        <div class="list-card__title">@run.AgentName</div>
+                        <div class="list-card__meta">
+                            <span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">
+                                @(run.Success == true ? S["BadgeOk"] : S["BadgeError"])
+                            </span>
+                            <span class="small text-muted">@run.CreatedAt.ToString("dd.MM HH:mm")</span>
+                            <span class="small text-muted">@S["RunNewUpdated", run.EntitiesInserted ?? 0, run.EntitiesUpdated ?? 0]</span>
+                            @if ((run.EntitiesFailed ?? 0) > 0)
+                            {
+                                <span class="badge bg-warning text-dark">@S["ColFailed"] @run.EntitiesFailed</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(run.Highlights))
+                        {
+                            <div class="small text-muted">@run.Highlights</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <a href="/reports" class="btn btn-outline-secondary btn-sm mt-3">@S["ShowAllReports"]</a>
     }
     else
     {

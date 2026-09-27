@@ -23,7 +23,7 @@ else if (!_runs.Any())
 }
 else
 {
-    <div class="table-responsive">
+    <div class="table-responsive list-table">
         <table class="table table-sm table-hover">
             <thead class="table-dark">
                 <tr>
@@ -57,6 +57,35 @@ else
                 }
             </tbody>
         </table>
+    </div>
+
+    @* Deset sloupců je na mobilu nečitelných — běh se skládá na kartu s highlights pod metadaty *@
+    <div class="list-cards">
+        @foreach (var run in _runs)
+        {
+            <div class="list-card">
+                <div class="list-card__main">
+                    <div class="list-card__title">@run.AgentName</div>
+                    <div class="list-card__meta">
+                        <span class="badge @(run.Success == true ? "bg-success" : "bg-danger")">
+                            @(run.Success == true ? S["BadgeOk"] : S["BadgeError"])
+                        </span>
+                        <span class="badge @(run.ReadinessStatus == "ready" ? "bg-success" : "bg-secondary")">@run.ReadinessStatus</span>
+                        <span class="small text-muted">@run.CreatedAt.ToString("dd.MM.yy HH:mm")</span>
+                        <span class="small text-muted">@Duration(run)</span>
+                        <span class="small text-muted">@S["RunNewUpdated", run.EntitiesInserted ?? 0, run.EntitiesUpdated ?? 0]</span>
+                        @if ((run.EntitiesFailed ?? 0) > 0)
+                        {
+                            <span class="badge bg-warning text-dark">@S["ColFailed"] @run.EntitiesFailed</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(run.Highlights))
+                    {
+                        <div class="small text-muted">@TruncateHighlights(run.Highlights)</div>
+                    }
+                </div>
+            </div>
+        }
     </div>
 }
 

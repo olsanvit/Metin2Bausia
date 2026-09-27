@@ -173,6 +173,9 @@ code {
     .list-card__main  { flex: 1; min-width: 0; color: inherit; text-decoration: none; }
     .list-card__title { font-weight: 600; overflow-wrap: anywhere; }
     .list-card__meta  { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; margin-top: .25rem; }
+
+    /* Schvalovací tlačítka v kartách musí jít trefit palcem — btn-sm dává jen 28 px */
+    .list-card .btn { min-width: 2.75rem; min-height: 2.75rem; }
 }
 
 /* Filtry: na mobilu schované pod rozbalovátkem, nad 768 px normální součást lišty.

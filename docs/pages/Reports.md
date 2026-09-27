@@ -3,6 +3,7 @@ Route: /reports
 Popis: Historie posledních 50 běhů AI agenta (`AgentRunReports`).
 
 ## Hotovo ✅
+- Desetisloupcová tabulka má pod 768 px kartovou podobu (agent, výsledek, připravenost, čas, trvání, počty, highlights)
 - Tabulka: agent, readiness, status, spuštění, trvání, počty items/mobs/obrázků, zkrácené highlights
 - Výpočet trvání z časů začátku/konce, zkrácení highlights na 80 znaků
 - **Opraveno 2026-09-12:** model přemapován na skutečné sloupce; trvání se počítá z `DurationMs`; přibyl sloupec režimu běhu; chyba DB se zobrazí.

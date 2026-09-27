@@ -3,6 +3,7 @@ Route: /items
 Popis: Fronta itemů, které AI agent nasbíral (`ContentStatus = 'pending'`) a čekají na schválení/zamítnutí.
 
 ## Hotovo ✅
+- Pod 768 px karty místo tabulky; schvalovací tlačítka mají 44 px dotykovou plochu
 - Tabulka max 200 pending itemů seřazená podle `ConfidenceScore` a data
 - Barevný badge confidence (≥80 / ≥50 / <50), odkaz na zdroj
 - Tlačítka ✓ / ✗ na řádku, blokace během zpracování (`_processing`)

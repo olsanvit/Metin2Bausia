@@ -3,6 +3,8 @@ Route: /manage/systems/{Guid:guid}
 Popis: Detail herního systému — editace metadat, zobrazení implementačních instrukcí, akce schválení a zapnutí.
 
 ## Hotovo ✅
+- Akce po ruce: na desktopu přilepené v pravém sloupci, pod 992 px lišta u spodního okraje; Uložit značí neuložené změny
+- „Zdroj dat" a „Kvalita dat" jako rozbalovátka (na mobilu sbalená, od 768 px vždy otevřená)
 - Editace: název, kategorie (12 hodnot), složitost (low/medium/high), zdrojový server, popis
 - Karta „Implementace" (`Implementation` jako `<pre>`), karta zdroje
 - Badge složitosti v hlavičce, Schválit / Zamítnout / Zapnout-Vypnout

@@ -24,7 +24,7 @@ else if (!_items.Any())
 else
 {
     <p class="text-muted">@S["ReviewTotal", _items.Count]</p>
-    <div class="table-responsive">
+    <div class="table-responsive list-table">
         <table class="table table-sm">
             <thead class="table-dark">
                 <tr>
@@ -52,6 +52,26 @@ else
                 }
             </tbody>
         </table>
+    </div>
+
+    @* Na mobilu místo tabulky karty — tlačítko „vyřešeno" zůstává vpravo na dosah *@
+    <div class="list-cards">
+        @foreach (var item in _items)
+        {
+            <div class="list-card">
+                <div class="list-card__main">
+                    <div class="list-card__title">@item.EntityTable</div>
+                    <div class="list-card__meta">
+                        <span class="badge bg-warning text-dark">@item.Reason</span>
+                        <code class="small">@(item.EntityGuid?.ToString()[..8] ?? "—")</code>
+                        <span class="small text-muted">@item.CreatedAt.ToString("dd.MM.yy")</span>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" @onclick="() => ResolveAsync(item)">
+                    @S["MarkResolved"]
+                </button>
+            </div>
+        }
     </div>
 }
 

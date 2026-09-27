@@ -3,6 +3,7 @@ Route: /review
 Popis: Fronta konfliktů, které agent nedokázal vyřešit sám (`ManualReviewQueue`) — např. dva zdroje s rozdílnými daty pro stejné vnum.
 
 ## Hotovo ✅
+- Pod 768 px karty místo tabulky, tlačítko „vyřešeno" zůstává vpravo
 - Tabulka nevyřešených položek (entita, důvod, zdroj A/B, datum)
 - Tlačítko „Vyřešeno" odebere položku z fronty
 - **Opraveno 2026-09-12:** místo neexistujících `Resolved/SourceA/SourceB` se pracuje se sloupcem `Status` (`pending` → `resolved`); chyba DB se zobrazí místo hlášky „fronta je prázdná".

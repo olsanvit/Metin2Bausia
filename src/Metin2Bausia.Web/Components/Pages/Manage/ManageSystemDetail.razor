@@ -95,20 +95,21 @@ else
 
             @if (_sys.SourceName != null)
             {
-                <div class="card mb-3">
-                    <div class="card-header"><strong>@S["DataSource"]</strong></div>
+                @* Na mobilu sbalené — kouká se sem zřídka a zbytečně prodlužovalo stránku *@
+                <details class="card mb-3 collapsible">
+                    <summary class="card-header"><strong>@S["DataSource"]</strong></summary>
                     <div class="card-body small">
                         <strong>@_sys.SourceName</strong>
                         @if (_sys.SourceUrl != null)
                         { <a href="@_sys.SourceUrl" target="_blank" class="ms-2">@_sys.SourceUrl</a> }
                     </div>
-                </div>
+                </details>
             }
         </div>
 
         <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["DataQuality"]</strong></div>
+            <details class="card mb-3 collapsible">
+                <summary class="card-header"><strong>@S["DataQuality"]</strong></summary>
                 <div class="card-body">
                     <div class="d-flex justify-content-between small mb-1">
                         <span>@S["FinalScore"]</span>
@@ -120,12 +121,13 @@ else
                         @S["Updated"]: @_sys.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
-            </div>
+            </details>
 
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["Actions"]</strong></div>
+            @* Akce musí být po ruce i uprostřed dlouhého popisu implementace *@
+            <div class="card mb-3 detail-actions">
+                <div class="card-header d-none d-lg-block"><strong>@S["Actions"]</strong></div>
                 <div class="card-body d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]</button>
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]@(IsDirty ? " •" : "")</button>
                     <div class="d-flex gap-1">
                         <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
                                 disabled="@(_sys.ContentStatus == "approved")">@S["Approve"]</button>
@@ -159,6 +161,11 @@ else
     private string? _editDescription;
     private string? _editComplexity;
     private string? _editSourceServer;
+    private string _snapshot = "";
+
+    // Porovnání proti stavu po načtení — jinak není poznat, že odchod ze stránky zahodí úpravy
+    private string Snapshot() => string.Join('|', _editName, _editCategory, _editDescription, _editComplexity, _editSourceServer);
+    private bool IsDirty => _sys != null && Snapshot() != _snapshot;
 
     protected override async Task OnInitializedAsync()
     {
@@ -179,6 +186,7 @@ else
                 _editDescription = _sys.Description;
                 _editComplexity = _sys.Complexity;
                 _editSourceServer = _sys.SourceServer;
+                _snapshot = Snapshot();
             }
         }
         catch (Exception ex) { ShowError(ex); }
@@ -200,6 +208,7 @@ else
             _sys.Description = _editDescription;
             _sys.Complexity = _editComplexity;
             _sys.SourceServer = _editSourceServer;
+            _snapshot = Snapshot();
             ShowOk(S["Saved"]);
         }
         catch (Exception ex) { ShowError(ex); }

@@ -3,6 +3,7 @@ Route: /
 Popis: Dashboard admina — rychlý přehled front ke schválení a stavu AI agenta (Metin2BausiaCollector).
 
 ## Hotovo ✅
+- Tabulka posledních běhů má pod 768 px kartovou podobu; highlights se zalomí celé místo useknutí
 - 4 klikací karty: pending itemy, pending mobové, schválené itemy, ruční review; barva karty podle toho, jestli je co řešit
 - Banner posledního agent runu (OK/chyba, čas, počty nových entit)
 - Tabulka posledních 5 runů z `AgentRunReports` + odkaz na `/reports`

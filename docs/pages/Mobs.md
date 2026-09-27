@@ -3,6 +3,7 @@ Route: /mobs
 Popis: Fronta mobů / NPC / metinů nasbíraných agentem, čekajících na schválení.
 
 ## Hotovo ✅
+- Pod 768 px karty místo tabulky; schvalovací tlačítka mají 44 px dotykovou plochu
 - Tabulka max 200 pending mobů (vnum, jméno, level, rank, zdroj, confidence)
 - ✓ / ✗ na řádku, zápis do `ApprovalLog` při schválení
 - Převod ranku na text (`RankLabel`)
