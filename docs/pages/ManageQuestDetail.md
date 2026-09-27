@@ -7,7 +7,9 @@ Platforma: Web
 - Název, soubor, levelový rozsah a startovní NPC (pokud jsou vyplněné)
 - Celý skript v posuvném `<pre>` s kódováním a velikostí
 - Zapnutí / vypnutí questu, původ dat, datum vytvoření a aktualizace
-- Texty přes `IStringLocalizer` (cs, en)
+- Texty přes `IStringLocalizer` (cs, en, de)
+- Pod 992 px jde sloupec se stavem a přepínačem nad skript, aby se k němu nemuselo rolovat přes celý výpis
+- Výška výpisu 70 vh na desktopu, 55 vh na mobilu; vodorovné rolování si řeší sám výpis, ne stránka
 
 ## Chybí / Rozpracováno ⚠️
 - Skript nejde upravit — záměrně, questy kompiluje `qc` ze souborů serveru

@@ -125,7 +125,7 @@ else
                                 @foreach (var f in _spawnFiles) { <option value="@f">@f</option> }
                             </select>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive list-table">
                             <table class="table table-sm mb-0 align-middle">
                                 <thead class="table-secondary">
                                     <tr>
@@ -150,6 +150,26 @@ else
                                 </tbody>
                             </table>
                         </div>
+
+                        @* Sedm sloupců se na mobil nevejde — řádek se skládá na kartu, souřadnice na druhý řádek *@
+                        <div class="list-cards px-2 pb-2">
+                            @foreach (var sp in FilteredSpawns.Take(SpawnLimit))
+                            {
+                                <div class="list-card">
+                                    <div class="list-card__main">
+                                        <div class="list-card__title">@SpawnTargetLabel(sp)</div>
+                                        <div class="list-card__meta">
+                                            <span class="badge bg-light text-dark">@SpawnTypeLabel(sp.Type)</span>
+                                            <span class="small text-muted">@sp.X, @sp.Y</span>
+                                            <span class="small text-muted">@sp.RangeX × @sp.RangeY</span>
+                                            <span class="small text-muted">@sp.Time</span>
+                                            <span class="small text-muted">@S["SpawnCount"] @sp.Count</span>
+                                        </div>
+                                        <div class="small text-muted">@sp.File</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                         @if (FilteredSpawns.Count() > SpawnLimit)
                         {
                             <div class="text-center text-muted small p-2">@S["RowsLimited", SpawnLimit]</div>
@@ -160,20 +180,21 @@ else
 
             @if (_map.SourceName != null)
             {
-                <div class="card mb-3">
-                    <div class="card-header"><strong>@S["DataSource"]</strong></div>
+                @* Na mobilu sbalené — kouká se sem zřídka a zbytečně prodlužovalo stránku *@
+                <details class="card mb-3 collapsible">
+                    <summary class="card-header"><strong>@S["DataSource"]</strong></summary>
                     <div class="card-body small">
                         <strong>@_map.SourceName</strong>
                         @if (_map.SourceUrl != null)
                         { <a href="@_map.SourceUrl" target="_blank" class="ms-2">@_map.SourceUrl</a> }
                     </div>
-                </div>
+                </details>
             }
         </div>
 
         <div class="col-lg-4">
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["DataQuality"]</strong></div>
+            <details class="card mb-3 collapsible">
+                <summary class="card-header"><strong>@S["DataQuality"]</strong></summary>
                 <div class="card-body">
                     <div class="d-flex justify-content-between small mb-1">
                         <span>@S["FinalScore"]</span>
@@ -185,12 +206,13 @@ else
                         @S["Updated"]: @_map.UpdatedAt.ToString("dd.MM.yyyy HH:mm")
                     </div>
                 </div>
-            </div>
+            </details>
 
-            <div class="card mb-3">
-                <div class="card-header"><strong>@S["Actions"]</strong></div>
+            @* Akce musí být po ruce i uprostřed dlouhého seznamu spawnů *@
+            <div class="card mb-3 detail-actions">
+                <div class="card-header d-none d-lg-block"><strong>@S["Actions"]</strong></div>
                 <div class="card-body d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]</button>
+                    <button class="btn btn-primary btn-sm" @onclick="SaveAsync">@S["Save"]@(IsDirty ? " •" : "")</button>
                     <div class="d-flex gap-1">
                         <button class="btn btn-success btn-sm flex-fill" @onclick='() => SetStatusAsync("approved")'
                                 disabled="@(_map.ContentStatus == "approved")">@S["Approve"]</button>
@@ -223,6 +245,11 @@ else
     private string? _editLocaleName;
     private string? _editMapType;
     private string? _editDescription;
+    private string _snapshot = "";
+
+    // Porovnání proti stavu po načtení — jinak není poznat, že odchod ze stránky zahodí úpravy
+    private string Snapshot() => string.Join('|', _editName, _editLocaleName, _editMapType, _editDescription);
+    private bool IsDirty => _map != null && Snapshot() != _snapshot;
 
     protected override async Task OnInitializedAsync()
     {
@@ -244,6 +271,7 @@ else
                 _editLocaleName = _map.LocaleName;
                 _editMapType = _map.MapType;
                 _editDescription = _map.Description;
+                _snapshot = Snapshot();
             }
             if (_map != null) await LoadSpawnsAsync();
         }
@@ -325,6 +353,7 @@ else
             _map.LocaleName = _editLocaleName;
             _map.MapType = _editMapType;
             _map.Description = _editDescription;
+            _snapshot = Snapshot();
             ShowOk(S["Saved"]);
         }
         catch (Exception ex) { ShowError(ex); }

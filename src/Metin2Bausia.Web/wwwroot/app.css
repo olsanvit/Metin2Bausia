@@ -234,3 +234,10 @@ details.collapsible > summary::after { content: " ▾"; float: right; opacity: .
     details.collapsible > summary::after { content: none; }
     details.collapsible:not([open]) > *:not(summary) { display: block !important; }
 }
+
+/* Výpis questu si roluje sám — bez pevné výšky by roztáhl stránku */
+.quest-script { max-height: 70vh; overflow: auto; white-space: pre; }
+
+@media (max-width: 767.98px) {
+    .quest-script { max-height: 55vh; }
+}

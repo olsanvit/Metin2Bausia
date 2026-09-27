@@ -26,7 +26,8 @@ else if (_quest == null)
 else
 {
     <div class="row g-4">
-        <div class="col-lg-8">
+        @* Pod 992 px jde pravý sloupec nahoru — přepínač jinak leží až za dlouhým výpisem skriptu *@
+        <div class="col-lg-8 order-2 order-lg-1">
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong>@_quest.QuestName</strong>
@@ -48,11 +49,11 @@ else
                     <span class="small text-muted">@_quest.Encoding · @_quest.ScriptLength.ToString("N0")</span>
                 </div>
                 @* Skript jen ke čtení — úpravy questů patří do souborů serveru, kde je kompiluje qc *@
-                <pre class="small mb-0 p-3" style="max-height:70vh;overflow:auto;white-space:pre">@_quest.LuaScript</pre>
+                <pre class="small mb-0 p-3 quest-script">@_quest.LuaScript</pre>
             </div>
         </div>
 
-        <div class="col-lg-4">
+        <div class="col-lg-4 order-1 order-lg-2">
             <div class="card mb-3">
                 <div class="card-body d-grid gap-2">
                     <button class="btn @(_quest.IsEnabled ? "btn-outline-secondary" : "btn-outline-success") btn-sm"

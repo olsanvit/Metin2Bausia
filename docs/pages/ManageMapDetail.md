@@ -7,9 +7,12 @@ Popis: Detail mapy — editace názvu/typu/popisu, rozměry a levelový rozsah, 
 - Editace: název, lokalizovaný název, typ mapy (field/dungeon/pvp/guild/empire/boat), popis
 - Náhledový obrázek (`PreviewImageUrl`), pokud existuje
 - Karta rozměrů, Schválit / Zamítnout / Zapnout-Vypnout
+- Spawny (`SpawnMobs`) po souborech s filtrem, limit 500 řádků; na mobilu karty místo sedmisloupcové tabulky
+- Akce po ruce: na desktopu přilepené v pravém sloupci, pod 992 px lišta u spodního okraje, tlačítko Uložit značí neuložené změny
+- „Zdroj dat" a „Kvalita dat" jako rozbalovátka (na mobilu sbalená, od 768 px vždy otevřená)
 
 ## Chybí / Rozpracováno ⚠️
-- **`SpawnMobs` (jsonb) se nezobrazuje** — co se na mapě spawnuje, je u mapy to hlavní.
+- **Spawny se jen zobrazují, needitují** — editor spawnů chybí.
 - `MapFiles`, `BaseX/BaseY`, `CellScale` chybí.
 - Min/max level je v UI dvakrát (editační řádek readonly + karta rozměrů) a ani jednou nejde upravit.
 - Audit problém jako ostatní detaily (`SetStatusAsync` bez `ApprovedAt` a `ApprovalLog`).
