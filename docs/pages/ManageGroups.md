@@ -4,6 +4,7 @@ Popis: Skupiny bez vlastní entity — skupiny mobů pro spawny (`group.txt`), s
 Platforma: Web
 
 ## Hotovo ✅
+- Na 375 px se tabulka vejde bez vodorovného rolování (4 sloupce, dlouhé názvy se zalomí) — ověřeno s 802 skupinami mobů
 - Taby podle typu s počty (802 / 211 / 285)
 - Vnum, název, vůdce skupiny mobů, druh skupiny předmětů, počet položek
 - Rozbalení řádku kliknutím ukáže položky tak, jak jsou v souboru
