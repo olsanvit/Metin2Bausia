@@ -35,6 +35,16 @@ public class GoogleAuthOptionsTests
         => Assert.False(new GoogleAuthOptions().IsAllowed("kdokoliv@gmail.com", Admin));
 
     [Fact]
+    public void DruhyUcetVitkaProjde()
+    {
+        // Oba účty jsou správcovské; whitelist je zároveň seznam adminů
+        var options = new GoogleAuthOptions { AllowedEmails = ["olsansky575@gmail.com"] };
+        Assert.True(options.IsAllowed("olsansky575@gmail.com", Admin));
+        Assert.True(options.IsAllowed(Admin, Admin));
+        Assert.False(options.IsAllowed("nekdo.jiny@gmail.com", Admin));
+    }
+
+    [Fact]
     public void SubAdminZeSeznamuProjde()
     {
         var options = new GoogleAuthOptions { AllowedEmails = ["parta@example.com"] };

@@ -38,7 +38,13 @@ public class LoginModel : PageModel
     public IActionResult OnPostGoogle(string? returnUrl = null)
     {
         var target = Url.IsLocalUrl(returnUrl) ? returnUrl! : "/";
-        return Challenge(new AuthenticationProperties { RedirectUri = target }, "Google");
+        // Stejná životnost jako po přihlášení heslem — bez toho by cookie zmizela se zavřením prohlížeče
+        return Challenge(new AuthenticationProperties
+        {
+            RedirectUri  = target,
+            IsPersistent = true,
+            ExpiresUtc   = DateTimeOffset.UtcNow.AddDays(7),
+        }, "Google");
     }
 
     public async Task<IActionResult> OnPostAsync(

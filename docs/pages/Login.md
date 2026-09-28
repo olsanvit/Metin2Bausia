@@ -30,12 +30,15 @@ Konfigurace (`appsettings.json` má jen zástupné hodnoty, skutečné patří d
   "Google": {
     "ClientId": "…",
     "ClientSecret": "…",
-    "AllowedEmails": ["dalsi.admin@example.com"]
+    "AllowedEmails": ["olsansky575@gmail.com"]
   }
 }
 ```
 
-`Admin:Email` je povolený vždy, i když v `AllowedEmails` není — seznam slouží pro další správce.
+`Admin:Email` (olsanskyvitek@gmail.com) je povolený vždy, i když v `AllowedEmails` není. Druhý správcovský
+účet olsansky575@gmail.com je v seznamu — oba mají plný přístup včetně role `Admin`.
+
+Přihlášení přes Google je trvalé stejně jako heslem (7 dní), jinak by cookie zmizela se zavřením prohlížeče.
 
 ## Chybí / Rozpracováno ⚠️
 - V Google Cloud Console musí být zaregistrovaný redirect `https://metin2bausia.vo2info.cz/signin-google`
