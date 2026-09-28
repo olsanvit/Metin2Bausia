@@ -50,22 +50,39 @@ else
                     <div class="row g-2 mb-2">
                         <div class="col-md-4">
                             <label class="form-label small">@S["Type"]</label>
+                            @* Hodnoty musí odpovídat item_proto.txt (ITEM_WEAPON, …) — varianty malými
+                               písmeny se v datech nevyskytují a u importovaného itemu nebyl vybraný žádný typ.
+                               Pořadí podle četnosti v datech. *@
                             <select class="form-select form-select-sm" @bind="_editItemType">
                                 <option value="">—</option>
-                                <option value="weapon">@S["ItemTypeWeapon"]</option>
-                                <option value="armor">@S["ItemTypeArmor"]</option>
-                                <option value="ring">@S["ItemTypeRing"]</option>
-                                <option value="belt">@S["ItemTypeBelt"]</option>
-                                <option value="boots">@S["ItemTypeBoots"]</option>
-                                <option value="necklace">@S["ItemTypeNecklace"]</option>
-                                <option value="bracelet">@S["ItemTypeBracelet"]</option>
-                                <option value="shield">@S["ItemTypeShield"]</option>
-                                <option value="bow">@S["ItemTypeBow"]</option>
-                                <option value="arrow">@S["ItemTypeArrow"]</option>
-                                <option value="potion">@S["ItemTypePotion"]</option>
-                                <option value="quest">Quest</option>
-                                <option value="unique">@S["ItemTypeUnique"]</option>
-                                <option value="special">@S["ItemTypeSpecial"]</option>
+                                <option value="ITEM_ARMOR">@ContentLabels.ItemType("ITEM_ARMOR")</option>
+                                <option value="ITEM_WEAPON">@ContentLabels.ItemType("ITEM_WEAPON")</option>
+                                <option value="ITEM_COSTUME">@ContentLabels.ItemType("ITEM_COSTUME")</option>
+                                <option value="ITEM_MATERIAL">@ContentLabels.ItemType("ITEM_MATERIAL")</option>
+                                <option value="ITEM_USE">@ContentLabels.ItemType("ITEM_USE")</option>
+                                <option value="ITEM_GIFTBOX">@ContentLabels.ItemType("ITEM_GIFTBOX")</option>
+                                <option value="ITEM_QUEST">@ContentLabels.ItemType("ITEM_QUEST")</option>
+                                <option value="ITEM_DS">@ContentLabels.ItemType("ITEM_DS")</option>
+                                <option value="ITEM_UNIQUE">@ContentLabels.ItemType("ITEM_UNIQUE")</option>
+                                <option value="ITEM_METIN">@ContentLabels.ItemType("ITEM_METIN")</option>
+                                <option value="ITEM_BELT">@ContentLabels.ItemType("ITEM_BELT")</option>
+                                <option value="ITEM_SPECIAL">@ContentLabels.ItemType("ITEM_SPECIAL")</option>
+                                <option value="ITEM_SKILLBOOK">@ContentLabels.ItemType("ITEM_SKILLBOOK")</option>
+                                <option value="ITEM_SKILLFORGET">@ContentLabels.ItemType("ITEM_SKILLFORGET")</option>
+                                <option value="ITEM_FISH">@ContentLabels.ItemType("ITEM_FISH")</option>
+                                <option value="ITEM_ROD">@ContentLabels.ItemType("ITEM_ROD")</option>
+                                <option value="ITEM_RESOURCE">@ContentLabels.ItemType("ITEM_RESOURCE")</option>
+                                <option value="ITEM_PICK">@ContentLabels.ItemType("ITEM_PICK")</option>
+                                <option value="ITEM_BLEND">@ContentLabels.ItemType("ITEM_BLEND")</option>
+                                <option value="ITEM_EXTRACT">@ContentLabels.ItemType("ITEM_EXTRACT")</option>
+                                <option value="ITEM_POLYMORPH">@ContentLabels.ItemType("ITEM_POLYMORPH")</option>
+                                <option value="ITEM_TREASURE_BOX">@ContentLabels.ItemType("ITEM_TREASURE_BOX")</option>
+                                <option value="ITEM_TREASURE_KEY">@ContentLabels.ItemType("ITEM_TREASURE_KEY")</option>
+                                <option value="ITEM_CONTAINER">@ContentLabels.ItemType("ITEM_CONTAINER")</option>
+                                <option value="ITEM_LOTTERY">@ContentLabels.ItemType("ITEM_LOTTERY")</option>
+                                <option value="ITEM_CAMPFIRE">@ContentLabels.ItemType("ITEM_CAMPFIRE")</option>
+                                <option value="ITEM_ELK">@ContentLabels.ItemType("ITEM_ELK")</option>
+                                <option value="ITEM_NONE">@ContentLabels.ItemType("ITEM_NONE")</option>
                             </select>
                         </div>
                         <div class="col-md-4">

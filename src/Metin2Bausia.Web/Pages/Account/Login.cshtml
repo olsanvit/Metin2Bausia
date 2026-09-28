@@ -62,6 +62,25 @@
             transition: background .2s;
         }
         .btn:hover { background: #f0c84a; }
+        .btn-google {
+            background: #fff;
+            color: #1f1f1f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-google:hover { background: #eee; }
+        .sep {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: .8rem;
+            margin-top: 22px;
+        }
+        .sep::before, .sep::after { content: ""; flex: 1; height: 1px; background: #2a2a4a; }
         .error {
             background: rgba(180,40,40,.2);
             border: 1px solid #b42828;
@@ -96,6 +115,16 @@
                 <div class="error">@Model.Error</div>
             }
         </form>
+
+        @* Tlačítko se ukáže jen s nastaveným klientem — jinak by vedlo na chybu Googlu *@
+        @if (Model.GoogleEnabled)
+        {
+            <div class="sep">nebo</div>
+            <form method="post" asp-page-handler="Google">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-google">Přihlásit se přes Google</button>
+            </form>
+        }
     </div>
 </body>
 </html>

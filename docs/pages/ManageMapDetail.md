@@ -3,6 +3,9 @@ Route: /manage/maps/{Guid:guid}
 Popis: Detail mapy — editace názvu/typu/popisu, rozměry a levelový rozsah, náhled, akce schválení a zapnutí.
 
 ## Hotovo ✅
+- **Editor spawnů**: aktivní až po výběru souboru ve filtru — mapy mají průměrně 445 spawnů (max 1551),
+  editovat všechny naráz by drželo tisíce vstupních polí v jednom okruhu. Přidávání a mazání řádků,
+  validace v `Data/SpawnValidation.cs` + ověření existence moba. Ukládá se spolu se zbytkem detailu.
 - Schvalování zapisuje `ApprovedAt`/`ApprovedBy` i řádek do `ApprovalLog`
 - Načtení záznamu (index, typ, rozměry, min/max level, popis, náhled, zdroj, skóre)
 - Editace: název, lokalizovaný název, typ mapy (field/dungeon/pvp/guild/empire/boat), popis
@@ -13,6 +16,7 @@ Popis: Detail mapy — editace názvu/typu/popisu, rozměry a levelový rozsah, 
 - „Zdroj dat" a „Kvalita dat" jako rozbalovátka (na mobilu sbalená, od 768 px vždy otevřená)
 
 ## Chybí / Rozpracováno ⚠️
+- Do mapy bez jediného spawnu nejde spawn přidat — editor se váže na existující soubor ve filtru.
 - **Spawny se jen zobrazují, needitují** — editor spawnů chybí.
 - `MapFiles`, `BaseX/BaseY`, `CellScale` chybí.
 - Min/max level je v UI dvakrát (editační řádek readonly + karta rozměrů) a ani jednou nejde upravit.

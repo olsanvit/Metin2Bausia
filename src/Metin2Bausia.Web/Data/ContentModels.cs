@@ -230,12 +230,26 @@ public static class JsonContent
 {
     public static readonly System.Text.Json.JsonSerializerOptions Options = new() { PropertyNameCaseInsensitive = true };
 
+    /// <summary>
+    /// Zápis zpět do jsonb. Importér píše camelCase a nepovinné klíče vynechává — editor
+    /// musí psát stejný tvar, jinak by se data po ručním uložení lišila od importovaných.
+    /// Escapování je uvolněné, aby korejská jména itemů zůstala čitelná a ne \uXXXX.
+    /// </summary>
+    public static readonly System.Text.Json.JsonSerializerOptions WriteOptions = new()
+    {
+        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
     public static List<T> ParseList<T>(string? json)
     {
         if (string.IsNullOrWhiteSpace(json)) return [];
         try { return System.Text.Json.JsonSerializer.Deserialize<List<T>>(json, Options) ?? []; }
         catch (System.Text.Json.JsonException) { return []; }   // poškozený jsonb nesmí shodit celou stránku
     }
+
+    public static string Write<T>(T value) => System.Text.Json.JsonSerializer.Serialize(value, WriteOptions);
 }
 
 public class QuestListRow

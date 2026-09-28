@@ -50,24 +50,31 @@ else
                     <div class="row g-2 mb-2">
                         <div class="col-md-4">
                             <label class="form-label small">@S["Type"]</label>
+                            @* Hodnoty musí odpovídat mob_proto.txt (MONSTER, STONE, …) — dřív tu byly
+                               varianty malými písmeny, které se v datech vůbec nevyskytují, takže
+                               u importovaného moba nebyl vybraný žádný typ *@
                             <select class="form-select form-select-sm" @bind="_editMobType">
                                 <option value="">—</option>
-                                <option value="monster">@S["MobTypeMonster"]</option>
-                                <option value="npc">NPC</option>
-                                <option value="metin">Metin</option>
-                                <option value="boss">Boss</option>
-                                <option value="chest">@S["MobTypeChest"]</option>
+                                <option value="MONSTER">@ContentLabels.MobType("MONSTER")</option>
+                                <option value="NPC">NPC</option>
+                                <option value="STONE">@ContentLabels.MobType("STONE")</option>
+                                <option value="WARP">@ContentLabels.MobType("WARP")</option>
+                                <option value="GOTO">@ContentLabels.MobType("GOTO")</option>
+                                <option value="DOOR">@ContentLabels.MobType("DOOR")</option>
+                                <option value="BUILDING">@ContentLabels.MobType("BUILDING")</option>
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small">@S["Rank"]</label>
+                            @* Zkratky S_PAWN / S_KNIGHT jsou tvar z mob_proto.txt *@
                             <select class="form-select form-select-sm" @bind="_editRank">
                                 <option value="">—</option>
-                                <option value="pawn">@S["RankPawn"]</option>
-                                <option value="knight">@S["RankKnight"]</option>
-                                <option value="super_knight">@S["RankSuperKnight"]</option>
-                                <option value="boss">Boss</option>
-                                <option value="king">@S["RankKing"]</option>
+                                <option value="PAWN">@ContentLabels.Rank("PAWN")</option>
+                                <option value="S_PAWN">@ContentLabels.Rank("S_PAWN")</option>
+                                <option value="KNIGHT">@ContentLabels.Rank("KNIGHT")</option>
+                                <option value="S_KNIGHT">@ContentLabels.Rank("S_KNIGHT")</option>
+                                <option value="BOSS">Boss</option>
+                                <option value="KING">@ContentLabels.Rank("KING")</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -143,83 +150,89 @@ else
                 </div>
             </div>
 
-            @* Dropy z mob_drop_item.txt — typy kill/limit odkazují item jménem, vnum se proto dohledává *@
+            @* Dropy z mob_drop_item.txt — typy kill/limit odkazují item jménem, vnum se proto dohledává.
+               Editace je inline: řádek se skládá z mřížky, která se na mobilu sama poskládá pod sebe. *@
             <div class="card mb-3">
-                <div class="card-header"><strong>@S["DropsTitle"]</strong></div>
-                <div class="card-body p-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>@S["DropsTitle"]</strong>
+                    <button class="btn btn-outline-secondary btn-sm" @onclick="AddGroup">@S["DropAddGroup"]</button>
+                </div>
+                <div class="card-body">
                     @if (_drops.Count == 0)
                     {
-                        <p class="text-muted small m-3">@S["DropsNone"]</p>
+                        <p class="text-muted small mb-0">@S["DropsNone"]</p>
                     }
-                    else
+                    @foreach (var g in _drops)
                     {
-                        @foreach (var g in _drops)
-                        {
-                            <div class="px-3 pt-2 small">
-                                <span class="badge bg-secondary">@g.Type</span>
-                                <span class="text-muted ms-1">@g.Group</span>
-                                @if (!string.IsNullOrEmpty(g.KillDrop)) { <span class="ms-2">@S["DropKillDrop"]: @g.KillDrop</span> }
-                                @if (!string.IsNullOrEmpty(g.LevelLimit)) { <span class="ms-2">@S["DropLevelLimit"]: @g.LevelLimit</span> }
-                            </div>
-                            <div class="table-responsive list-table">
-                                <table class="table table-sm mb-2">
-                                    <thead><tr><th>@S["DropItem"]</th><th class="text-end">@S["DropCount"]</th><th class="text-end">@S["DropChance"]</th></tr></thead>
-                                    <tbody>
-                                    @foreach (var it in g.Items)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @if (it.Vnum is int v && _itemNames.TryGetValue(v, out var item))
-                                                { <a href="/manage/items/@item.Guid">@item.Label</a> <code class="small text-muted ms-1">@v</code> }
-                                                else if (it.Vnum is int v2)
-                                                { <code class="small">@v2</code> }
-                                                else
-                                                { <span class="text-muted">@(it.ItemName ?? "?") (@S["DropUnresolved"])</span> }
-                                            </td>
-                                            <td class="text-end">@it.Count</td>
-                                            <td class="text-end">@it.Pct.ToString("0.###") %</td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
+                        <div class="border rounded p-2 mb-2">
+                            <div class="row g-2 align-items-end mb-2">
+                                <div class="col-6 col-md-3">
+                                    <label class="form-label small mb-1">@S["DropGroupType"]</label>
+                                    <select class="form-select form-select-sm" @bind="g.Type">
+                                        <option value="drop">drop</option>
+                                        <option value="kill">kill</option>
+                                        <option value="limit">limit</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <label class="form-label small mb-1">@S["DropGroupName"]</label>
+                                    <input class="form-control form-control-sm" @bind="g.Group" />
+                                </div>
+                                <div class="col-6 col-md-2">
+                                    <label class="form-label small mb-1">@S["DropKillDrop"]</label>
+                                    <input class="form-control form-control-sm" @bind="g.KillDrop" />
+                                </div>
+                                <div class="col-6 col-md-2">
+                                    <label class="form-label small mb-1">@S["DropLevelLimit"]</label>
+                                    <input class="form-control form-control-sm" @bind="g.LevelLimit" />
+                                </div>
+                                <div class="col-md-1 d-flex justify-content-end">
+                                    <button class="btn btn-outline-danger btn-sm" title="@S["DropRemoveGroup"]"
+                                            @onclick="() => _drops.Remove(g)">✕</button>
+                                </div>
                             </div>
 
-                            @* Tři sloupce se na mobilu nevejdou — z řádku se stává karta s jménem a metadaty *@
-                            <div class="list-cards px-3 pb-2">
-                                @foreach (var it in g.Items)
-                                {
-                                    <div class="list-card">
-                                        @if (it.Vnum is int cv && _itemNames.TryGetValue(cv, out var citem))
-                                        {
-                                            <a class="list-card__main" href="/manage/items/@citem.Guid">
-                                                <div class="list-card__title">@citem.Label</div>
-                                                <div class="list-card__meta">
-                                                    <code class="small">@cv</code>
-                                                    <span class="badge bg-light text-dark">@S["DropCount"] @it.Count</span>
-                                                    <span class="badge bg-light text-dark">@it.Pct.ToString("0.###") %</span>
-                                                </div>
-                                            </a>
-                                            <span class="text-muted">›</span>
-                                        }
-                                        else
-                                        {
-                                            <div class="list-card__main">
-                                                <div class="list-card__title">
-                                                    @if (it.Vnum is int cv2)
-                                                    { <code class="small">@cv2</code> }
-                                                    else
-                                                    { <span class="text-muted">@(it.ItemName ?? "?") (@S["DropUnresolved"])</span> }
-                                                </div>
-                                                <div class="list-card__meta">
-                                                    <span class="badge bg-light text-dark">@S["DropCount"] @it.Count</span>
-                                                    <span class="badge bg-light text-dark">@it.Pct.ToString("0.###") %</span>
-                                                </div>
-                                            </div>
-                                        }
+                            @if (g.Items.Count == 0)
+                            {
+                                <p class="text-muted small mb-2">@S["DropRowsNone"]</p>
+                            }
+                            @foreach (var it in g.Items)
+                            {
+                                <div class="row g-2 align-items-end mb-2">
+                                    <div class="col-6 col-md-2">
+                                        <label class="form-label small mb-1">@S["DropVnum"]</label>
+                                        <input class="form-control form-control-sm" type="number" min="0"
+                                               value="@it.Vnum" @onchange="e => VnumChangedAsync(it, e.Value?.ToString())" />
                                     </div>
-                                }
-                            </div>
-                        }
+                                    <div class="col-6 col-md-4">
+                                        <label class="form-label small mb-1">@S["DropItemName"]</label>
+                                        <input class="form-control form-control-sm" @bind="it.ItemName" />
+                                    </div>
+                                    <div class="col-6 col-md-2">
+                                        <label class="form-label small mb-1">@S["DropCount"]</label>
+                                        <input class="form-control form-control-sm" type="number" min="1" @bind="it.Count" />
+                                    </div>
+                                    <div class="col-6 col-md-2">
+                                        <label class="form-label small mb-1">@S["DropChance"]</label>
+                                        <input class="form-control form-control-sm" type="number" step="0.001" min="0" max="100" @bind="it.Pct" />
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-center justify-content-between gap-2">
+                                        <span class="small text-truncate">
+                                            @if (it.Vnum is int v && _itemNames.TryGetValue(v, out var item))
+                                            { <a href="/manage/items/@item.Guid">@item.Label</a> }
+                                            else if (it.Vnum is > 0)
+                                            { <span class="text-danger">@S["DropUnknownItem"]</span> }
+                                        </span>
+                                        <button class="btn btn-outline-danger btn-sm" title="@S["DropRemoveRow"]"
+                                                @onclick="() => g.Items.Remove(it)">✕</button>
+                                    </div>
+                                </div>
+                            }
+
+                            <button class="btn btn-outline-secondary btn-sm" @onclick="() => g.Items.Add(new DropItemJson { Count = 1, Pct = 1 })">
+                                @S["DropAddRow"]
+                            </button>
+                        </div>
                     }
                 </div>
             </div>
@@ -305,7 +318,8 @@ else
         _mob?.Level, _mob?.MaxHp, _mob?.Exp,
         _mob?.Atk, _mob?.Def, _mob?.MagicAtk, _mob?.MagicDef,
         _mob?.AttackSpeed, _mob?.MoveSpeed,
-        _mob?.GoldMin, _mob?.GoldMax, _mob?.GoldDropRate, _mob?.AggressiveSight);
+        _mob?.GoldMin, _mob?.GoldMax, _mob?.GoldDropRate, _mob?.AggressiveSight,
+        JsonContent.Write(_drops));
 
     private bool IsDirty => _mob != null && Snapshot() != _snapshot;
 
@@ -332,9 +346,13 @@ else
                 _editMobType = _mob.MobType;
                 _editRank = _mob.Rank;
                 _editDescription = _mob.Description;
+            }
+            if (_mob != null)
+            {
+                await LoadDropsAsync();
+                // Snapshot až po načtení seznamu — dřív hlásilo tlačítko změny hned po otevření
                 _snapshot = Snapshot();
             }
-            if (_mob != null) await LoadDropsAsync();
         }
         catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
@@ -356,9 +374,49 @@ else
         _itemNames = refs.GroupBy(r => r.Vnum).ToDictionary(g => g.Key, g => g.First());
     }
 
+    private void AddGroup() => _drops.Add(new DropGroupJson { Type = "drop", Group = _mob?.Name ?? "" });
+
+    /// <summary>Po změně vnumu dotáhne jméno itemu, ať admin hned vidí, jestli takový item existuje.</summary>
+    private async Task VnumChangedAsync(DropItemJson row, string? raw)
+    {
+        row.Vnum = int.TryParse(raw, out var v) && v > 0 ? v : null;
+        if (row.Vnum is not int vnum || _itemNames.ContainsKey(vnum)) return;
+        var found = await Db.QueryFirstOrDefaultAsync<NameRef>(
+            @"SELECT ""Guid"", ""Vnum"", coalesce(""LocaleName"", ""Name"") AS ""Label""
+              FROM ""Items"" WHERE ""Vnum"" = @v AND ""IsDeleted"" = FALSE",
+            new { v = vnum });
+        if (found != null) _itemNames[vnum] = found;
+    }
+
+    /// <summary>
+    /// Kontroly před uložením. Pravidla formátu řeší DropValidation, tady se k nim doplní
+    /// jen ověření, že odkazované itemy opravdu existují. Vrací hlášku, nebo null když je vše v pořádku.
+    /// </summary>
+    private async Task<string?> ValidateDropsAsync()
+    {
+        var (problem, group) = DropValidation.FirstProblem(_drops);
+        if (problem != DropValidation.Problem.None)
+            return problem switch
+            {
+                DropValidation.Problem.MissingItem => S["DropErrEmpty", group],
+                DropValidation.Problem.BadCount    => S["DropErrCount", group],
+                _                                  => S["DropErrPct", group],
+            };
+
+        var vnums = DropValidation.ReferencedVnums(_drops);
+        if (vnums.Length == 0) return null;
+        var existing = (await Db.QueryAsync<int>(
+            @"SELECT ""Vnum"" FROM ""Items"" WHERE ""Vnum"" = ANY(@v) AND ""IsDeleted"" = FALSE",
+            new { v = vnums })).ToHashSet();
+        var missing = vnums.Where(v => !existing.Contains(v)).ToArray();
+        return missing.Length == 0 ? null : S["DropErrUnknownVnum", string.Join(", ", missing)].Value;
+    }
+
     private async Task SaveAsync()
     {
         if (_mob == null) return;
+        // Dropy odchází stejným tlačítkem jako zbytek detailu — jedna transakce, jeden přechod na 'manual'
+        if (await ValidateDropsAsync() is string problem) { ShowProblem(problem); return; }
         try
         {
             await Db.ExecuteAsync(
@@ -370,6 +428,7 @@ else
                          ""AttackSpeed"" = @AttackSpeed, ""MoveSpeed"" = @MoveSpeed,
                          ""GoldMin"" = @GoldMin, ""GoldMax"" = @GoldMax, ""GoldDropRate"" = @GoldDropRate,
                          ""AggressiveSight"" = @AggressiveSight,
+                         ""DropItems"" = @drops::jsonb,
                          ""DataOrigin"" = CASE WHEN ""DataOrigin"" = 'imported' THEN 'manual' ELSE ""DataOrigin"" END,
                          ""UpdatedAt"" = NOW()
                   WHERE ""Guid"" = @g",
@@ -378,6 +437,7 @@ else
                     n = _editName, l = _editLocaleName, t = _editMobType, r = _editRank, d = _editDescription, g = _mob.Guid,
                     _mob.Level, _mob.MaxHp, _mob.Exp, _mob.Atk, _mob.Def, _mob.MagicAtk, _mob.MagicDef,
                     _mob.AttackSpeed, _mob.MoveSpeed, _mob.GoldMin, _mob.GoldMax, _mob.GoldDropRate, _mob.AggressiveSight,
+                    drops = JsonContent.Write(_drops),
                 });
             if (_mob.DataOrigin == "imported") _mob.DataOrigin = "manual";
             _mob.Name = _editName;

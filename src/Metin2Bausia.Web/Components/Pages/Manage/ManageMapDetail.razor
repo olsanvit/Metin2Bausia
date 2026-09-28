@@ -119,57 +119,127 @@ else
                     }
                     else
                     {
-                        <div class="p-2">
+                        <div class="p-2 d-flex flex-wrap gap-2 align-items-center">
                             <select class="form-select form-select-sm" style="max-width:220px" @bind="_spawnFile">
                                 <option value="">@S["AllFiles"]</option>
                                 @foreach (var f in _spawnFiles) { <option value="@f">@f</option> }
                             </select>
-                        </div>
-                        <div class="table-responsive list-table">
-                            <table class="table table-sm mb-0 align-middle">
-                                <thead class="table-secondary">
-                                    <tr>
-                                        <th>@S["SpawnFile"]</th><th>@S["SpawnType"]</th><th>@S["SpawnTarget"]</th>
-                                        <th class="text-end">@S["SpawnPosition"]</th><th class="text-end">@S["SpawnRange"]</th>
-                                        <th class="text-end">@S["SpawnTime"]</th><th class="text-end">@S["SpawnCount"]</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                @foreach (var sp in FilteredSpawns.Take(SpawnLimit))
-                                {
-                                    <tr>
-                                        <td class="small text-muted">@sp.File</td>
-                                        <td class="small">@SpawnTypeLabel(sp.Type)</td>
-                                        <td class="small">@SpawnTargetLabel(sp)</td>
-                                        <td class="text-end small">@sp.X, @sp.Y</td>
-                                        <td class="text-end small">@sp.RangeX × @sp.RangeY</td>
-                                        <td class="text-end small">@sp.Time</td>
-                                        <td class="text-end small">@sp.Count</td>
-                                    </tr>
-                                }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        @* Sedm sloupců se na mobil nevejde — řádek se skládá na kartu, souřadnice na druhý řádek *@
-                        <div class="list-cards px-2 pb-2">
-                            @foreach (var sp in FilteredSpawns.Take(SpawnLimit))
+                            @* Mapa má i přes tisíc spawnů — editovat jde až vybraný soubor, jinak by
+                               stránka držela tisíce vstupních polí v jednom okruhu *@
+                            @if (string.IsNullOrEmpty(_spawnFile))
                             {
-                                <div class="list-card">
-                                    <div class="list-card__main">
-                                        <div class="list-card__title">@SpawnTargetLabel(sp)</div>
-                                        <div class="list-card__meta">
-                                            <span class="badge bg-light text-dark">@SpawnTypeLabel(sp.Type)</span>
-                                            <span class="small text-muted">@sp.X, @sp.Y</span>
-                                            <span class="small text-muted">@sp.RangeX × @sp.RangeY</span>
-                                            <span class="small text-muted">@sp.Time</span>
-                                            <span class="small text-muted">@S["SpawnCount"] @sp.Count</span>
-                                        </div>
-                                        <div class="small text-muted">@sp.File</div>
-                                    </div>
-                                </div>
+                                <span class="small text-muted">@S["SpawnPickFileToEdit"]</span>
+                            }
+                            else
+                            {
+                                <span class="small text-muted">@S["SpawnEditingFile", _spawnFile]</span>
+                                <button class="btn btn-outline-secondary btn-sm ms-auto" @onclick="AddSpawn">@S["SpawnAddRow"]</button>
                             }
                         </div>
+
+                        @if (string.IsNullOrEmpty(_spawnFile))
+                        {
+                            <div class="table-responsive list-table">
+                                <table class="table table-sm mb-0 align-middle">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th>@S["SpawnFile"]</th><th>@S["SpawnType"]</th><th>@S["SpawnTarget"]</th>
+                                            <th class="text-end">@S["SpawnPosition"]</th><th class="text-end">@S["SpawnRange"]</th>
+                                            <th class="text-end">@S["SpawnTime"]</th><th class="text-end">@S["SpawnCount"]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var sp in FilteredSpawns.Take(SpawnLimit))
+                                    {
+                                        <tr>
+                                            <td class="small text-muted">@sp.File</td>
+                                            <td class="small">@SpawnTypeLabel(sp.Type)</td>
+                                            <td class="small">@SpawnTargetLabel(sp)</td>
+                                            <td class="text-end small">@sp.X, @sp.Y</td>
+                                            <td class="text-end small">@sp.RangeX × @sp.RangeY</td>
+                                            <td class="text-end small">@sp.Time</td>
+                                            <td class="text-end small">@sp.Count</td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @* Sedm sloupců se na mobil nevejde — řádek se skládá na kartu, souřadnice na druhý řádek *@
+                            <div class="list-cards px-2 pb-2">
+                                @foreach (var sp in FilteredSpawns.Take(SpawnLimit))
+                                {
+                                    <div class="list-card">
+                                        <div class="list-card__main">
+                                            <div class="list-card__title">@SpawnTargetLabel(sp)</div>
+                                            <div class="list-card__meta">
+                                                <span class="badge bg-light text-dark">@SpawnTypeLabel(sp.Type)</span>
+                                                <span class="small text-muted">@sp.X, @sp.Y</span>
+                                                <span class="small text-muted">@sp.RangeX × @sp.RangeY</span>
+                                                <span class="small text-muted">@sp.Time</span>
+                                                <span class="small text-muted">@S["SpawnCount"] @sp.Count</span>
+                                            </div>
+                                            <div class="small text-muted">@sp.File</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="px-2 pb-2">
+                                @foreach (var sp in FilteredSpawns.Take(SpawnLimit))
+                                {
+                                    <div class="row g-2 align-items-end mb-2 border-bottom pb-2">
+                                        <div class="col-6 col-md-2">
+                                            <label class="form-label small mb-1">@S["SpawnType"]</label>
+                                            <select class="form-select form-select-sm" @bind="sp.Type">
+                                                <option value="m">m</option>
+                                                <option value="ma">ma</option>
+                                                <option value="g">g</option>
+                                                <option value="ga">ga</option>
+                                                <option value="r">r</option>
+                                                <option value="s">s</option>
+                                                <option value="e">e</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6 col-md-2">
+                                            <label class="form-label small mb-1">@S["SpawnVnum"]</label>
+                                            <input class="form-control form-control-sm" type="number" min="0" @bind="sp.Vnum" />
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <label class="form-label small mb-1">@S["SpawnX"]</label>
+                                            <input class="form-control form-control-sm" type="number" @bind="sp.X" />
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <label class="form-label small mb-1">@S["SpawnY"]</label>
+                                            <input class="form-control form-control-sm" type="number" @bind="sp.Y" />
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <label class="form-label small mb-1">@S["SpawnRangeX"]</label>
+                                            <input class="form-control form-control-sm" type="number" @bind="sp.RangeX" />
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <label class="form-label small mb-1">@S["SpawnRangeY"]</label>
+                                            <input class="form-control form-control-sm" type="number" @bind="sp.RangeY" />
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <label class="form-label small mb-1">@S["SpawnTime"]</label>
+                                            <input class="form-control form-control-sm" @bind="sp.Time" />
+                                        </div>
+                                        <div class="col-3 col-md-1">
+                                            <label class="form-label small mb-1">@S["SpawnCount"]</label>
+                                            <input class="form-control form-control-sm" type="number" min="1" @bind="sp.Count" />
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-center justify-content-between gap-2">
+                                            <span class="small text-truncate">@SpawnTargetLabel(sp)</span>
+                                            <button class="btn btn-outline-danger btn-sm" title="@S["SpawnRemoveRow"]"
+                                                    @onclick="() => _spawns.Remove(sp)">✕</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
                         @if (FilteredSpawns.Count() > SpawnLimit)
                         {
                             <div class="text-center text-muted small p-2">@S["RowsLimited", SpawnLimit]</div>
@@ -248,7 +318,8 @@ else
     private string _snapshot = "";
 
     // Porovnání proti stavu po načtení — jinak není poznat, že odchod ze stránky zahodí úpravy
-    private string Snapshot() => string.Join('|', _editName, _editLocaleName, _editMapType, _editDescription);
+    private string Snapshot() => string.Join('|', _editName, _editLocaleName, _editMapType, _editDescription,
+        JsonContent.Write(_spawns));
     private bool IsDirty => _map != null && Snapshot() != _snapshot;
 
     protected override async Task OnInitializedAsync()
@@ -271,9 +342,13 @@ else
                 _editLocaleName = _map.LocaleName;
                 _editMapType = _map.MapType;
                 _editDescription = _map.Description;
+            }
+            if (_map != null)
+            {
+                await LoadSpawnsAsync();
+                // Snapshot až po načtení seznamu — dřív hlásilo tlačítko změny hned po otevření
                 _snapshot = Snapshot();
             }
-            if (_map != null) await LoadSpawnsAsync();
         }
         catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }
@@ -339,16 +414,57 @@ else
         }
     }
 
+    /// <summary>Nový spawn vzniká ve vybraném souboru — jinam by ho stránka stejně neukázala.</summary>
+    private void AddSpawn()
+    {
+        if (string.IsNullOrEmpty(_spawnFile)) return;
+        var template = _spawns.FirstOrDefault(s => s.File == _spawnFile);
+        _spawns.Add(new SpawnJson
+        {
+            File = _spawnFile,
+            Type = template?.Type ?? "m",
+            Time = template?.Time ?? "5m",
+            Count = 1,
+            Pct = 100,
+        });
+    }
+
+    /// <summary>
+    /// Kontroly před uložením. Tvarová pravidla řeší SpawnValidation, tady se doplní ověření,
+    /// že cílové moby a skupiny existují. Vrací hlášku, nebo null když je vše v pořádku.
+    /// </summary>
+    private async Task<string?> ValidateSpawnsAsync()
+    {
+        var problem = SpawnValidation.FirstProblem(_spawns);
+        if (problem == SpawnValidation.Problem.BadVnum) return S["SpawnErrVnum"];
+        if (problem == SpawnValidation.Problem.BadCount) return S["SpawnErrCount"];
+
+        var mobVnums = SpawnValidation.MobVnums(_spawns);
+        if (mobVnums.Length == 0) return null;
+        var existing = (await Db.QueryAsync<int>(
+            @"SELECT ""Vnum"" FROM ""Mobs"" WHERE ""Vnum"" = ANY(@v) AND ""IsDeleted"" = FALSE",
+            new { v = mobVnums })).ToHashSet();
+        var missing = mobVnums.Where(v => !existing.Contains(v)).ToArray();
+        return missing.Length == 0 ? null : S["SpawnErrUnknownMob", string.Join(", ", missing)].Value;
+    }
+
     private async Task SaveAsync()
     {
         if (_map == null) return;
+        // Spawny odchází stejným tlačítkem jako zbytek detailu
+        if (await ValidateSpawnsAsync() is string problem) { ShowProblem(problem); return; }
         try
         {
             await Db.ExecuteAsync(
                 @"UPDATE ""Maps"" SET ""Name"" = @n, ""LocaleName"" = @l,
-                         ""MapType"" = @t, ""Description"" = @d, ""UpdatedAt"" = NOW()
+                         ""MapType"" = @t, ""Description"" = @d,
+                         ""SpawnMobs"" = @spawns::jsonb, ""UpdatedAt"" = NOW()
                   WHERE ""Guid"" = @g",
-                new { n = _editName, l = _editLocaleName, t = _editMapType, d = _editDescription, g = _map.Guid });
+                new
+                {
+                    n = _editName, l = _editLocaleName, t = _editMapType, d = _editDescription, g = _map.Guid,
+                    spawns = JsonContent.Write(_spawns),
+                });
             _map.Name = _editName;
             _map.LocaleName = _editLocaleName;
             _map.MapType = _editMapType;

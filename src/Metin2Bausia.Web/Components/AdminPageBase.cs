@@ -26,6 +26,14 @@ public abstract class AdminPageBase : ComponentBase
         ToastStamp++;
     }
 
+    /// <summary>Vadný vstup od uživatele — nezapisuje se do logu, není to porucha aplikace.</summary>
+    protected void ShowProblem(string text)
+    {
+        ToastText = text;
+        ToastIsError = true;
+        ToastStamp++;
+    }
+
     protected void ShowError(Exception ex, [CallerMemberName] string operation = "")
     {
         LogError(ex, operation);

@@ -1,6 +1,8 @@
 using System.Globalization;
 using Metin2Bausia.Web.Services;
 using MercenariesAndBeasts.Infrastructure.Localization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using SharedServices;
 using SharedServices.Services;
@@ -8,7 +10,11 @@ using SharedServices.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Auth — cookie, single admin ──────────────────────────
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+// Google se registruje jen s opravdovými klíči — se zástupnou hodnotou by tlačítko vedlo na 401
+var googleAuth = builder.Configuration.GetSection(GoogleAuthOptions.Section).Get<GoogleAuthOptions>() ?? new();
+builder.Services.AddSingleton(googleAuth);
+
+var authBuilder = builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath    = "/account/login";
@@ -20,6 +26,34 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     });
+
+if (googleAuth.IsConfigured)
+{
+    authBuilder.AddGoogle(o =>
+    {
+        o.ClientId     = googleAuth.ClientId!;
+        o.ClientSecret = googleAuth.ClientSecret!;
+        // Přihlášení končí ve stejné admin cookie jako přihlášení heslem — žádný druhý svět uživatelů
+        o.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        o.Events.OnCreatingTicket = ctx =>
+        {
+            var email = ctx.Identity?.FindFirst(ClaimTypes.Email)?.Value;
+            var admin = ctx.HttpContext.RequestServices.GetRequiredService<AdminCredentialService>().AdminEmail;
+            if (!googleAuth.IsAllowed(email, admin))
+                throw new AuthenticationFailureException($"Účet {email} nemá do adminu přístup.");
+
+            // Role musí přidat i tahle cesta, jinak by Google admin neprošel [Authorize(Roles = "Admin")]
+            ctx.Identity!.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
+            return Task.CompletedTask;
+        };
+        o.Events.OnRemoteFailure = ctx =>
+        {
+            ctx.Response.Redirect("/account/login?error=google");
+            ctx.HandleResponse();
+            return Task.CompletedTask;
+        };
+    });
+}
 
 builder.Services.AddAuthorization();
 // /health pinkne DB; connection string se tu jmenuje Metin2Bausia, ne výchozí DefaultConnection

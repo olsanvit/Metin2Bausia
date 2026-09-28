@@ -270,14 +270,41 @@
   <data name="Disabled" xml:space="preserve">
     <value>Disabled</value>
   </data>
+  <data name="DropAddGroup" xml:space="preserve">
+    <value>Add group</value>
+  </data>
+  <data name="DropAddRow" xml:space="preserve">
+    <value>Add row</value>
+  </data>
   <data name="DropChance" xml:space="preserve">
     <value>Chance</value>
   </data>
   <data name="DropCount" xml:space="preserve">
     <value>Count</value>
   </data>
+  <data name="DropErrCount" xml:space="preserve">
+    <value>Count must be at least 1 (group {0})</value>
+  </data>
+  <data name="DropErrEmpty" xml:space="preserve">
+    <value>Row needs a vnum or an item name (group {0})</value>
+  </data>
+  <data name="DropErrPct" xml:space="preserve">
+    <value>Chance must be over 0 and at most 100 (group {0})</value>
+  </data>
+  <data name="DropErrUnknownVnum" xml:space="preserve">
+    <value>These vnums do not exist among items: {0}</value>
+  </data>
+  <data name="DropGroupName" xml:space="preserve">
+    <value>Group name</value>
+  </data>
+  <data name="DropGroupType" xml:space="preserve">
+    <value>Group type</value>
+  </data>
   <data name="DropItem" xml:space="preserve">
     <value>Item</value>
+  </data>
+  <data name="DropItemName" xml:space="preserve">
+    <value>Item name in proto</value>
   </data>
   <data name="DropKillDrop" xml:space="preserve">
     <value>Kill drop</value>
@@ -285,14 +312,29 @@
   <data name="DropLevelLimit" xml:space="preserve">
     <value>Level limit</value>
   </data>
+  <data name="DropRemoveGroup" xml:space="preserve">
+    <value>Remove group</value>
+  </data>
+  <data name="DropRemoveRow" xml:space="preserve">
+    <value>Remove row</value>
+  </data>
+  <data name="DropRowsNone" xml:space="preserve">
+    <value>Group has no rows</value>
+  </data>
   <data name="DropsNone" xml:space="preserve">
     <value>This mob has no drops.</value>
   </data>
   <data name="DropsTitle" xml:space="preserve">
     <value>Drops</value>
   </data>
+  <data name="DropUnknownItem" xml:space="preserve">
+    <value>unknown item</value>
+  </data>
   <data name="DropUnresolved" xml:space="preserve">
     <value>unknown item</value>
+  </data>
+  <data name="DropVnum" xml:space="preserve">
+    <value>Item vnum</value>
   </data>
   <data name="DuplicateNote" xml:space="preserve">
     <value>The group appeared twice in the source file — the first occurrence is used, the second is kept in metadata.</value>
@@ -783,20 +825,47 @@
   <data name="SourceServer" xml:space="preserve">
     <value>Source server</value>
   </data>
+  <data name="SpawnAddRow" xml:space="preserve">
+    <value>Add spawn</value>
+  </data>
   <data name="SpawnAggressive" xml:space="preserve">
     <value>aggressive</value>
   </data>
   <data name="SpawnCount" xml:space="preserve">
     <value>Count</value>
   </data>
+  <data name="SpawnEditingFile" xml:space="preserve">
+    <value>Editing {0}</value>
+  </data>
+  <data name="SpawnErrCount" xml:space="preserve">
+    <value>Count must be at least 1</value>
+  </data>
+  <data name="SpawnErrUnknownMob" xml:space="preserve">
+    <value>These vnums do not exist among mobs: {0}</value>
+  </data>
+  <data name="SpawnErrVnum" xml:space="preserve">
+    <value>Spawn needs a vnum over 0</value>
+  </data>
   <data name="SpawnFile" xml:space="preserve">
     <value>File</value>
+  </data>
+  <data name="SpawnPickFileToEdit" xml:space="preserve">
+    <value>Pick a file to edit its spawns</value>
   </data>
   <data name="SpawnPosition" xml:space="preserve">
     <value>Position</value>
   </data>
   <data name="SpawnRange" xml:space="preserve">
     <value>Range</value>
+  </data>
+  <data name="SpawnRangeX" xml:space="preserve">
+    <value>Range X</value>
+  </data>
+  <data name="SpawnRangeY" xml:space="preserve">
+    <value>Range Y</value>
+  </data>
+  <data name="SpawnRemoveRow" xml:space="preserve">
+    <value>Remove spawn</value>
   </data>
   <data name="SpawnsNone" xml:space="preserve">
     <value>This map has no spawns.</value>
@@ -830,6 +899,15 @@
   </data>
   <data name="SpawnTypeMob" xml:space="preserve">
     <value>mob</value>
+  </data>
+  <data name="SpawnVnum" xml:space="preserve">
+    <value>Target vnum</value>
+  </data>
+  <data name="SpawnX" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="SpawnY" xml:space="preserve">
+    <value>Y</value>
   </data>
   <data name="StartNpc" xml:space="preserve">
     <value>Start NPC</value>

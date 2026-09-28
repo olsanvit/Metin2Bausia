@@ -3,6 +3,9 @@ Route: /manage/mobs/{Guid:guid}
 Popis: Detail moba — editace názvu/typu/ranku/popisu, bojové statistiky, gold drop, akce schválení a zapnutí.
 
 ## Hotovo ✅
+- **Editor dropů**: inline řádky (vnum, jméno z proto, počet, šance), přidávání a mazání řádků i skupin,
+  editace typu skupiny (drop/kill/limit), `kill_drop` a `level_limit`. Ukládá se spolu se zbytkem detailu.
+  Validace v `Data/DropValidation.cs` + ověření existence vnumu proti tabulce Items.
 - Načtení plného záznamu včetně bojových statistik
 - Editace: název, lokalizovaný název, typ (monster/npc/metin/boss/chest), rank (pawn…king), popis
 - Karta statistik: HP, EXP, útok/obrana (fyz./mag.), rychlosti; gold min–max, šance na gold, agresivní dohled
