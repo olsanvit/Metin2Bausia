@@ -1,31 +1,33 @@
-# Index.razor
-Route: /
-Popis: Dashboard admina — rychlý přehled front ke schválení a stavu AI agenta (Metin2BausiaCollector).
+# Metin2Bausia — Přehled stránek
 
-## Hotovo ✅
-- Tabulka posledních běhů má pod 768 px kartovou podobu; highlights se zalomí celé místo useknutí
-- 4 klikací karty: pending itemy, pending mobové, schválené itemy, ruční review; barva karty podle toho, jestli je co řešit
-- Banner posledního agent runu (OK/chyba, čas, počty nových entit)
-- Tabulka posledních 5 runů z `AgentRunReports` + odkaz na `/reports`
-- Odkaz na `/stats`
-- **Opraveno 2026-09-12:** model `AgentRunReport` přemapován na skutečné sloupce (`Success`, `EntitiesInserted/Updated/Failed`, `CreatedAt`, `BlockerCategory`); počet ruční review čte `Status = 'pending'`; chyba DB se zobrazí místo tichého spolknutí.
+Stav: ✅ funguje a otestováno | 🔄 rozděláno | ❌ nefunguje | ❓ neznámý stav
 
-## Chybí / Rozpracováno ⚠️
-- Model `AgentRunReport` čte `RunStatus`, `RunRunAt`, `RunFinishedAt`, `ItemsNew`, `MobsNew`, `ImagesDownloaded`, `AgentType` — v tabulce `AgentRunReports` neexistují (jsou tam `Success`, `RunMode`, `DurationMs`, `EntitiesInserted/Updated/Failed`, `BlockerCategory`). Banner je proto vždy ❌ a čísla nulová.
-- Počet ruční review čte `ManualReviewQueue."Resolved"` — sloupec neexistuje (je `Status`) → dotaz padá, karta ukáže 0.
-- `Highlights` je `jsonb`, zobrazuje se jako syrový JSON.
-- Chybí karty pro pending Maps / Skills / Quests / Systems / ContentImages.
-- `catch { /* DB not yet available */ }` spolkne jakoukoli chybu, nejen nedostupnou DB.
+## Veřejné stránky
 
-## Návrhy na vylepšení 💡
-- Přemapovat model na skutečné sloupce (`Success` → badge, `DurationMs` → trvání, `EntitiesInserted` → nové)
-- Rozpis `Highlights` jako odrážky
-- Karta „Nejstarší nevyřízená položka" (kolik dní čeká)
-- Tlačítko „Exportovat proto" (volání MCP `export_item_proto_txt`/`export_mob_proto_txt`) s výsledkem
-- Auto-refresh (timer 30–60 s) místo jednorázového načtení
+| Stránka | Route | Stav | Poznámky |
+|---|---|---|---|
+| Index / Landing | `/` | ❓ | Úvodní stránka |
+| Items | `/items` | ❓ | Přehled itemů |
+| Mobs | `/mobs` | ❓ | Přehled mobů |
+| Stats | `/stats` | ❓ | Statistiky serveru |
+| Review | `/review` | ❓ | Review / hodnocení |
+| Reports | `/reports` | ❓ | Reporty |
 
-## Brainstorming poznámky
-- Sparkline velikosti pending fronty za 7/30 dní (z `CreatedAt`/`ApprovedAt`)
-- Upozornění, když agent neběžel déle než `AgentSchedules.IntervalHours` (missed run)
-- Stav circuit breakerů zdrojů (`SourceCircuitBreaker` s `State = open`)
-- Stav herního serveru (auth :11002, game :13000) — ping/health, pokud bude dostupný
+## Manage (admin/editor)
+
+| Stránka | Route | Stav | Poznámky |
+|---|---|---|---|
+| Manage Items | `/manage/items` | ❓ | Správa itemů |
+| Manage Item Detail | `/manage/items/{id}` | ❓ | Detail itemu |
+| Manage Mobs | `/manage/mobs` | ❓ | Správa mobů |
+| Manage Mob Detail | `/manage/mobs/{id}` | ❓ | Detail mobu |
+| Manage Maps | `/manage/maps` | ❓ | Správa map |
+| Manage Map Detail | `/manage/maps/{id}` | ❓ | Detail mapy |
+| Manage Quests | `/manage/quests` | ❓ | Správa questů |
+| Manage Quest Detail | `/manage/quests/{id}` | ❓ | Detail questu |
+| Manage Systems | `/manage/systems` | ❓ | Správa systémů |
+| Manage System Detail | `/manage/systems/{id}` | ❓ | Detail systému |
+| Manage Groups | `/manage/groups` | ❓ | Správa skupin |
+
+## TODO / chybí
+- [ ] Doplnit skutečný stav každé stránky (session Metin2Bausia)
