@@ -1,5 +1,56 @@
 # Dokumentace stránek — Metin2Bausia.Web
 
+> **Pozor na velikost písmen:** soubor `index.md` tu **nesmí vzniknout** — macOS má
+> case-insensitive systém a přepsal by `Index.md` (dokumentaci dashboardu). Přesně to se
+> stalo v commitu `7bac2e5`; obsah se musel obnovit z historie. Rozcestník je proto tady.
+
+## Přehled stránek
+
+Stav k 29. 9. 2026, commit `7ed93e1`. Na produkci je nasazený stav po `e94ef2e`.
+✅ funguje a otestováno | 🔄 rozděláno
+
+**Žádná stránka není veřejná** — celý admin je za `@attribute [Authorize]`, nepřihlášený
+uživatel skončí na `/account/login`.
+
+### Přehled a fronty
+
+| Stránka | Route | Stav | Poznámky |
+|---|---|---|---|
+| [Dashboard](Index.md) | `/` | ✅ | Urgentní fronta, stav agenta, posledních 5 běhů |
+| [Statistiky](StatsPage.md) | `/stats` | ✅ | Itemy podle typu, mobové podle ranku |
+| [Agent reporty](Reports.md) | `/reports` | ✅ | 50 posledních běhů, na mobilu karty |
+| [Ruční review](Review.md) | `/review` | ✅ | Fronta `ManualReviewQueue` |
+| [Itemy (pending)](Items.md) | `/items` | ✅ | Schvalování, tlačítka 44 px |
+| [Mobové (pending)](Mobs.md) | `/mobs` | ✅ | Totéž pro moby |
+
+### Správa obsahu
+
+| Stránka | Route | Stav | Poznámky |
+|---|---|---|---|
+| [Itemy](ManageItems.md) | `/manage/items`, `/items/browse` | ✅ | Obě routy vedou na jednu stránku |
+| [Detail itemu](ManageItemDetail.md) | `/manage/items/{guid}` | 🔄 | Chybí `SubType`, flagy, `IconFile`, `ModelFile` |
+| [Mobové](ManageMobs.md) | `/manage/mobs` | ✅ | Stránkováno po 50 |
+| [Detail moba](ManageMobDetail.md) | `/manage/mobs/{guid}` | 🔄 | Editor dropů hotový; chybí `Resists`, `AttackRange`, regenerace |
+| [Mapy](ManageMaps.md) | `/manage/maps` | ✅ | |
+| [Detail mapy](ManageMapDetail.md) | `/manage/maps/{guid}` | 🔄 | Editor spawnů až po výběru souboru; levelový rozsah jen ke čtení |
+| [Questy](ManageQuests.md) | `/manage/quests` | ✅ | |
+| [Detail questu](ManageQuestDetail.md) | `/manage/quests/{guid}` | 🔄 | Skript jen ke čtení (záměr), chybí zvýraznění Lua |
+| [Systémy](ManageSystems.md) | `/manage/systems` | ✅ | |
+| [Detail systému](ManageSystemDetail.md) | `/manage/systems/{guid}` | 🔄 | Chybí sekce se soubory |
+| [Skupiny](ManageGroups.md) | `/manage/groups` | 🔄 | Zobrazení ověřeno s 1 298 skupinami, rozbalení klikem ne |
+
+### Účet
+
+| Stránka | Route | Stav | Poznámky |
+|---|---|---|---|
+| [Přihlášení](Login.md) | `/account/login` | 🔄 | Heslo funguje; tlačítko Google se zobrazí až se skutečnými klíči a redirectem v Google Cloud Console |
+| Změna hesla | `/account/change-password` | ✅ | Vynucená při prvním přihlášení |
+| Odhlášení | `/account/logout` | ✅ | |
+
+Otevřené úkoly: [docs/TODO.md](../TODO.md).
+
+---
+
 Jedna MD per routovatelná `.razor` stránka (`@page`). Stav k 2026-09-11, vzniklo čtením kódu — aplikace nebyla spuštěna.
 
 ## Opraveno 2026-09-12
