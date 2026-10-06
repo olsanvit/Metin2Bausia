@@ -10,7 +10,7 @@ sub-admini až s ním, export do hry ke stažení jako ZIP, MAP_ALLOW jen vygene
 kontejner zůstává vypnutý, testy beze změny (bez bUnit).
 
 1. ~~Editor dropů a spawnů~~ — hotovo, čeká na build a ověření
-2. ThemePicker — mění téma až po reloadu
+2. ~~ThemePicker~~ — hotovo 6. 10.: přepnutí bez reloadu, volba per prohlížeč (localStorage)
 3. Globální hledání
 4. Export do hry
 5. ~~Patcher `net9.0-windows` → `net10.0-windows`~~ — přepnuto, ale **CI Patcher nebuilduje**, změna není nikde ověřená

@@ -10,7 +10,10 @@
     <title>Metin2Bausia Admin</title>
     <base href="/" />
     @* Bootstrap chodí z Bootswatch CDN přes ThemeService — bez něj by celé UI (cards, tables, badges) zůstalo nenastylované *@
-    <link rel="stylesheet" href="@ThemeService.CurrentThemeUrl" />
+    <link rel="stylesheet" id="app-theme" href="@ThemeService.CurrentThemeUrl" />
+    @* V <head>, ne na konci <body> — skript vymění uložené téma ještě před vykreslením,
+       takže nenaskočí nejdřív výchozí a pak zvolené *@
+    <script src="_content/SharedServices/js/theme-switch.js"></script>
     @* Bootstrap Icons: sdílené komponenty (UserNavRow) je používají, Bootswatch je neobsahuje *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="app.css" />
@@ -21,6 +24,8 @@
         <Routes />
     </CascadingAuthenticationState>
     @* blazor.web.js patří k MapRazorComponents/AddInteractiveServerRenderMode; starší blazor.server.js by circuit nenavázal a @onclick by nefungovalo *@
+    @* Bootstrap JS kvůli dropdownu v ThemePickeru — Bootswatch dodává jen CSS *@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="_framework/blazor.web.js"></script>
     <script>
         // Enhanced navigation zachová zaškrtnutý checkbox — bez tohoto by mobilní menu zůstalo otevřené přes novou stránku

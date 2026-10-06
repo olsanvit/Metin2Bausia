@@ -56,6 +56,12 @@
         </div>
     </NavSection>
 
+    @* Volba vzhledu je per prohlížeč (localStorage), ne per server — ThemeService je singleton
+       a bez toho by přepnutí jedním uživatelem změnilo téma všem *@
+    <div class="pt-2">
+        <ThemePicker @rendermode="InteractiveServer" />
+    </div>
+
     @* Na úzkém displeji se přepínač jazyka do horní lišty nevejde, bydlí tedy tady *@
     <div class="d-sm-none px-2 pt-2">
         <LangSwitcher @rendermode="InteractiveServer" />
