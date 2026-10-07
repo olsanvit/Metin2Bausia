@@ -30,6 +30,8 @@ public sealed class AdminAppFactory : WebApplicationFactory<Program>, IAsyncLife
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Metin2Bausia", ConnectionString);
+        // Aplikace bez počátečního hesla nenaběhne (fail fast); v testech stačí náhodné
+        builder.UseSetting("Admin:Password", Guid.NewGuid().ToString("N"));
         builder.ConfigureTestServices(services =>
         {
             services.AddAuthentication(o =>
@@ -109,7 +111,9 @@ public sealed class TestAuthHandler(
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var identity = new ClaimsIdentity([new Claim(ClaimTypes.Name, "test-admin")], SchemeName);
+        // Role Admin stejně jako po skutečném přihlášení — /manage stránky ji vyžadují
+        var identity = new ClaimsIdentity(
+            [new Claim(ClaimTypes.Name, "test-admin"), new Claim(ClaimTypes.Role, "Admin")], SchemeName);
         return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName)));
     }
 }

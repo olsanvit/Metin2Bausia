@@ -1,5 +1,5 @@
 @page "/manage/maps/{Guid:guid}"
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
 @rendermode InteractiveServer
 @inject IDbService Db

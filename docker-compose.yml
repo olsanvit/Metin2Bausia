@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: Metin2Bausia
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?nastav POSTGRES_PASSWORD v .env}
     volumes:
       - mt2-pgdata:/var/lib/postgresql/data
       - ./database/postgres:/docker-entrypoint-initdb.d:ro
@@ -34,7 +34,7 @@ services:
         condition: service_healthy
     environment:
       PORT: 3000
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-changeme}@mt2-postgres:5432/Metin2Bausia
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?nastav POSTGRES_PASSWORD v .env}@mt2-postgres:5432/Metin2Bausia
       MT2_FILES_DIR: /app/mt2files
       NTFY_URL: https://ntfy.vo2info.cz
       NTFY_AUTH: ${NTFY_AUTH:-}
@@ -66,8 +66,8 @@ services:
         condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
-      ConnectionStrings__Metin2Bausia: "Host=mt2-postgres;Port=5432;Database=Metin2Bausia;Username=postgres;Password=${POSTGRES_PASSWORD:-changeme}"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?nastav POSTGRES_PASSWORD v .env}
+      ConnectionStrings__Metin2Bausia: "Host=mt2-postgres;Port=5432;Database=Metin2Bausia;Username=postgres;Password=${POSTGRES_PASSWORD:?nastav POSTGRES_PASSWORD v .env}"
     ports:
       - "8083:8080"
     healthcheck:

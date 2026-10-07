@@ -32,16 +32,33 @@ public class AdminCredentialService
 
     public string AdminEmail => _config["Admin:Email"] ?? "olsanskyvitek@gmail.com";
 
+    /// <summary>
+    /// Počáteční heslo admina musí přijít z konfigurace. Chybí-li (nebo je to zástupná hodnota
+    /// z šablony), aplikace nenastartuje — tichý fallback by vytvořil účet se známým heslem.
+    /// Týká se jen prvního spuštění; jakmile existuje data/admin-creds.json, konfigurace se nečte.
+    /// </summary>
+    public static string RequireInitialPassword(string? configured)
+    {
+        if (string.IsNullOrWhiteSpace(configured)
+            || configured.StartsWith("changeme", StringComparison.OrdinalIgnoreCase)
+            || configured.StartsWith("YOUR_", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Chybí počáteční heslo admina: nastav Admin:Password (env Admin__Password) " +
+                "v appsettings.Production.json nebo proměnné prostředí. Výchozí heslo záměrně neexistuje.");
+        return configured;
+    }
+
     // ── Načtení stavu ─────────────────────────────────────────────────────
 
     private AdminCreds LoadOrCreate()
     {
         if (!File.Exists(_dataPath))
         {
-            // První spuštění — heslo z appsettings rovnou zahashovat a vynutit změnu
+            // První spuštění — heslo z konfigurace rovnou zahashovat a vynutit změnu.
+            // Výchozí heslo v kódu nesmí existovat: repo je veřejné, takže by ho znal každý.
             var initial = new AdminCreds
             {
-                PasswordHash       = Hash(_config["Admin:Password"] ?? "Admin@123"),
+                PasswordHash       = Hash(RequireInitialPassword(_config["Admin:Password"])),
                 MustChangePassword = true
             };
             Save(initial);

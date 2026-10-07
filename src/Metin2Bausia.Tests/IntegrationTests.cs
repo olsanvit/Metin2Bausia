@@ -14,7 +14,9 @@ public class IntegrationTests : IClassFixture<WebApplicationFactory<Program>>
         {
             builder.UseSetting("ConnectionStrings:Metin2Bausia",
                 Environment.GetEnvironmentVariable("ConnectionStrings__Metin2Bausia")
-                ?? "Host=localhost;Port=54321;Database=ci_test_db;Username=postgres;Password=postgres");
+                ?? AdminAppFactory.ConnectionString);
+            // Bez počátečního hesla aplikace nenaběhne (fail fast) — v testech stačí náhodné
+            builder.UseSetting("Admin:Password", Guid.NewGuid().ToString("N"));
         }).CreateClient(new WebApplicationFactoryClientOptions
         {
             AllowAutoRedirect = false

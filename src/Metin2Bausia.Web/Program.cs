@@ -90,6 +90,10 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 var app = builder.Build();
 
+// Fail fast: bez uloženého hesla i bez Admin:Password by admin vznikl až při prvním
+// přihlášení a chyba by se ukázala uživateli. Takhle kontejner rovnou nenaběhne s jasnou hláškou.
+_ = app.Services.GetRequiredService<AdminCredentialService>().MustChangePassword;
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
