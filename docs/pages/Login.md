@@ -41,7 +41,7 @@ Konfigurace (`appsettings.json` má jen zástupné hodnoty, skutečné patří d
 Přihlášení přes Google je trvalé stejně jako heslem (7 dní), jinak by cookie zmizela se zavřením prohlížeče.
 
 ## Chybí / Rozpracováno ⚠️
-- V Google Cloud Console musí být zaregistrovaný redirect `https://metin2bausia.vo2info.cz/signin-google`
+- V Google Cloud Console musí být zaregistrovaný redirect `https://bausia.vo2info.cz/signin-google`
   — bez toho se přihlášení nedokončí. Zatím nenastaveno.
 - Celý tok přes Google není ověřený proti skutečnému Googlu (vyžaduje klienta a přihlášení uživatele);
   otestovaná je jen logika povolených e-mailů (`GoogleAuthOptionsTests`).

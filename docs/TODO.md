@@ -82,6 +82,6 @@ Ostatní položky níž jsou pod touto pětkou.
 
 - [x] `GoogleAuthOptions` + registrace v `Program.cs` jen se skutečnými klíči, whitelist e-mailů
 - [x] Tlačítko na přihlašovací stránce, jednotkové testy povolených e-mailů
-- [ ] Zaregistrovat redirect `https://metin2bausia.vo2info.cz/signin-google` v Google Cloud Console
+- [ ] Zaregistrovat redirect `https://bausia.vo2info.cz/signin-google` v Google Cloud Console
 - [ ] Vyplnit `ClientId`/`ClientSecret` do `appsettings.Production.json` na QNAPu (necommitovat!)
 - [ ] Ověřit celý tok proti skutečnému Googlu — bez klienta to nejde otestovat
