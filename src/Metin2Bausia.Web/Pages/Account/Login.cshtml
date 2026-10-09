@@ -120,7 +120,9 @@
         @if (Model.GoogleEnabled)
         {
             <div class="sep">nebo</div>
-            <form method="post" asp-page-handler="Google">
+            @* Projekt nemá _ViewImports s tag helpery — asp-page-handler by se ignoroval a POST by
+               skončil v přihlášení heslem. Proto adresa handleru explicitně. *@
+            <form method="post" action="@Url.Page("/Account/Login", "Google", new { returnUrl = Request.Query["ReturnUrl"].FirstOrDefault() })">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-google">Přihlásit se přes Google</button>
             </form>
