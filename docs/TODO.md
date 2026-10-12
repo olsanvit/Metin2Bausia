@@ -7,7 +7,7 @@ Ověřeno proti kódu, ne jen přepsáno ze starších poznámek.
 
 Rozhodnutí z review 28. 9.: Google login vlastním lehkým OAuth (ne Identity),
 sub-admini až s ním, export do hry ke stažení jako ZIP, MAP_ALLOW jen vygenerovat řádek,
-kontejner zůstává vypnutý, testy beze změny (bez bUnit).
+testy beze změny (bez bUnit). Od 9. 10. web běží trvale (restart=unless-stopped).
 
 1. ~~Editor dropů a spawnů~~ — hotovo, čeká na build a ověření
 2. ~~ThemePicker~~ — hotovo 6. 10.: přepnutí bez reloadu, volba per prohlížeč (localStorage)
@@ -78,10 +78,10 @@ Ostatní položky níž jsou pod touto pětkou.
 - Audit schvalování (`ApprovedAt`/`ApprovedBy` + zápis do `ApprovalLog`) mají **všechny čtyři**
   detailní stránky. Starší poznámky v `docs/pages/*.md` tvrdily opak.
 
-## 7. Google login (rozpracováno 28. 9.)
+## 7. Google login (hotovo 12. 10.)
 
 - [x] `GoogleAuthOptions` + registrace v `Program.cs` jen se skutečnými klíči, whitelist e-mailů
 - [x] Tlačítko na přihlašovací stránce, jednotkové testy povolených e-mailů
-- [ ] Zaregistrovat redirect `https://bausia.vo2info.cz/signin-google` v Google Cloud Console
-- [ ] Vyplnit `ClientId`/`ClientSecret` do `appsettings.Production.json` na QNAPu (necommitovat!)
-- [ ] Ověřit celý tok proti skutečnému Googlu — bez klienta to nejde otestovat
+- [x] Redirect `https://bausia.vo2info.cz/signin-google` zaregistrovaný (projekt Metin2, 9. 10.)
+- [x] `ClientId`/`ClientSecret` v trezoru a na QNAPu přes secret-to-qnap (9. 10.)
+- [x] Celý tok ověřený v Chromu jako olsansky575 (12. 10., ba8f6c0)

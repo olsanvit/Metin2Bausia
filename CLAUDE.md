@@ -41,8 +41,12 @@ Naplnění daty: migrace `database/postgres/0{1,2,3,4,5,6}_*.sql`, pak
 
 - Produkční kontejner **`metin2bausia`** = `aspnet:10.0` + publish složka
   `/share/Public/BlazorMetin2Bausia/publish`, port 5023. **Ne** compose z repa.
-- Deploy: `~/deploy-to-qnap.sh metin2bausia` (rsync + restart kontejneru).
-- **Projekt je záměrně vypnutý** (`restart=no`), dokud ho uživatel nespustí. Deploy skript kontejner restartuje — po ověření `/health` ho zase zastavit.
+- Deploy: `~/.claude/deploy-gate.sh metin2bausia prod <session>` na pozadí (fronta → `~/deploy-to-qnap.sh`,
+  smoke test na `https://bausia.vo2info.cz`, při chybě sám rollback).
+- Web běží trvale (`restart=unless-stopped`, rozhodl Vítek 9. 10.) — po deployi už nezastavovat.
+  Doména je `bausia.vo2info.cz`; `metin2bausia.vo2info.cz` neexistuje.
+- Počáteční heslo admina (`Admin:Password`) a Google OAuth jsou v Bitwardenu (složka Infra) a na QNAP
+  se dostávají jen přes `secret-to-qnap`. Bez `Admin:Password` aplikace záměrně nenaběhne.
 - `appsettings.Production.json` je na QNAPu zdroj pravdy (`KEEP_REMOTE_PROD_CFG=1`), necommituje se.
 
 ## Pravidla
