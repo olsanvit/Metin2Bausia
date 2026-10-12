@@ -39,6 +39,12 @@ uživatel skončí na `/account/login`.
 | [Detail systému](ManageSystemDetail.md) | `/manage/systems/{guid}` | 🔄 | Chybí sekce se soubory |
 | [Skupiny](ManageGroups.md) | `/manage/groups` | 🔄 | Zobrazení ověřeno s 1 298 skupinami, rozbalení klikem ne |
 
+### Znalosti
+
+| Stránka | Route | Stav | Poznámky |
+|---|---|---|---|
+| [Servery, monstra, kameny](Knowledge.md) | `/knowledge/servers`, `/knowledge/monsters`, `/knowledge/stones` | 🔄 | Schéma a stránky hotové, data se převedou v dalším kroku |
+
 ### Účet
 
 | Stránka | Route | Stav | Poznámky |

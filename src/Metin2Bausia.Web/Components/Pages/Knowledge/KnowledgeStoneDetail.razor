@@ -1,0 +1,82 @@
+@page "/knowledge/stones/{Guid:guid}"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@(_row?.Name ?? S["KnStonesTitle"]) — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/knowledge/stones" class="btn btn-outline-secondary btn-sm">@S["KnBackToStones"]</a>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_row == null)
+{
+    <div class="alert alert-danger">@(_error != null ? S["DbError", _error] : S["NotFound"])</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><strong>@_row.Name</strong></div>
+                <div class="card-body small">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">@S["KnLevel"]</dt><dd class="col-sm-8">@(_row.Level == "" ? "—" : _row.Level)</dd>
+                        <dt class="col-sm-4">@S["KnSpawn"]</dt><dd class="col-sm-8">@(_row.Spawn == "" ? "—" : _row.Spawn)</dd>
+                        <dt class="col-sm-4">@S["KnSkillBook"]</dt><dd class="col-sm-8">@YesNo(_row.SkillBook)</dd>
+                        <dt class="col-sm-4">@S["KnSpirit"]</dt><dd class="col-sm-8">@YesNo(_row.Spirit)</dd>
+                        <dt class="col-sm-4">@S["KnSoul"]</dt><dd class="col-sm-8">@YesNo(_row.Soul)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <KnowledgeMobLink Table="KnowledgeStones" RowGuid="@_row.Guid" MobVnum="@_row.MobVnum"
+                              MobName="@_row.MobName" MobGuid="@_row.MobGuid" />
+            <div class="card mb-3">
+                <div class="card-body small d-grid gap-2">
+                    @if (KnowledgeText.SafeUrl(_row.NameUrl) is { } wiki)
+                    {
+                        <a class="btn btn-outline-primary btn-sm" href="@wiki" target="_blank" rel="noopener noreferrer">@S["KnOpenWiki"]</a>
+                    }
+                    <div class="text-muted">
+                        @S["KnSource"]: @_row.SourceName<br />
+                        @S["Updated"]: @_row.UpdatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+            <div class="small text-muted">GUID: <code class="small">@_row.Guid</code></div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private string? _error;
+    private KnowledgeStoneRow? _row;
+
+    private string YesNo(string value) => KnowledgeText.IsChecked(value) ? S["KnYes"] : S["KnNo"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _row = await Db.QueryFirstOrDefaultAsync<KnowledgeStoneRow>(
+                @"SELECT k.""Guid"", k.""Name"", k.""NameUrl"", k.""Spawn"", k.""SkillBook"", k.""Spirit"", k.""Soul"",
+                         k.""Level"", k.""MobVnum"", k.""SourceName"", k.""UpdatedAt"",
+                         m.""Guid"" AS ""MobGuid"", coalesce(m.""LocaleName"", m.""Name"") AS ""MobName""
+                  FROM ""KnowledgeStones"" k
+                  LEFT JOIN ""Mobs"" m ON m.""Vnum"" = k.""MobVnum"" AND m.""IsDeleted"" = FALSE
+                  WHERE k.""Guid"" = @g AND k.""IsDeleted"" = FALSE",
+                new { g = Guid });
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+        finally { _loading = false; }
+    }
+}

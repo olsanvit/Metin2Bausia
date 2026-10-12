@@ -996,4 +996,160 @@
   <data name="Width" xml:space="preserve">
     <value>Šířka</value>
   </data>
+  <data name="NavSectionKnowledge" xml:space="preserve">
+    <value>ZNALOSTI</value>
+  </data>
+  <data name="NavKnServers" xml:space="preserve">
+    <value>🌐 Servery</value>
+  </data>
+  <data name="NavKnMonsters" xml:space="preserve">
+    <value>🐺 Monstra (wiki)</value>
+  </data>
+  <data name="NavKnStones" xml:space="preserve">
+    <value>🪨 Kameny (wiki)</value>
+  </data>
+  <data name="KnServersTitle" xml:space="preserve">
+    <value>Metin2 servery</value>
+  </data>
+  <data name="KnServersIntro" xml:space="preserve">
+    <value>Private servery ze seznamů na webu. Neaktivní = při posledním stažení už na seznamu nebyl.</value>
+  </data>
+  <data name="KnMonstersTitle" xml:space="preserve">
+    <value>Monstra z wiki</value>
+  </data>
+  <data name="KnMonstersIntro" xml:space="preserve">
+    <value>Monstra z Metin2 wiki. Spárování s naším mobem se dělá ručně v detailu.</value>
+  </data>
+  <data name="KnStonesTitle" xml:space="preserve">
+    <value>Metin kameny z wiki</value>
+  </data>
+  <data name="KnStonesIntro" xml:space="preserve">
+    <value>Metin kameny z wiki — kde se objevují a co z nich padá.</value>
+  </data>
+  <data name="KnEmpty" xml:space="preserve">
+    <value>Zatím žádná data. Plní je worker SimulateReal.</value>
+  </data>
+  <data name="KnTooMany" xml:space="preserve">
+    <value>Zobrazeno prvních {0} — zužte hledání nebo filtr.</value>
+  </data>
+  <data name="KnColName" xml:space="preserve">
+    <value>Název</value>
+  </data>
+  <data name="KnStyle" xml:space="preserve">
+    <value>Styl</value>
+  </data>
+  <data name="KnAllStyles" xml:space="preserve">
+    <value>Všechny styly</value>
+  </data>
+  <data name="KnMaxLevel" xml:space="preserve">
+    <value>Max. level</value>
+  </data>
+  <data name="KnOnline" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="KnComments" xml:space="preserve">
+    <value>Komentáře</value>
+  </data>
+  <data name="KnFirstSeen" xml:space="preserve">
+    <value>Poprvé viděn</value>
+  </data>
+  <data name="KnLastSeen" xml:space="preserve">
+    <value>Naposledy viděn</value>
+  </data>
+  <data name="KnActive" xml:space="preserve">
+    <value>Aktivní</value>
+  </data>
+  <data name="KnInactive" xml:space="preserve">
+    <value>Neaktivní</value>
+  </data>
+  <data name="KnOpenDetail" xml:space="preserve">
+    <value>Otevřít detail na webu ↗</value>
+  </data>
+  <data name="KnOpenListing" xml:space="preserve">
+    <value>Otevřít seznam ↗</value>
+  </data>
+  <data name="KnOpenWiki" xml:space="preserve">
+    <value>Otevřít na wiki ↗</value>
+  </data>
+  <data name="KnSource" xml:space="preserve">
+    <value>Zdroj</value>
+  </data>
+  <data name="KnBackToServers" xml:space="preserve">
+    <value>← Zpět na servery</value>
+  </data>
+  <data name="KnBackToMonsters" xml:space="preserve">
+    <value>← Zpět na monstra</value>
+  </data>
+  <data name="KnBackToStones" xml:space="preserve">
+    <value>← Zpět na kameny</value>
+  </data>
+  <data name="KnLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="KnElement" xml:space="preserve">
+    <value>Element</value>
+  </data>
+  <data name="KnAllElements" xml:space="preserve">
+    <value>Všechny elementy</value>
+  </data>
+  <data name="KnResistance" xml:space="preserve">
+    <value>Odolnost</value>
+  </data>
+  <data name="KnRace" xml:space="preserve">
+    <value>Rasa</value>
+  </data>
+  <data name="KnStage" xml:space="preserve">
+    <value>Fáze</value>
+  </data>
+  <data name="KnLocation" xml:space="preserve">
+    <value>Lokace</value>
+  </data>
+  <data name="KnAllLocations" xml:space="preserve">
+    <value>Všechny lokace</value>
+  </data>
+  <data name="KnExp" xml:space="preserve">
+    <value>Zkušenosti</value>
+  </data>
+  <data name="KnMob" xml:space="preserve">
+    <value>Náš mob</value>
+  </data>
+  <data name="KnLinked" xml:space="preserve">
+    <value>Spárované</value>
+  </data>
+  <data name="KnNotLinked" xml:space="preserve">
+    <value>Nespárované</value>
+  </data>
+  <data name="KnMobLink" xml:space="preserve">
+    <value>Spárování s mobem</value>
+  </data>
+  <data name="KnMobMissing" xml:space="preserve">
+    <value>Mob s vnum {0} neexistuje.</value>
+  </data>
+  <data name="KnVnumInvalid" xml:space="preserve">
+    <value>Zadej kladné vnum moba.</value>
+  </data>
+  <data name="KnUnlink" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
+  <data name="KnSpawn" xml:space="preserve">
+    <value>Výskyt</value>
+  </data>
+  <data name="KnSkillBook" xml:space="preserve">
+    <value>Kniha dovedností</value>
+  </data>
+  <data name="KnSpirit" xml:space="preserve">
+    <value>Duch</value>
+  </data>
+  <data name="KnSoul" xml:space="preserve">
+    <value>Duše</value>
+  </data>
+  <data name="KnAllDrops" xml:space="preserve">
+    <value>Všechny dropy</value>
+  </data>
+  <data name="KnYes" xml:space="preserve">
+    <value>Ano</value>
+  </data>
+  <data name="KnNo" xml:space="preserve">
+    <value>Ne</value>
+  </data>
 </root>

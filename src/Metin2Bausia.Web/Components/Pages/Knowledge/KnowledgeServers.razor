@@ -1,0 +1,131 @@
+@page "/knowledge/servers"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@S["KnServersTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["KnServersTitle"]</h2>
+<p class="text-muted mb-3">@S["KnServersIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">@S["DbError", _error]</div>
+}
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <input class="form-control form-control-sm" style="max-width:240px"
+           placeholder="@S["Search"]" @bind="_search" @bind:event="oninput" />
+    <select class="form-select form-select-sm" style="max-width:160px" @bind="_style">
+        <option value="">@S["KnAllStyles"]</option>
+        @foreach (var s in _styles)
+        {
+            <option value="@s">@s</option>
+        }
+    </select>
+    <select class="form-select form-select-sm" style="max-width:160px" @bind="_active">
+        <option value="">@S["All"]</option>
+        <option value="true">@S["KnActive"]</option>
+        <option value="false">@S["KnInactive"]</option>
+    </select>
+    <span class="text-muted small ms-auto">@S["ShownOf", Filtered.Count(), _rows.Count]</span>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_rows.Count == 0)
+{
+    <div class="alert alert-info">@S["KnEmpty"]</div>
+}
+else
+{
+    <div class="table-responsive list-table">
+        <table class="table table-sm table-hover align-middle">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <SortableHeader Field="Name" Label="@S["KnColName"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <th style="width:120px">@S["KnStyle"]</th>
+                    <SortableHeader Field="MaxLevel" Label="@S["KnMaxLevel"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <th style="width:130px">@S["KnOnline"]</th>
+                    <SortableHeader Field="LastSeen" Label="@S["KnLastSeen"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <th style="width:50px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Shown)
+                {
+                    <tr class="@(r.IsActive ? "" : "opacity-60")">
+                        <td>@r.Name</td>
+                        <td><span class="badge bg-light text-dark">@r.Style</span></td>
+                        <td>@r.MaxLevel</td>
+                        <td class="small text-muted">@r.OnlineText</td>
+                        <td class="small text-muted">@r.LastSeenUtc.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                        <td><a href="/knowledge/servers/@r.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="list-cards">
+        @foreach (var r in Shown)
+        {
+            <div class="list-card @(r.IsActive ? "" : "opacity-60")">
+                <a class="list-card__main" href="/knowledge/servers/@r.Guid">
+                    <div class="list-card__title">@r.Name</div>
+                    <div class="list-card__meta">
+                        <span class="badge bg-light text-dark">@r.Style</span>
+                        @if (r.MaxLevel.HasValue) { <span class="small">Lv @r.MaxLevel</span> }
+                        <span class="small text-muted">@r.OnlineText</span>
+                    </div>
+                </a>
+                <span class="text-muted">›</span>
+            </div>
+        }
+    </div>
+
+    @if (Filtered.Count() > MaxRows)
+    {
+        <p class="text-muted small mt-2">@S["KnTooMany", MaxRows]</p>
+    }
+}
+
+@code {
+    // Serverů jsou tisíce — celý seznam by zpomalil vykreslení; filtr stejně hledá ve všech
+    private const int MaxRows = 300;
+
+    private bool _loading = true;
+    private string? _error;
+    private List<KnowledgeServerRow> _rows = [];
+    private List<string> _styles = [];
+    private string _search = "", _style = "", _active = "";
+    private string _sortBy = "LastSeen";
+    private bool _asc;
+
+    private IEnumerable<KnowledgeServerRow> Filtered => _rows.Where(r =>
+        (string.IsNullOrEmpty(_search) || r.Name.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrEmpty(_style) || r.Style == _style) &&
+        (string.IsNullOrEmpty(_active) || r.IsActive.ToString().ToLower() == _active));
+
+    private IEnumerable<KnowledgeServerRow> Shown => (_sortBy switch
+    {
+        "Name"     => _asc ? Filtered.OrderBy(r => r.Name) : Filtered.OrderByDescending(r => r.Name),
+        "MaxLevel" => _asc ? Filtered.OrderBy(r => r.MaxLevel) : Filtered.OrderByDescending(r => r.MaxLevel),
+        _          => _asc ? Filtered.OrderBy(r => r.LastSeenUtc) : Filtered.OrderByDescending(r => r.LastSeenUtc),
+    }).Take(MaxRows);
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _rows = (await Db.QueryAsync<KnowledgeServerRow>(
+                @"SELECT ""Guid"", ""Name"", ""Style"", ""MaxLevel"", ""OnlineText"", ""LastSeenUtc"", ""IsActive""
+                  FROM ""KnowledgeServers"" WHERE ""IsDeleted"" = FALSE")).ToList();
+            _styles = _rows.Select(r => r.Style).Where(s => s != "").Distinct().Order().ToList();
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+        finally { _loading = false; }
+    }
+}

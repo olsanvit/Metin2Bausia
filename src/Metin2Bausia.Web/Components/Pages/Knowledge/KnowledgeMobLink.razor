@@ -1,0 +1,92 @@
+@inject IDbService Db
+
+@* Ruční spárování wiki záznamu s naším mobem — automaticky to nejde, jména na wiki jsou anglická *@
+<div class="card mb-3">
+    <div class="card-header small"><strong>@S["KnMobLink"]</strong></div>
+    <div class="card-body small d-grid gap-2">
+        @if (_mobGuid.HasValue)
+        {
+            <div>
+                <a href="/manage/mobs/@_mobGuid">@(_mobName ?? S["KnMob"])</a>
+                <code class="ms-1">@_vnum</code>
+            </div>
+        }
+        else if (_vnum.HasValue)
+        {
+            <div class="text-warning">@S["KnMobMissing", _vnum]</div>
+        }
+        <div class="input-group input-group-sm">
+            <input type="number" class="form-control" placeholder="vnum" min="1" @bind="_input" />
+            <button class="btn btn-outline-primary" @onclick="SaveAsync">@S["Save"]</button>
+            @if (_vnum.HasValue)
+            {
+                <button class="btn btn-outline-secondary" @onclick="ClearAsync">@S["KnUnlink"]</button>
+            }
+        </div>
+    </div>
+</div>
+
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
+
+@code {
+    // Název tabulky jde do SQL — povolené jsou jen tyto dvě, nikdy hodnota zvenčí
+    private static readonly HashSet<string> AllowedTables = ["KnowledgeMonsters", "KnowledgeStones"];
+
+    [Parameter, EditorRequired] public string Table { get; set; } = "";
+    [Parameter, EditorRequired] public Guid RowGuid { get; set; }
+    [Parameter] public int? MobVnum { get; set; }
+    [Parameter] public string? MobName { get; set; }
+    [Parameter] public Guid? MobGuid { get; set; }
+
+    private int? _vnum, _input;
+    private string? _mobName;
+    private Guid? _mobGuid;
+
+    protected override void OnInitialized()
+    {
+        if (!AllowedTables.Contains(Table))
+            throw new ArgumentException($"Nepovolená tabulka {Table}", nameof(Table));
+        _vnum = _input = MobVnum;
+        _mobName = MobName;
+        _mobGuid = MobGuid;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_input is not > 0)
+        {
+            ShowProblem(S["KnVnumInvalid"]);
+            return;
+        }
+        try
+        {
+            var mob = await Db.QueryFirstOrDefaultAsync<NameRef>(
+                @"SELECT ""Guid"", ""Vnum"", coalesce(""LocaleName"", ""Name"") AS ""Label""
+                  FROM ""Mobs"" WHERE ""Vnum"" = @v AND ""IsDeleted"" = FALSE", new { v = _input });
+            if (mob == null)
+            {
+                ShowProblem(S["KnMobMissing", _input]);
+                return;
+            }
+            await Db.ExecuteAsync(
+                $@"UPDATE ""{Table}"" SET ""MobVnum"" = @v, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { v = _input, g = RowGuid });
+            (_vnum, _mobName, _mobGuid) = (mob.Vnum, mob.Label, mob.Guid);
+            ShowOk(S["Saved"]);
+        }
+        catch (Exception ex) { ShowError(ex); }
+    }
+
+    private async Task ClearAsync()
+    {
+        try
+        {
+            await Db.ExecuteAsync(
+                $@"UPDATE ""{Table}"" SET ""MobVnum"" = NULL, ""UpdatedAt"" = NOW() WHERE ""Guid"" = @g",
+                new { g = RowGuid });
+            (_vnum, _input, _mobName, _mobGuid) = (null, null, null, null);
+            ShowOk(S["Saved"]);
+        }
+        catch (Exception ex) { ShowError(ex); }
+    }
+}

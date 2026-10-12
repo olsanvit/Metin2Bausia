@@ -26,6 +26,9 @@ public class AdminPagesTests(AdminAppFactory factory) : IClassFixture<AdminAppFa
     [InlineData("/manage/systems")]
     [InlineData("/manage/quests")]
     [InlineData("/manage/groups")]
+    [InlineData("/knowledge/servers")]
+    [InlineData("/knowledge/monsters")]
+    [InlineData("/knowledge/stones")]
     public async Task AdminPage_RendersWithoutError(string url)
     {
         var html = await GetOkHtml(url);
@@ -58,6 +61,24 @@ public class AdminPagesTests(AdminAppFactory factory) : IClassFixture<AdminAppFa
         foreach (var value in new[] { "17", "5151", "616", "21", "22", "23", "24", "105", "106", "30", "40", "55", "1777" })
             html.Should().MatchRegex($"<input[^>]*type=\"number\"[^>]*value=\"{value}\"", $"hodnota {value} má být v editovatelném poli");
         html.Should().NotMatchRegex("<input[^>]*readonly", "bojové statistiky už nejsou jen ke čtení");
+    }
+
+    [Fact]
+    public async Task KnowledgeDetails_ShowSeededRows()
+    {
+        var server = await GetOkHtml($"/knowledge/servers/{AdminAppFactory.ServerGuid}");
+        server.Should().Contain("Testovací server").And.Contain("Oldschool").And.Contain("https://example.test/server/1");
+
+        // Monstrum je spárované s testovacím mobem — detail ukazuje odkaz na něj
+        var monster = await GetOkHtml($"/knowledge/monsters/{AdminAppFactory.MonsterGuid}");
+        monster.Should().Contain("Test Wolf (Ice)").And.Contain("Seungryong Valley")
+            .And.Contain($"/manage/mobs/{AdminAppFactory.MobGuid}").And.Contain("Testovací vlk");
+
+        var stone = await GetOkHtml($"/knowledge/stones/{AdminAppFactory.StoneGuid}");
+        stone.Should().Contain("Test Metin").And.Contain("Joan, Pyungmoo");
+
+        foreach (var html in new[] { server, monster, stone })
+            html.Should().NotContain("alert-danger").And.NotContain("toast-err");
     }
 
     [Theory]

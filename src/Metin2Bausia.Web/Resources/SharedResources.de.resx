@@ -996,4 +996,160 @@
   <data name="Width" xml:space="preserve">
     <value>Breite</value>
   </data>
+  <data name="NavSectionKnowledge" xml:space="preserve">
+    <value>WISSEN</value>
+  </data>
+  <data name="NavKnServers" xml:space="preserve">
+    <value>🌐 Server</value>
+  </data>
+  <data name="NavKnMonsters" xml:space="preserve">
+    <value>🐺 Monster (Wiki)</value>
+  </data>
+  <data name="NavKnStones" xml:space="preserve">
+    <value>🪨 Steine (Wiki)</value>
+  </data>
+  <data name="KnServersTitle" xml:space="preserve">
+    <value>Metin2-Server</value>
+  </data>
+  <data name="KnServersIntro" xml:space="preserve">
+    <value>Private Server aus Weblisten. Inaktiv = beim letzten Abruf nicht mehr gelistet.</value>
+  </data>
+  <data name="KnMonstersTitle" xml:space="preserve">
+    <value>Monster aus dem Wiki</value>
+  </data>
+  <data name="KnMonstersIntro" xml:space="preserve">
+    <value>Monster aus dem Metin2-Wiki. Die Verknüpfung mit unserem Mob erfolgt manuell im Detail.</value>
+  </data>
+  <data name="KnStonesTitle" xml:space="preserve">
+    <value>Metin-Steine aus dem Wiki</value>
+  </data>
+  <data name="KnStonesIntro" xml:space="preserve">
+    <value>Metin-Steine aus dem Wiki — wo sie erscheinen und was sie droppen.</value>
+  </data>
+  <data name="KnEmpty" xml:space="preserve">
+    <value>Noch keine Daten. Der SimulateReal-Worker füllt sie.</value>
+  </data>
+  <data name="KnTooMany" xml:space="preserve">
+    <value>Die ersten {0} werden angezeigt — Suche oder Filter eingrenzen.</value>
+  </data>
+  <data name="KnColName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="KnStyle" xml:space="preserve">
+    <value>Stil</value>
+  </data>
+  <data name="KnAllStyles" xml:space="preserve">
+    <value>Alle Stile</value>
+  </data>
+  <data name="KnMaxLevel" xml:space="preserve">
+    <value>Max. Level</value>
+  </data>
+  <data name="KnOnline" xml:space="preserve">
+    <value>Online</value>
+  </data>
+  <data name="KnComments" xml:space="preserve">
+    <value>Kommentare</value>
+  </data>
+  <data name="KnFirstSeen" xml:space="preserve">
+    <value>Zuerst gesehen</value>
+  </data>
+  <data name="KnLastSeen" xml:space="preserve">
+    <value>Zuletzt gesehen</value>
+  </data>
+  <data name="KnActive" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="KnInactive" xml:space="preserve">
+    <value>Inaktiv</value>
+  </data>
+  <data name="KnOpenDetail" xml:space="preserve">
+    <value>Detail im Web öffnen ↗</value>
+  </data>
+  <data name="KnOpenListing" xml:space="preserve">
+    <value>Liste öffnen ↗</value>
+  </data>
+  <data name="KnOpenWiki" xml:space="preserve">
+    <value>Im Wiki öffnen ↗</value>
+  </data>
+  <data name="KnSource" xml:space="preserve">
+    <value>Quelle</value>
+  </data>
+  <data name="KnBackToServers" xml:space="preserve">
+    <value>← Zurück zu Servern</value>
+  </data>
+  <data name="KnBackToMonsters" xml:space="preserve">
+    <value>← Zurück zu Monstern</value>
+  </data>
+  <data name="KnBackToStones" xml:space="preserve">
+    <value>← Zurück zu Steinen</value>
+  </data>
+  <data name="KnLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="KnElement" xml:space="preserve">
+    <value>Element</value>
+  </data>
+  <data name="KnAllElements" xml:space="preserve">
+    <value>Alle Elemente</value>
+  </data>
+  <data name="KnResistance" xml:space="preserve">
+    <value>Resistenz</value>
+  </data>
+  <data name="KnRace" xml:space="preserve">
+    <value>Rasse</value>
+  </data>
+  <data name="KnStage" xml:space="preserve">
+    <value>Stufe</value>
+  </data>
+  <data name="KnLocation" xml:space="preserve">
+    <value>Ort</value>
+  </data>
+  <data name="KnAllLocations" xml:space="preserve">
+    <value>Alle Orte</value>
+  </data>
+  <data name="KnExp" xml:space="preserve">
+    <value>Erfahrung</value>
+  </data>
+  <data name="KnMob" xml:space="preserve">
+    <value>Unser Mob</value>
+  </data>
+  <data name="KnLinked" xml:space="preserve">
+    <value>Verknüpft</value>
+  </data>
+  <data name="KnNotLinked" xml:space="preserve">
+    <value>Nicht verknüpft</value>
+  </data>
+  <data name="KnMobLink" xml:space="preserve">
+    <value>Verknüpfung mit Mob</value>
+  </data>
+  <data name="KnMobMissing" xml:space="preserve">
+    <value>Mob mit Vnum {0} existiert nicht.</value>
+  </data>
+  <data name="KnVnumInvalid" xml:space="preserve">
+    <value>Positive Mob-Vnum eingeben.</value>
+  </data>
+  <data name="KnUnlink" xml:space="preserve">
+    <value>Lösen</value>
+  </data>
+  <data name="KnSpawn" xml:space="preserve">
+    <value>Vorkommen</value>
+  </data>
+  <data name="KnSkillBook" xml:space="preserve">
+    <value>Fertigkeitsbuch</value>
+  </data>
+  <data name="KnSpirit" xml:space="preserve">
+    <value>Geist</value>
+  </data>
+  <data name="KnSoul" xml:space="preserve">
+    <value>Seele</value>
+  </data>
+  <data name="KnAllDrops" xml:space="preserve">
+    <value>Alle Drops</value>
+  </data>
+  <data name="KnYes" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="KnNo" xml:space="preserve">
+    <value>Nein</value>
+  </data>
 </root>

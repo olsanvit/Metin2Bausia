@@ -1,0 +1,84 @@
+@page "/knowledge/monsters/{Guid:guid}"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@(_row?.Name ?? S["KnMonstersTitle"]) — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/knowledge/monsters" class="btn btn-outline-secondary btn-sm">@S["KnBackToMonsters"]</a>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_row == null)
+{
+    <div class="alert alert-danger">@(_error != null ? S["DbError", _error] : S["NotFound"])</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><strong>@_row.Name</strong></div>
+                <div class="card-body small">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">@S["KnLevel"]</dt><dd class="col-sm-8">@Dash(_row.Level)</dd>
+                        <dt class="col-sm-4">@S["KnElement"]</dt><dd class="col-sm-8">@Dash(_row.Element)</dd>
+                        <dt class="col-sm-4">@S["KnResistance"]</dt><dd class="col-sm-8">@Dash(_row.Resistance)</dd>
+                        <dt class="col-sm-4">@S["KnRace"]</dt><dd class="col-sm-8">@Dash(_row.Race)</dd>
+                        <dt class="col-sm-4">@S["KnStage"]</dt><dd class="col-sm-8">@Dash(_row.Stage)</dd>
+                        <dt class="col-sm-4">@S["KnLocation"]</dt><dd class="col-sm-8">@Dash(_row.Location)</dd>
+                        <dt class="col-sm-4">@S["KnExp"]</dt><dd class="col-sm-8">@Dash(_row.Exp)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <KnowledgeMobLink Table="KnowledgeMonsters" RowGuid="@_row.Guid" MobVnum="@_row.MobVnum"
+                              MobName="@_row.MobName" MobGuid="@_row.MobGuid" />
+            <div class="card mb-3">
+                <div class="card-body small d-grid gap-2">
+                    @if (KnowledgeText.SafeUrl(_row.NameUrl) is { } wiki)
+                    {
+                        <a class="btn btn-outline-primary btn-sm" href="@wiki" target="_blank" rel="noopener noreferrer">@S["KnOpenWiki"]</a>
+                    }
+                    <div class="text-muted">
+                        @S["KnSource"]: @_row.SourceName<br />
+                        @S["Updated"]: @_row.UpdatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                </div>
+            </div>
+            <div class="small text-muted">GUID: <code class="small">@_row.Guid</code></div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private string? _error;
+    private KnowledgeMonsterRow? _row;
+
+    private static string Dash(string value) => string.IsNullOrWhiteSpace(value) ? "—" : value;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _row = await Db.QueryFirstOrDefaultAsync<KnowledgeMonsterRow>(
+                @"SELECT k.""Guid"", k.""Name"", k.""NameUrl"", k.""Element"", k.""Resistance"", k.""Race"",
+                         k.""Level"", k.""Stage"", k.""Location"", k.""Exp"", k.""MobVnum"", k.""SourceName"", k.""UpdatedAt"",
+                         m.""Guid"" AS ""MobGuid"", coalesce(m.""LocaleName"", m.""Name"") AS ""MobName""
+                  FROM ""KnowledgeMonsters"" k
+                  LEFT JOIN ""Mobs"" m ON m.""Vnum"" = k.""MobVnum"" AND m.""IsDeleted"" = FALSE
+                  WHERE k.""Guid"" = @g AND k.""IsDeleted"" = FALSE",
+                new { g = Guid });
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+        finally { _loading = false; }
+    }
+}

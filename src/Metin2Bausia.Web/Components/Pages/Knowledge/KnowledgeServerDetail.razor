@@ -1,0 +1,88 @@
+@page "/knowledge/servers/{Guid:guid}"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@(_row?.Name ?? S["KnServersTitle"]) — Metin2Bausia</PageTitle>
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <a href="/knowledge/servers" class="btn btn-outline-secondary btn-sm">@S["KnBackToServers"]</a>
+    @if (_row != null)
+    {
+        <span class="badge @(_row.IsActive ? "bg-success" : "bg-secondary")">@(_row.IsActive ? S["KnActive"] : S["KnInactive"])</span>
+    }
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_row == null)
+{
+    <div class="alert alert-danger">@(_error != null ? S["DbError", _error] : S["NotFound"])</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card mb-3">
+                <div class="card-header"><strong>@_row.Name</strong></div>
+                <div class="card-body small">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">@S["KnStyle"]</dt><dd class="col-sm-8">@_row.Style</dd>
+                        <dt class="col-sm-4">@S["KnMaxLevel"]</dt><dd class="col-sm-8">@(_row.MaxLevel?.ToString() ?? "—")</dd>
+                        <dt class="col-sm-4">@S["KnOnline"]</dt><dd class="col-sm-8">@(_row.OnlineText ?? "—")</dd>
+                        <dt class="col-sm-4">@S["KnComments"]</dt><dd class="col-sm-8">@(_row.CommentsCount?.ToString() ?? "—")</dd>
+                    </dl>
+                    @if (!string.IsNullOrEmpty(_row.ShortDescription))
+                    {
+                        <p class="mt-3 mb-0">@_row.ShortDescription</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-body small d-grid gap-2">
+                    @if (KnowledgeText.SafeUrl(_row.DetailUrl) is { } detail)
+                    {
+                        <a class="btn btn-outline-primary btn-sm" href="@detail" target="_blank" rel="noopener noreferrer">@S["KnOpenDetail"]</a>
+                    }
+                    @if (KnowledgeText.SafeUrl(_row.ListingUrl) is { } listing)
+                    {
+                        <a class="btn btn-outline-secondary btn-sm" href="@listing" target="_blank" rel="noopener noreferrer">@S["KnOpenListing"]</a>
+                    }
+                    <div class="text-muted">
+                        @S["KnFirstSeen"]: @_row.FirstSeenUtc.ToLocalTime().ToString("dd.MM.yyyy")<br />
+                        @S["KnLastSeen"]: @_row.LastSeenUtc.ToLocalTime().ToString("dd.MM.yyyy HH:mm")<br />
+                        @S["KnSource"]: @_row.SourceName
+                    </div>
+                </div>
+            </div>
+            <div class="small text-muted">GUID: <code class="small">@_row.Guid</code></div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Guid { get; set; }
+
+    private bool _loading = true;
+    private string? _error;
+    private KnowledgeServerRow? _row;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _row = await Db.QueryFirstOrDefaultAsync<KnowledgeServerRow>(
+                @"SELECT ""Guid"", ""Name"", ""Style"", ""MaxLevel"", ""ShortDescription"", ""OnlineText"",
+                         ""CommentsCount"", ""ListingUrl"", ""DetailUrl"", ""FirstSeenUtc"", ""LastSeenUtc"",
+                         ""IsActive"", ""SourceName"", ""UpdatedAt""
+                  FROM ""KnowledgeServers"" WHERE ""Guid"" = @g AND ""IsDeleted"" = FALSE",
+                new { g = Guid });
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+        finally { _loading = false; }
+    }
+}

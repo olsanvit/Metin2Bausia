@@ -20,6 +20,9 @@ public sealed class AdminAppFactory : WebApplicationFactory<Program>, IAsyncLife
 {
     public static readonly Guid ItemGuid = Guid.Parse("7e57a000-0000-4000-8000-000000000001");
     public static readonly Guid MobGuid = Guid.Parse("7e57a000-0000-4000-8000-000000000002");
+    public static readonly Guid ServerGuid = Guid.Parse("7e57a000-0000-4000-8000-000000000003");
+    public static readonly Guid MonsterGuid = Guid.Parse("7e57a000-0000-4000-8000-000000000004");
+    public static readonly Guid StoneGuid = Guid.Parse("7e57a000-0000-4000-8000-000000000005");
     public const int ItemVnum = 990001;
     public const int MobVnum = 990002;
 
@@ -61,6 +64,14 @@ public sealed class AdminAppFactory : WebApplicationFactory<Program>, IAsyncLife
             }
         }
 
+        // Migrace od 07 jsou idempotentní (IF NOT EXISTS) — existující lokální DB se tak doplní sama
+        foreach (var file in Directory.GetFiles(FindMigrationsDir(), "0*.sql").Order()
+                     .Where(f => string.CompareOrdinal(Path.GetFileName(f), "07") >= 0))
+        {
+            await using var migrate = new NpgsqlCommand(await File.ReadAllTextAsync(file), conn);
+            await migrate.ExecuteNonQueryAsync();
+        }
+
         const string seed = """
             DELETE FROM "Items" WHERE "Guid" = @ig OR "Vnum" = @iv;
             DELETE FROM "Mobs"  WHERE "Guid" = @mg OR "Vnum" = @mv;
@@ -80,12 +91,24 @@ public sealed class AdminAppFactory : WebApplicationFactory<Program>, IAsyncLife
                     17, 5151, 616, 21, 22, 23, 24,
                     105, 106, 30, 40, 55, 1777,
                     'approved', TRUE, 'imported');
+            DELETE FROM "KnowledgeServers"  WHERE "Guid" = @sg OR "DetailUrl" = 'https://example.test/server/1';
+            DELETE FROM "KnowledgeMonsters" WHERE "Guid" = @kg OR "NameUrl" = 'https://example.test/wiki/Test_Wolf';
+            DELETE FROM "KnowledgeStones"   WHERE "Guid" = @tg OR "NameUrl" = 'https://example.test/wiki/Test_Metin';
+            INSERT INTO "KnowledgeServers" ("Guid", "Name", "Style", "MaxLevel", "OnlineText", "ListingUrl", "DetailUrl", "IsActive")
+            VALUES (@sg, 'Testovací server', 'Oldschool', 105, '3 měsíce', 'https://example.test/list', 'https://example.test/server/1', TRUE);
+            INSERT INTO "KnowledgeMonsters" ("Guid", "Name", "NameUrl", "Element", "Race", "Level", "Location", "Exp", "MobVnum")
+            VALUES (@kg, 'Test Wolf (Ice)', 'https://example.test/wiki/Test_Wolf', 'Ice', 'Animal', '42', 'Seungryong Valley', '77', @mv);
+            INSERT INTO "KnowledgeStones" ("Guid", "Name", "NameUrl", "Spawn", "SkillBook", "Level")
+            VALUES (@tg, 'Test Metin', 'https://example.test/wiki/Test_Metin', 'Joan, Pyungmoo', '√', '10');
             """;
         await using var cmd = new NpgsqlCommand(seed, conn);
         cmd.Parameters.AddWithValue("ig", ItemGuid);
         cmd.Parameters.AddWithValue("iv", ItemVnum);
         cmd.Parameters.AddWithValue("mg", MobGuid);
         cmd.Parameters.AddWithValue("mv", MobVnum);
+        cmd.Parameters.AddWithValue("sg", ServerGuid);
+        cmd.Parameters.AddWithValue("kg", MonsterGuid);
+        cmd.Parameters.AddWithValue("tg", StoneGuid);
         await cmd.ExecuteNonQueryAsync();
     }
 

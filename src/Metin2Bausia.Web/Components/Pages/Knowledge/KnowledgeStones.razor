@@ -1,0 +1,123 @@
+@page "/knowledge/stones"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject IDbService Db
+
+<PageTitle>@S["KnStonesTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["KnStonesTitle"]</h2>
+<p class="text-muted mb-3">@S["KnStonesIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">@S["DbError", _error]</div>
+}
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <input class="form-control form-control-sm" style="max-width:240px"
+           placeholder="@S["Search"]" @bind="_search" @bind:event="oninput" />
+    <select class="form-select form-select-sm" style="max-width:200px" @bind="_drop">
+        <option value="">@S["KnAllDrops"]</option>
+        <option value="skillbook">@S["KnSkillBook"]</option>
+        <option value="spirit">@S["KnSpirit"]</option>
+        <option value="soul">@S["KnSoul"]</option>
+    </select>
+    <span class="text-muted small ms-auto">@S["ShownOf", Filtered.Count(), _rows.Count]</span>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_rows.Count == 0)
+{
+    <div class="alert alert-info">@S["KnEmpty"]</div>
+}
+else
+{
+    <div class="table-responsive list-table">
+        <table class="table table-sm table-hover align-middle">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <SortableHeader Field="Name" Label="@S["KnColName"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <SortableHeader Field="Level" Label="@S["KnLevel"]" @bind-SortBy="_sortBy" @bind-Ascending="_asc" />
+                    <th>@S["KnSpawn"]</th>
+                    <th class="text-center" style="width:90px">@S["KnSkillBook"]</th>
+                    <th class="text-center" style="width:90px">@S["KnSpirit"]</th>
+                    <th class="text-center" style="width:90px">@S["KnSoul"]</th>
+                    <th style="width:50px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Shown)
+                {
+                    <tr>
+                        <td>@r.Name</td>
+                        <td>@r.Level</td>
+                        <td class="small text-muted">@r.Spawn</td>
+                        <td class="text-center">@Check(r.SkillBook)</td>
+                        <td class="text-center">@Check(r.Spirit)</td>
+                        <td class="text-center">@Check(r.Soul)</td>
+                        <td><a href="/knowledge/stones/@r.Guid" class="btn btn-outline-secondary btn-sm py-0">→</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="list-cards">
+        @foreach (var r in Shown)
+        {
+            <div class="list-card">
+                <a class="list-card__main" href="/knowledge/stones/@r.Guid">
+                    <div class="list-card__title">@r.Name</div>
+                    <div class="list-card__meta">
+                        @if (r.Level != "") { <span class="small">Lv @r.Level</span> }
+                        <span class="small text-muted">@r.Spawn</span>
+                    </div>
+                </a>
+                <span class="text-muted">›</span>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool _loading = true;
+    private string? _error;
+    private List<KnowledgeStoneRow> _rows = [];
+    private string _search = "", _drop = "";
+    private string _sortBy = "Level";
+    private bool _asc = true;
+
+    private static string Check(string value) => KnowledgeText.IsChecked(value) ? "✓" : "";
+
+    private IEnumerable<KnowledgeStoneRow> Filtered => _rows.Where(r =>
+        (string.IsNullOrEmpty(_search) ||
+            r.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+            r.Spawn.Contains(_search, StringComparison.OrdinalIgnoreCase)) &&
+        _drop switch
+        {
+            "skillbook" => KnowledgeText.IsChecked(r.SkillBook),
+            "spirit"    => KnowledgeText.IsChecked(r.Spirit),
+            "soul"      => KnowledgeText.IsChecked(r.Soul),
+            _           => true
+        });
+
+    private IEnumerable<KnowledgeStoneRow> Shown => _sortBy == "Name"
+        ? (_asc ? Filtered.OrderBy(r => r.Name) : Filtered.OrderByDescending(r => r.Name))
+        : (_asc ? Filtered.OrderBy(r => r.LevelNumber ?? int.MaxValue).ThenBy(r => r.Name)
+                : Filtered.OrderByDescending(r => r.LevelNumber ?? -1).ThenBy(r => r.Name));
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _rows = (await Db.QueryAsync<KnowledgeStoneRow>(
+                @"SELECT ""Guid"", ""Name"", ""Spawn"", ""SkillBook"", ""Spirit"", ""Soul"", ""Level""
+                  FROM ""KnowledgeStones"" WHERE ""IsDeleted"" = FALSE")).ToList();
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+        finally { _loading = false; }
+    }
+}
