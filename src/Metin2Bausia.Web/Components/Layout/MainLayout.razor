@@ -1,34 +1,76 @@
 @inherits LayoutComponentBase
 @attribute [Authorize]
+@inject Metin2Navigation Navigation
+@inject NavigationManager Nav
 
+@* Společná navigace ze SharedServices (kaskáda z USM 13. 10.): panel Znalosti / Admin, horní lišta
+   s motivem, jazykem a profilem, na mobilu spodní lišta s Menu. Layout je SSR — panel se na mobilu
+   vysouvá checkboxem bez JS; interaktivní jsou jen ostrůvky v horní liště. *@
 <div class="page">
-    @* Mobilní menu bez JS: layout je SSR, @onclick by tu nereagoval — stav drží skrytý checkbox *@
-    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true" tabindex="-1" />
-    <label for="nav-toggle" class="nav-backdrop"></label>
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-    <main>
-        <div class="top-row px-3 px-md-4">
-            <label for="nav-toggle" class="nav-toggle-btn" title="@S["Menu"]" aria-label="@S["Menu"]">☰</label>
-            <a href="/" class="fw-semibold text-decoration-none text-body">@S["AdminTitle"]</a>
+    <input type="checkbox" id="app-nav-toggle" class="app-nav-toggle" aria-hidden="true" tabindex="-1" />
+    <label for="app-nav-toggle" class="app-nav-backdrop" aria-hidden="true"></label>
 
-            @* Jazyk i uživatelské menu reagují na klik, ale layout je SSR — proto samostatné interaktivní ostrůvky *@
-            <div class="ms-auto d-flex align-items-center gap-2">
-                <span class="d-none d-sm-inline-flex"><LangSwitcher @rendermode="InteractiveServer" /></span>
-                <AuthorizeView>
-                    <Authorized>
-                        <AvatarDropdown @rendermode="InteractiveServer"
-                                        UserName="@(context.User.Identity?.Name ?? "?")"
-                                        ProfileHref=""
-                                        SettingsHref="/account/change-password"
-                                        LogoutHref="/account/logout" />
-                    </Authorized>
-                </AuthorizeView>
-            </div>
-        </div>
+    @if (_nav is not null)
+    {
+        <aside class="app-shell-side"
+               onclick="if(event.target.closest('a'))document.getElementById('app-nav-toggle').checked=false">
+            <AppSideNav Sections="_nav.Sections" IsAdmin="_isAdmin" AdminOpen="_onAdminPage"
+                        AriaLabel="@S["Menu"]" CloseLabel="@S["Nav2Close"]">
+                <Brand>
+                    <a class="app-shell-brand" href="/">⚔️ Metin2 Bausia</a>
+                </Brand>
+            </AppSideNav>
+        </aside>
+    }
+
+    <main>
+        <AuthorizeView>
+            <Authorized>
+                <AppTopBar UserName="@context.User.Identity?.Name">
+                    <Leading>
+                        <a class="app-shell-brand d-md-none" href="/" aria-label="Metin2 Bausia">⚔️</a>
+                    </Leading>
+                    <Profile>
+                        <ThemePicker @rendermode="InteractiveServer" />
+                        <LangSwitcher @rendermode="InteractiveServer" />
+                        <a class="btn btn-outline-secondary btn-sm" href="/account/change-password" title="@S["Nav2ChangePassword"]">
+                            <i class="bi bi-key"></i><span class="d-none d-lg-inline ms-1">@S["Nav2ChangePassword"]</span>
+                        </a>
+                        <a class="btn btn-outline-secondary btn-sm" href="/account/logout">
+                            <i class="bi bi-box-arrow-right"></i><span class="d-none d-lg-inline ms-1">@S["Nav2Logout"]</span>
+                        </a>
+                    </Profile>
+                </AppTopBar>
+            </Authorized>
+        </AuthorizeView>
+
         <article class="content px-3 px-md-4">
             @Body
         </article>
     </main>
+
+    @if (_nav is not null)
+    {
+        <AppBottomNav Items="_nav.Bottom" MenuLabel="@S["Menu"]" AriaLabel="@S["Nav2Quick"]" />
+    }
 </div>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    private Metin2Navigation.Model? _nav;
+    private bool _isAdmin;
+    private bool _onAdminPage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var user = AuthState is null ? null : (await AuthState).User;
+        _isAdmin = user?.IsInRole("Admin") == true;
+
+        var path = "/" + Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#')[0];
+        _onAdminPage = Metin2Navigation.IsAdminPath(path);
+
+        // Nepřihlášený panel nevidí — všechny odkazy vedou na stránky za [Authorize]
+        _nav = user?.Identity?.IsAuthenticated == true ? await Navigation.BuildAsync() : null;
+    }
+}

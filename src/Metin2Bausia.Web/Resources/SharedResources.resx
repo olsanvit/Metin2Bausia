@@ -1197,4 +1197,70 @@
   <data name="KnNoStone" xml:space="preserve">
     <value>Mob {0} je kámen — monstrum s ním párovat nejde.</value>
   </data>
+  <data name="Nav2SecKnowledge" xml:space="preserve">
+    <value>Znalosti</value>
+  </data>
+  <data name="Nav2SecAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="Nav2Dashboard" xml:space="preserve">
+    <value>Přehled</value>
+  </data>
+  <data name="Nav2ItemsPending" xml:space="preserve">
+    <value>Itemy ke schválení</value>
+  </data>
+  <data name="Nav2MobsPending" xml:space="preserve">
+    <value>Mobové ke schválení</value>
+  </data>
+  <data name="Nav2Stats" xml:space="preserve">
+    <value>Statistiky</value>
+  </data>
+  <data name="Nav2KnServers" xml:space="preserve">
+    <value>Servery</value>
+  </data>
+  <data name="Nav2KnMonsters" xml:space="preserve">
+    <value>Monstra (wiki)</value>
+  </data>
+  <data name="Nav2KnStones" xml:space="preserve">
+    <value>Kameny (wiki)</value>
+  </data>
+  <data name="Nav2ManageItems" xml:space="preserve">
+    <value>Itemy</value>
+  </data>
+  <data name="Nav2ManageMobs" xml:space="preserve">
+    <value>Mobové / NPC / Metiny</value>
+  </data>
+  <data name="Nav2ManageMaps" xml:space="preserve">
+    <value>Mapy</value>
+  </data>
+  <data name="Nav2ManageQuests" xml:space="preserve">
+    <value>Questy</value>
+  </data>
+  <data name="Nav2ManageSystems" xml:space="preserve">
+    <value>Systémy</value>
+  </data>
+  <data name="Nav2ManageGroups" xml:space="preserve">
+    <value>Skupiny</value>
+  </data>
+  <data name="Nav2Reports" xml:space="preserve">
+    <value>Agent reporty</value>
+  </data>
+  <data name="Nav2Review" xml:space="preserve">
+    <value>Ruční review</value>
+  </data>
+  <data name="Nav2KnLink" xml:space="preserve">
+    <value>Párování s moby</value>
+  </data>
+  <data name="Nav2Close" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
+  <data name="Nav2Quick" xml:space="preserve">
+    <value>Rychlá navigace</value>
+  </data>
+  <data name="Nav2Logout" xml:space="preserve">
+    <value>Odhlásit</value>
+  </data>
+  <data name="Nav2ChangePassword" xml:space="preserve">
+    <value>Změnit heslo</value>
+  </data>
 </root>

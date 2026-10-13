@@ -1197,4 +1197,70 @@
   <data name="KnNoStone" xml:space="preserve">
     <value>Mob {0} ist ein Stein — ein Monster kann nicht damit verknüpft werden.</value>
   </data>
+  <data name="Nav2SecKnowledge" xml:space="preserve">
+    <value>Wissen</value>
+  </data>
+  <data name="Nav2SecAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="Nav2Dashboard" xml:space="preserve">
+    <value>Übersicht</value>
+  </data>
+  <data name="Nav2ItemsPending" xml:space="preserve">
+    <value>Items zur Freigabe</value>
+  </data>
+  <data name="Nav2MobsPending" xml:space="preserve">
+    <value>Mobs zur Freigabe</value>
+  </data>
+  <data name="Nav2Stats" xml:space="preserve">
+    <value>Statistiken</value>
+  </data>
+  <data name="Nav2KnServers" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="Nav2KnMonsters" xml:space="preserve">
+    <value>Monster (Wiki)</value>
+  </data>
+  <data name="Nav2KnStones" xml:space="preserve">
+    <value>Steine (Wiki)</value>
+  </data>
+  <data name="Nav2ManageItems" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="Nav2ManageMobs" xml:space="preserve">
+    <value>Mobs / NPC / Metins</value>
+  </data>
+  <data name="Nav2ManageMaps" xml:space="preserve">
+    <value>Karten</value>
+  </data>
+  <data name="Nav2ManageQuests" xml:space="preserve">
+    <value>Quests</value>
+  </data>
+  <data name="Nav2ManageSystems" xml:space="preserve">
+    <value>Systeme</value>
+  </data>
+  <data name="Nav2ManageGroups" xml:space="preserve">
+    <value>Gruppen</value>
+  </data>
+  <data name="Nav2Reports" xml:space="preserve">
+    <value>Agent-Berichte</value>
+  </data>
+  <data name="Nav2Review" xml:space="preserve">
+    <value>Manuelle Prüfung</value>
+  </data>
+  <data name="Nav2KnLink" xml:space="preserve">
+    <value>Mit Mobs verknüpfen</value>
+  </data>
+  <data name="Nav2Close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="Nav2Quick" xml:space="preserve">
+    <value>Schnellnavigation</value>
+  </data>
+  <data name="Nav2Logout" xml:space="preserve">
+    <value>Abmelden</value>
+  </data>
+  <data name="Nav2ChangePassword" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
 </root>

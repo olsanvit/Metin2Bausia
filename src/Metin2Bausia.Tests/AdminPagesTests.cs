@@ -67,6 +67,32 @@ public class AdminPagesTests(AdminAppFactory factory)
     }
 
     [Fact]
+    public async Task Layout_UsesSharedNavigation()
+    {
+        var html = await GetOkHtml("/");
+
+        html.Should().Contain("app-sidenav").And.Contain("app-bottomnav").And.Contain("app-topbar");
+        html.Should().Contain("href=\"/knowledge/servers\"").And.Contain("href=\"/stats\"");
+
+        // Admin sekce je sbalená (details), detaily v menu nejsou
+        var admin = html[html.IndexOf("<details class=\"app-sidenav-section\"", StringComparison.Ordinal)..];
+        admin.Should().Contain("href=\"/manage/items\"").And.Contain("href=\"/knowledge/link\"");
+        html.Should().NotContain("href=\"/manage/items/");
+
+        // Spodní lišta (herní menu) nevede do adminu
+        var bottomStart = html.IndexOf("class=\"app-bottomnav\"", StringComparison.Ordinal);
+        var bottom = html[bottomStart..html.IndexOf("</nav>", bottomStart, StringComparison.Ordinal)];
+        bottom.Should().NotContain("/manage").And.NotContain("/reports").And.NotContain("/review");
+    }
+
+    [Fact]
+    public async Task Layout_OpensAdminSectionOnAdminPage()
+    {
+        var html = await GetOkHtml("/manage/maps");
+        html.Should().MatchRegex("<details class=\"app-sidenav-section\"[^>]*open");
+    }
+
+    [Fact]
     public async Task KnowledgeDetails_ShowSeededRows()
     {
         var server = await GetOkHtml($"/knowledge/servers/{AdminAppFactory.ServerGuid}");

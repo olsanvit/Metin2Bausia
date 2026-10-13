@@ -17,6 +17,9 @@
     @* Bootstrap Icons: sdílené komponenty (UserNavRow) je používají, Bootswatch je neobsahuje *@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="app.css" />
+    @* Scoped CSS aplikace a SharedServices — bez nich by AppSideNav/AppTopBar/AppBottomNav byly bez stylů *@
+    <link rel="stylesheet" href="@Assets["Metin2Bausia.Web.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/SharedServices/SharedServices.bundle.scp.css"]" />
     <HeadOutlet />
 </head>
 <body>

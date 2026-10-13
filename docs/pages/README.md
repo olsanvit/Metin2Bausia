@@ -4,6 +4,13 @@
 > case-insensitive systém a přepsal by `Index.md` (dokumentaci dashboardu). Přesně to se
 > stalo v commitu `7bac2e5`; obsah se musel obnovit z historie. Rozcestník je proto tady.
 
+## Navigace
+
+Od 13. 10. 2026 společné komponenty ze SharedServices (kaskáda z USM): `AppSideNav` (sekce **Znalosti**
+a sbalená **Admin**), `AppTopBar` (motiv, jazyk, změna hesla, odhlášení) a na mobilu `AppBottomNav`
+s tlačítkem Menu. Položky skládá `Services/Metin2Navigation.cs`, rozložení `Components/Layout/MainLayout.razor(.css)`.
+Detailové stránky v menu nejsou; spodní lišta nevede do adminu.
+
 ## Přehled stránek
 
 Stav k 29. 9. 2026, commit `7ed93e1`. Na produkci je nasazený stav po `e94ef2e`.
