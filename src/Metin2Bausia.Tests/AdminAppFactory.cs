@@ -12,6 +12,16 @@ using Npgsql;
 namespace Metin2Bausia.Tests;
 
 /// <summary>
+/// Jedna fixture pro všechny testy nad sdílenou DB — dvě instance by seedovaly souběžně
+/// a padaly na duplicitním klíči.
+/// </summary>
+[CollectionDefinition(Name)]
+public sealed class AdminDbCollection : ICollectionFixture<AdminAppFactory>
+{
+    public const string Name = "AdminDb";
+}
+
+/// <summary>
 /// Aplikace s přihlášeným testovacím adminem a databází se schématem a vzorovými daty.
 /// Proč: admin je celý za [Authorize] a heslo do testů nepatří — testovací schéma autentizace
 /// existuje jen tady, produkční Program.cs zůstává beze změny.

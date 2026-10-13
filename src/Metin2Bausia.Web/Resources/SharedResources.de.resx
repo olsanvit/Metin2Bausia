@@ -1152,4 +1152,49 @@
   <data name="KnNo" xml:space="preserve">
     <value>Nein</value>
   </data>
+  <data name="NavKnLink" xml:space="preserve">
+    <value>🔗 Mit Mobs verknüpfen</value>
+  </data>
+  <data name="KnLinkTitle" xml:space="preserve">
+    <value>Wissen mit Mobs verknüpfen</value>
+  </data>
+  <data name="KnLinkIntro" xml:space="preserve">
+    <value>Nicht verknüpfte Monster und Steine aus dem Wiki. Eintrag wählen und einen der vorgeschlagenen Mobs bestätigen — sortiert nach Namen und Level.</value>
+  </data>
+  <data name="KnLinkMonsters" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="KnLinkStones" xml:space="preserve">
+    <value>Steine</value>
+  </data>
+  <data name="KnUnlinkedCount" xml:space="preserve">
+    <value>Nicht verknüpft: {0}</value>
+  </data>
+  <data name="KnAllLinked" xml:space="preserve">
+    <value>Alles ist verknüpft oder es gibt noch keine Daten.</value>
+  </data>
+  <data name="KnPickRow" xml:space="preserve">
+    <value>Eintrag wählen — vorgeschlagene Mobs erscheinen.</value>
+  </data>
+  <data name="KnNoCandidates" xml:space="preserve">
+    <value>Kein passender Mob. Die Vnum kann im Detail manuell eingegeben werden.</value>
+  </data>
+  <data name="KnScore" xml:space="preserve">
+    <value>Übereinstimmung {0} %</value>
+  </data>
+  <data name="KnDoLink" xml:space="preserve">
+    <value>Verknüpfen</value>
+  </data>
+  <data name="KnDetail" xml:space="preserve">
+    <value>Detail</value>
+  </data>
+  <data name="KnFindCandidates" xml:space="preserve">
+    <value>Kandidaten suchen</value>
+  </data>
+  <data name="KnNeedStone" xml:space="preserve">
+    <value>Mob {0} ist kein Stein (Typ STONE).</value>
+  </data>
+  <data name="KnNoStone" xml:space="preserve">
+    <value>Mob {0} ist ein Stein — ein Monster kann nicht damit verknüpft werden.</value>
+  </data>
 </root>

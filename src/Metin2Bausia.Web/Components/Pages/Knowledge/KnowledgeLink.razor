@@ -1,0 +1,179 @@
+@page "/knowledge/link"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject IDbService Db
+@inject KnowledgeLinkService Links
+
+<PageTitle>@S["KnLinkTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["KnLinkTitle"]</h2>
+<p class="text-muted mb-3">@S["KnLinkIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">@S["DbError", _error]</div>
+}
+
+<div class="toolbar mb-3 d-flex gap-2 align-items-center flex-wrap">
+    <div class="btn-group btn-group-sm" role="group">
+        <button class="btn @(_kind == KnowledgeKind.Monster ? "btn-primary" : "btn-outline-primary")"
+                @onclick="() => SwitchKindAsync(KnowledgeKind.Monster)">@S["KnLinkMonsters"]</button>
+        <button class="btn @(_kind == KnowledgeKind.Stone ? "btn-primary" : "btn-outline-primary")"
+                @onclick="() => SwitchKindAsync(KnowledgeKind.Stone)">@S["KnLinkStones"]</button>
+    </div>
+    <input class="form-control form-control-sm" style="max-width:240px"
+           placeholder="@S["Search"]" @bind="_search" @bind:event="oninput" />
+    <span class="text-muted small ms-auto">@S["KnUnlinkedCount", Filtered.Count()]</span>
+</div>
+
+@if (_loading)
+{
+    <p>@S["Loading"]</p>
+}
+else if (_error == null && _rows.Count == 0)
+{
+    <div class="alert alert-info">@S["KnAllLinked"]</div>
+}
+else if (_error == null)
+{
+    <div class="row g-3">
+        @* Na mobilu jdou kandidáti nahoru — jinak by po výběru byli až pod dlouhým seznamem *@
+        <div class="col-lg-7 order-1 order-lg-2">
+            @if (_selected == null)
+            {
+                <div class="text-muted small">@S["KnPickRow"]</div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-header">
+                        <strong>@_selected.Name</strong>
+                        @if (_selected.Level != "") { <span class="small text-muted ms-1">Lv @_selected.Level</span> }
+                        <a class="small ms-2" href="/knowledge/@(_kind == KnowledgeKind.Stone ? "stones" : "monsters")/@_selected.Guid">@S["KnDetail"]</a>
+                    </div>
+                    <div class="card-body p-2">
+                        @if (_candidates.Count == 0)
+                        {
+                            <div class="text-muted small p-2">@S["KnNoCandidates"]</div>
+                        }
+                        <div class="d-grid gap-2">
+                            @foreach (var c in _candidates)
+                            {
+                                <div class="list-card">
+                                    <div class="list-card__main">
+                                        <div class="list-card__title">@c.Mob.Label</div>
+                                        <div class="list-card__meta">
+                                            <code class="small">@c.Mob.Vnum</code>
+                                            @if (c.Mob.Level.HasValue) { <span class="small">Lv @c.Mob.Level</span> }
+                                            <span class="badge bg-light text-dark">@c.Mob.MobType</span>
+                                            <span class="small text-muted">@S["KnScore", (int)Math.Round(c.Score * 100)]</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline-success btn-sm" @onclick="() => LinkAsync(c.Mob)">@S["KnDoLink"]</button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-5 order-2 order-lg-1">
+            <div class="list-group">
+                @foreach (var r in Filtered.Take(MaxRows))
+                {
+                    <button type="button"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(r == _selected ? "active" : "")"
+                            @onclick="() => Select(r)">
+                        <span class="text-truncate">@r.Name</span>
+                        <span class="small ms-2 text-nowrap">@(r.Level == "" ? "" : "Lv " + r.Level)</span>
+                    </button>
+                }
+            </div>
+            @if (Filtered.Count() > MaxRows)
+            {
+                <p class="text-muted small mt-2">@S["KnTooMany", MaxRows]</p>
+            }
+        </div>
+    </div>
+}
+
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
+
+@code {
+    private const int MaxRows = 200;
+
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+    [SupplyParameterFromQuery(Name = "kind")] public string? KindQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "id")] public Guid? IdQuery { get; set; }
+
+    private bool _loading = true;
+    private string? _error;
+    private KnowledgeKind _kind;
+    private List<KnowledgeLinkRow> _rows = [];
+    private List<MobCandidate> _mobs = [];
+    private List<ScoredCandidate> _candidates = [];
+    private KnowledgeLinkRow? _selected;
+    private string _search = "";
+
+    private IEnumerable<KnowledgeLinkRow> Filtered => _rows.Where(r =>
+        string.IsNullOrEmpty(_search) || r.Name.Contains(_search, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        _kind = string.Equals(KindQuery, "stone", StringComparison.OrdinalIgnoreCase) ? KnowledgeKind.Stone : KnowledgeKind.Monster;
+        try
+        {
+            _mobs = (await Db.QueryAsync<MobCandidate>(
+                @"SELECT ""Guid"", ""Vnum"", ""Name"", ""LocaleName"", ""MobType"", ""Level""
+                  FROM ""Mobs"" WHERE ""IsDeleted"" = FALSE AND ""Vnum"" IS NOT NULL")).ToList();
+            await LoadRowsAsync();
+            if (IdQuery is { } id && _rows.FirstOrDefault(r => r.Guid == id) is { } row) Select(row);
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+        finally { _loading = false; }
+    }
+
+    private async Task LoadRowsAsync()
+    {
+        var table = KnowledgeLinking.TableOf(_kind);
+        _rows = (await Db.QueryAsync<KnowledgeLinkRow>(
+            $@"SELECT ""Guid"", ""Name"", ""Level"" FROM ""{table}""
+               WHERE ""IsDeleted"" = FALSE AND ""MobVnum"" IS NULL ORDER BY ""Name""")).ToList();
+        _selected = null;
+        _candidates = [];
+    }
+
+    private async Task SwitchKindAsync(KnowledgeKind kind)
+    {
+        if (kind == _kind) return;
+        _kind = kind;
+        try { await LoadRowsAsync(); }
+        catch (Exception ex) { ShowError(ex); }
+    }
+
+    private void Select(KnowledgeLinkRow row)
+    {
+        _selected = row;
+        _candidates = KnowledgeLinking.Rank(_kind, row.Name, row.Level, _mobs);
+    }
+
+    private async Task LinkAsync(MobCandidate mob)
+    {
+        if (_selected == null) return;
+        try
+        {
+            var (result, _) = await Links.LinkAsync(_kind, _selected.Guid, mob.Vnum, await AuthState.OperatorNameAsync());
+            if (result != LinkResult.Ok)
+            {
+                ShowProblem(result == LinkResult.RowNotFound ? S["NotFound"] : S["KnMobMissing", mob.Vnum]);
+                return;
+            }
+            ShowOk(S["KnLinked", _selected.Name, mob.Label]);
+            _rows.Remove(_selected);
+            _selected = null;
+            _candidates = [];
+        }
+        catch (Exception ex) { ShowError(ex); }
+    }
+}

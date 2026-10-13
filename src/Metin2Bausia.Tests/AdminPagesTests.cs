@@ -8,7 +8,8 @@ namespace Metin2Bausia.Tests;
 /// Stránky adminu vykreslené na serveru (prerender) s přihlášeným testovacím adminem.
 /// Ověřuje dotazy, mapování Dapperu a markup — interaktivní uložení se tu nespouští.
 /// </summary>
-public class AdminPagesTests(AdminAppFactory factory) : IClassFixture<AdminAppFactory>
+[Collection(AdminDbCollection.Name)]
+public class AdminPagesTests(AdminAppFactory factory)
 {
     private readonly HttpClient _client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
@@ -29,6 +30,8 @@ public class AdminPagesTests(AdminAppFactory factory) : IClassFixture<AdminAppFa
     [InlineData("/knowledge/servers")]
     [InlineData("/knowledge/monsters")]
     [InlineData("/knowledge/stones")]
+    [InlineData("/knowledge/link")]
+    [InlineData("/knowledge/link?kind=stone")]
     public async Task AdminPage_RendersWithoutError(string url)
     {
         var html = await GetOkHtml(url);

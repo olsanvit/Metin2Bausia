@@ -1152,4 +1152,49 @@
   <data name="KnNo" xml:space="preserve">
     <value>Ne</value>
   </data>
+  <data name="NavKnLink" xml:space="preserve">
+    <value>🔗 Párování s moby</value>
+  </data>
+  <data name="KnLinkTitle" xml:space="preserve">
+    <value>Párování Znalostí s moby</value>
+  </data>
+  <data name="KnLinkIntro" xml:space="preserve">
+    <value>Nespárovaná monstra a kameny z wiki. Vyber záznam a potvrď jednoho z navržených mobů — návrh řadí podle shody jména a levelu.</value>
+  </data>
+  <data name="KnLinkMonsters" xml:space="preserve">
+    <value>Monstra</value>
+  </data>
+  <data name="KnLinkStones" xml:space="preserve">
+    <value>Kameny</value>
+  </data>
+  <data name="KnUnlinkedCount" xml:space="preserve">
+    <value>Nespárováno: {0}</value>
+  </data>
+  <data name="KnAllLinked" xml:space="preserve">
+    <value>Vše je spárované, nebo zatím nejsou žádná data.</value>
+  </data>
+  <data name="KnPickRow" xml:space="preserve">
+    <value>Vyber záznam vlevo — ukážou se navržení mobové.</value>
+  </data>
+  <data name="KnNoCandidates" xml:space="preserve">
+    <value>Žádný vhodný mob. Vnum lze zadat ručně v detailu záznamu.</value>
+  </data>
+  <data name="KnScore" xml:space="preserve">
+    <value>shoda {0} %</value>
+  </data>
+  <data name="KnDoLink" xml:space="preserve">
+    <value>Spárovat</value>
+  </data>
+  <data name="KnDetail" xml:space="preserve">
+    <value>detail</value>
+  </data>
+  <data name="KnFindCandidates" xml:space="preserve">
+    <value>Najít kandidáty</value>
+  </data>
+  <data name="KnNeedStone" xml:space="preserve">
+    <value>Mob {0} není kámen (typ STONE).</value>
+  </data>
+  <data name="KnNoStone" xml:space="preserve">
+    <value>Mob {0} je kámen — monstrum s ním párovat nejde.</value>
+  </data>
 </root>
