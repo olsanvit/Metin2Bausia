@@ -1263,4 +1263,13 @@
   <data name="Nav2ChangePassword" xml:space="preserve">
     <value>Změnit heslo</value>
   </data>
+  <data name="Nav2BottomItems" xml:space="preserve">
+    <value>Itemy</value>
+  </data>
+  <data name="Nav2BottomMobs" xml:space="preserve">
+    <value>Mobové</value>
+  </data>
+  <data name="Nav2BottomMonsters" xml:space="preserve">
+    <value>Monstra</value>
+  </data>
 </root>

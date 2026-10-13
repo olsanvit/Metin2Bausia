@@ -38,7 +38,7 @@ public sealed class Metin2Navigation(IStringLocalizer<SharedResources> S, IDbSer
             new("manage-items", S["Nav2ManageItems"], "bi-box", "/manage/items"),
             new("manage-mobs", S["Nav2ManageMobs"], "bi-bug-fill", "/manage/mobs"),
             new("manage-maps", S["Nav2ManageMaps"], "bi-map", "/manage/maps"),
-            new("manage-quests", S["Nav2ManageQuests"], "bi-scroll", "/manage/quests"),
+            new("manage-quests", S["Nav2ManageQuests"], "bi-file-earmark-code", "/manage/quests"),
             new("manage-systems", S["Nav2ManageSystems"], "bi-gear", "/manage/systems"),
             new("manage-groups", S["Nav2ManageGroups"], "bi-collection", "/manage/groups"),
             new("reports", S["Nav2Reports"], "bi-journal-text", "/reports"),
@@ -46,8 +46,15 @@ public sealed class Metin2Navigation(IStringLocalizer<SharedResources> S, IDbSer
             new("kn-link", S["Nav2KnLink"], "bi-link-45deg", "/knowledge/link"),
         ], AdminOnly: true);
 
-        // Spodní lišta na mobilu jen ze „Znalostí“ — admin správa je za tlačítkem Menu
-        IReadOnlyList<AppNavItem> bottom = [dashboard, pendingItems, pendingMobs, monsters];
+        // Spodní lišta na mobilu jen ze „Znalostí“ — admin správa je za tlačítkem Menu.
+        // Krátké popisky: „Itemy ke schválení“ se na 390 px pod ikonu nevešly
+        IReadOnlyList<AppNavItem> bottom =
+        [
+            dashboard,
+            pendingItems with { Label = S["Nav2BottomItems"] },
+            pendingMobs with { Label = S["Nav2BottomMobs"] },
+            monsters with { Label = S["Nav2BottomMonsters"] },
+        ];
 
         return new Model([knowledge, admin], bottom);
     }
