@@ -18,7 +18,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {
   ITEM_COLUMNS, MOB_COLUMNS, parseProto, parseGroupFile, attachMobDrops,
-  toContentGroups, dedupeFirstWins, parseMaps, readMapAllow, parseQuests,
+  toContentGroups, dedupeFirstWins, parseMaps, readMapAllow, parseQuests, mapLevelRange,
 } from "./parsers.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -123,9 +123,13 @@ const mapAllow = readMapAllow([
   path.join(repoRoot, "server/docker/docker-compose.yml"),
   path.join(repoRoot, "server/game/conf.cfg"),
 ]);
-const maps = parseMaps(path.join(data, "map"), mapAllow);
+const mobLevels = new Map(mobs.filter((m) => m.MobType === "MONSTER" || m.MobType === "STONE").map((m) => [m.Vnum, m.Level]));
+const mobGroups = parseGroupFile(path.join(data, "group.txt"));
+const mobGroupGroups = parseGroupFile(path.join(data, "group_group.txt"));
+const maps = parseMaps(path.join(data, "map"), mapAllow)
+  .map((m) => ({ ...m, ...mapLevelRange(m.SpawnMobs, mobLevels, mobGroups, mobGroupGroups) }));
 writeSql("03_maps.sql", "Maps z data/map", upsert("Maps", ["MapIndex"], maps.map((r) => ({ ...r, ...approvedFields(r.IsEnabled) })), PROTECTED));
-summary.maps = { rows: maps.length, mapAllowZdroj: mapAllow.size ? "compose/conf" : "prázdné", enabled: maps.filter((m) => m.IsEnabled).length, spawns: maps.reduce((a, m) => a + m.SpawnMobs.length, 0) };
+summary.maps = { rows: maps.length, mapAllowZdroj: mapAllow.size ? "compose/conf" : "prázdné", enabled: maps.filter((m) => m.IsEnabled).length, spawns: maps.reduce((a, m) => a + m.SpawnMobs.length, 0), withLevels: maps.filter((m) => m.MaxLevel > 0).length };
 
 const quests = parseQuests(path.join(data, "quest"));
 writeSql("04_quests.sql", "Quests z data/quest", upsert("Quests", ["FileName"], quests.map((r) => ({ ...r, ...approvedFields(r.IsEnabled) })), PROTECTED));

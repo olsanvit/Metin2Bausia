@@ -361,3 +361,25 @@ export function parseQuests(questDir) {
     };
   });
 }
+
+/**
+ * MinLevel/MaxLevel mapy z levelů mobů, kteří na ní spawnují. Herní soubory úroveň mapy nemají,
+ * proto bez výpočtu zůstávalo 0/0. Typ spawnu: m = mob, g = skupina (group.txt), r = skupina skupin
+ * (group_group.txt); druhé písmeno „a“ jen mění způsob rozmístění. Počítají se jen MONSTER a STONE —
+ * NPC a stráže (level 70–100) stojí i na startovních mapách a rozsah by zkreslily.
+ */
+export function mapLevelRange(spawns, mobLevels, groups, groupGroups) {
+  const groupMobs = new Map(groups.map((g) => [Number(g.kv.vnum?.[0]),
+    [g.kv.leader?.at(-1), ...g.rows.map((r) => r.at(-1))].map(Number).filter(Number.isFinite)]));
+  const ggGroups = new Map(groupGroups.map((g) => [Number(g.kv.vnum?.[0]), g.rows.map((r) => Number(r[1]))]));
+  const levels = [];
+  const addMob = (v) => { const l = mobLevels.get(v); if (l > 0) levels.push(l); };
+  const addGroup = (v) => (groupMobs.get(v) ?? []).forEach(addMob);
+  for (const s of spawns) {
+    const t = s.type.toLowerCase()[0];
+    if (t === "m") addMob(s.vnum);
+    else if (t === "g") addGroup(s.vnum);
+    else if (t === "r") (ggGroups.get(s.vnum) ?? []).forEach(addGroup);
+  }
+  return levels.length ? { MinLevel: Math.min(...levels), MaxLevel: Math.max(...levels) } : { MinLevel: 0, MaxLevel: 0 };
+}

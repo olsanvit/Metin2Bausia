@@ -15,7 +15,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import {
   ITEM_COLUMNS, MOB_COLUMNS, parseProto, parseNamesRows, parseGroupFile,
-  attachMobDrops, toContentGroups, dedupeFirstWins, parseMaps, readMapAllow, parseQuests,
+  attachMobDrops, toContentGroups, dedupeFirstWins, parseMaps, readMapAllow, parseQuests, mapLevelRange,
 } from "./parsers.mjs";
 import { buildItemProtoLine, buildMobProtoLine, buildNamesFile, ITEM_PROTO_HEADER, MOB_PROTO_HEADER } from "../../mcp/proto-format.js";
 
@@ -111,4 +111,15 @@ test("mapy, questy a skupiny mají jedinečné klíče pro upsert", { skip }, ()
   const keys = groups.map((g) => `${g.GroupType}:${g.GroupVnum}`);
   const dup = keys.filter((k, i) => keys.indexOf(k) !== i);
   assert.deepEqual([...new Set(dup)], [], "ContentGroups (GroupType, GroupVnum)");
+});
+
+test("mapLevelRange: mob, skupina i skupina skupin; NPC (bez levelu v mapě) se nepočítá", () => {
+  const levels = new Map([[101, 1], [102, 5], [201, 30]]);   // jen MONSTER/STONE — NPC sem import nedá
+  const groups = [{ kv: { vnum: ["7"], leader: ["Wolf", "102"] }, rows: [["1", "Wildhund", "101"]] }];
+  const groupGroups = [{ kv: { vnum: ["70"] }, rows: [["1", "7", "1"]] }];
+  const spawn = (type, vnum) => ({ type, vnum });
+
+  assert.deepEqual(mapLevelRange([spawn("m", 201), spawn("ga", 7)], levels, groups, groupGroups), { MinLevel: 1, MaxLevel: 30 });
+  assert.deepEqual(mapLevelRange([spawn("r", 70)], levels, groups, groupGroups), { MinLevel: 1, MaxLevel: 5 });
+  assert.deepEqual(mapLevelRange([spawn("m", 20354)], levels, groups, groupGroups), { MinLevel: 0, MaxLevel: 0 });
 });
