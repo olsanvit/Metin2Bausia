@@ -17,16 +17,6 @@ public class AdminUserServiceTests(AdminAppFactory factory)
 
     private static string NewEmail() => $"sub-{Guid.NewGuid():N}@test.example";
 
-    [Theory]
-    [InlineData("  Someone@Example.COM ", "someone@example.com")]
-    [InlineData("", null)]
-    [InlineData("bez-zavinace", null)]
-    [InlineData("a@b@c", null)]
-    [InlineData("@example.com", null)]
-    [InlineData("a b@example.com", null)]
-    public void Normalize_TrimsLowercasesAndRejectsGarbage(string input, string? expected) =>
-        AdminUserService.Normalize(input).Should().Be(expected);
-
     [Fact]
     public async Task Add_AllowsLoginAndWritesAudit()
     {
@@ -102,4 +92,18 @@ public class AdminUserServiceTests(AdminAppFactory factory)
             @"SELECT ""Action"" FROM ""ApprovalLog"" WHERE ""EntityTable"" = 'AdminUsers' AND ""EntityGuid"" = @guid
               ORDER BY ""CreatedAt"", ""Action""", new { guid })).ToList();
     }
+}
+
+/// <summary>Bez DB — běží i na build stroji bez testovací databáze.</summary>
+public class AdminEmailNormalizeTests
+{
+    [Theory]
+    [InlineData("  Someone@Example.COM ", "someone@example.com")]
+    [InlineData("", null)]
+    [InlineData("bez-zavinace", null)]
+    [InlineData("a@b@c", null)]
+    [InlineData("@example.com", null)]
+    [InlineData("a b@example.com", null)]
+    public void Normalize_TrimsLowercasesAndRejectsGarbage(string input, string? expected) =>
+        AdminUserService.Normalize(input).Should().Be(expected);
 }
