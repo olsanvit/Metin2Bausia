@@ -5,7 +5,7 @@
 @inject IDbService Db
 @inject NavigationManager Nav
 
-<PageTitle>@(_mob?.Name ?? S["MobDetailTitle"]) — Metin2Bausia</PageTitle>
+<PageTitle>@(_mob != null ? ContentLabels.MobName(_mob.Name, _mob.LocaleName) : S["MobDetailTitle"]) — Metin2Bausia</PageTitle>
 
 <div class="d-flex align-items-center gap-2 mb-3">
     <a href="/manage/mobs" class="btn btn-outline-secondary btn-sm">@S["BackToMobs"]</a>

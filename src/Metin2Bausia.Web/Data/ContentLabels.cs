@@ -84,4 +84,14 @@ public static class ContentLabels
     public static bool IsBossRank(string? r)
         => string.Equals(r, "boss", StringComparison.OrdinalIgnoreCase)
         || string.Equals(r, "king", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Jméno moba pro zobrazení. Upstream mob_proto.txt má u většiny mobů místo korejského jména
+    /// doslova „??“ (originál se ztratil už u zdroje) — tam se ukáže české jméno. Data se nemění,
+    /// aby export proto souboru zůstal shodný se serverem (rozhodnutí Vítka 16. 10.).
+    /// </summary>
+    public static string MobName(string? name, string? localeName) =>
+        string.IsNullOrWhiteSpace(name) || name.All(c => c is '?' or ' ' or '_')
+            ? (string.IsNullOrWhiteSpace(localeName) ? name ?? "" : localeName)
+            : name;
 }

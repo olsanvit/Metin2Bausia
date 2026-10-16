@@ -69,8 +69,8 @@ else
                         </td>
                         <td><code class="small">@mob.Vnum</code></td>
                         <td>
-                            <strong>@mob.Name</strong>
-                            @if (mob.LocaleName != null)
+                            <strong>@ContentLabels.MobName(mob.Name, mob.LocaleName)</strong>
+                            @if (mob.LocaleName != null && ContentLabels.MobName(mob.Name, mob.LocaleName) != mob.LocaleName)
                             { <small class="text-muted"> (@mob.LocaleName)</small> }
                         </td>
                         <td class="text-muted small">@mob.Level</td>
