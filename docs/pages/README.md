@@ -26,6 +26,7 @@ uživatel skončí na `/account/login`.
 | [Dashboard](Index.md) | `/` | ✅ | Urgentní fronta, stav agenta, posledních 5 běhů |
 | [Statistiky](StatsPage.md) | `/stats` | ✅ | Itemy podle typu, mobové podle ranku |
 | [Agent reporty](Reports.md) | `/reports` | ✅ | 50 posledních běhů, na mobilu karty |
+| [Administrace](Admin.md) | `/admin`, `/admin/access` | ✅ | přehled + správci v tabulce AdminUsers |
 | [Ruční review](Review.md) | `/review` | ✅ | Fronta `ManualReviewQueue` |
 | [Itemy (pending)](Items.md) | `/items` | ✅ | Schvalování, tlačítka 44 px |
 | [Mobové (pending)](Mobs.md) | `/mobs` | ✅ | Totéž pro moby |

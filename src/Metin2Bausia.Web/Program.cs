@@ -35,16 +35,16 @@ if (googleAuth.IsConfigured)
         o.ClientSecret = googleAuth.ClientSecret!;
         // Přihlášení končí ve stejné admin cookie jako přihlášení heslem — žádný druhý svět uživatelů
         o.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        o.Events.OnCreatingTicket = ctx =>
+        o.Events.OnCreatingTicket = async ctx =>
         {
             var email = ctx.Identity?.FindFirst(ClaimTypes.Email)?.Value;
-            var admin = ctx.HttpContext.RequestServices.GetRequiredService<AdminCredentialService>().AdminEmail;
-            if (!googleAuth.IsAllowed(email, admin))
+            // Správce spravuje admin na /admin/access (tabulka AdminUsers), ne appsettings
+            var admins = ctx.HttpContext.RequestServices.GetRequiredService<AdminUserService>();
+            if (!await admins.IsAllowedAsync(email))
                 throw new AuthenticationFailureException($"Účet {email} nemá do adminu přístup.");
 
             // Role musí přidat i tahle cesta, jinak by Google admin neprošel [Authorize(Roles = "Admin")]
             ctx.Identity!.AddClaim(new Claim(ClaimTypes.Role, "Admin"));
-            return Task.CompletedTask;
         };
         o.Events.OnRemoteFailure = ctx =>
         {
@@ -62,6 +62,7 @@ builder.Services.AddRazorPages();   // pro Login Razor Page (POST + HttpContext)
 
 // Admin přihlašovací údaje + MustChangePassword flag
 builder.Services.AddSingleton<AdminCredentialService>();
+builder.Services.AddSingleton<AdminUserService>();
 
 // ── Blazor ───────────────────────────────────────────────
 builder.Services.AddRazorComponents()
@@ -96,6 +97,7 @@ var app = builder.Build();
 // Fail fast: bez uloženého hesla i bez Admin:Password by admin vznikl až při prvním
 // přihlášení a chyba by se ukázala uživateli. Takhle kontejner rovnou nenaběhne s jasnou hláškou.
 _ = app.Services.GetRequiredService<AdminCredentialService>().MustChangePassword;
+await app.Services.GetRequiredService<AdminUserService>().SeedAsync();
 
 if (!app.Environment.IsDevelopment())
 {

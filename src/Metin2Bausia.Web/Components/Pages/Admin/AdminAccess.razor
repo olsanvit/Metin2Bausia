@@ -1,0 +1,116 @@
+@page "/admin/access"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@inject AdminUserService Admins
+
+<PageTitle>@S["AdmAccessTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["AdmAccessTitle"]</h2>
+<p class="text-muted mb-3">@S["AdmAccessIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-warning">@S["AdmAccessUnavailable", _error]</div>
+}
+else if (_rows == null)
+{
+    <p>@S["Loading"]</p>
+}
+else
+{
+    <form class="d-flex gap-2 flex-wrap mb-3" @onsubmit="AddAsync" @onsubmit:preventDefault>
+        <input type="email" class="form-control form-control-sm" style="max-width:320px" maxlength="254"
+               placeholder="@S["AdmEmailPlaceholder"]" @bind="_newEmail" aria-label="@S["AdmEmailPlaceholder"]" />
+        <button type="submit" class="btn btn-primary btn-sm" disabled="@_busy">
+            <i class="bi bi-person-plus me-1"></i>@S["AdmAdd"]
+        </button>
+    </form>
+
+    <div class="list-group">
+        @foreach (var r in _rows)
+        {
+            <div class="list-group-item d-flex align-items-center gap-2 flex-wrap">
+                <i class="bi @(r.IsSuperAdmin ? "bi-shield-fill-check text-warning" : "bi-person")"></i>
+                <span class="text-break">@r.Email</span>
+                @if (r.IsSuperAdmin)
+                {
+                    <span class="badge bg-warning text-dark">@S["AdmSuperAdmin"]</span>
+                }
+                <span class="small text-muted ms-auto">@r.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy") · @r.CreatedBy</span>
+                @if (!r.IsSuperAdmin)
+                {
+                    @if (_confirm == r.Guid)
+                    {
+                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveAsync(r)" disabled="@_busy">@S["AdmConfirmRemove"]</button>
+                        <button class="btn btn-outline-secondary btn-sm" @onclick="() => _confirm = null">@S["Cancel"]</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-outline-danger btn-sm" @onclick="() => _confirm = r.Guid">@S["AdmRemove"]</button>
+                    }
+                }
+            </div>
+        }
+    </div>
+}
+
+<ToastMessage Text="@ToastText" IsError="@ToastIsError" Stamp="@ToastStamp" />
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState>? AuthState { get; set; }
+
+    private List<AdminUserRow>? _rows;
+    private string? _error;
+    private string _newEmail = "";
+    private Guid? _confirm;
+    private bool _busy;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        try { _rows = await Admins.ListAsync(); _error = null; }
+        catch (Exception ex) { _error = LogError(ex); }
+    }
+
+    private async Task AddAsync()
+    {
+        _busy = true;
+        try
+        {
+            var result = await Admins.AddAsync(_newEmail, await AuthState.OperatorNameAsync());
+            switch (result)
+            {
+                case AdminChange.Ok:
+                    ShowOk(S["AdmAdded", _newEmail.Trim()]);
+                    _newEmail = "";
+                    await LoadAsync();
+                    break;
+                case AdminChange.AlreadyAdmin: ShowProblem(S["AdmAlready"]); break;
+                default: ShowProblem(S["AdmInvalidEmail"]); break;
+            }
+        }
+        catch (Exception ex) { ShowError(ex); }
+        finally { _busy = false; }
+    }
+
+    private async Task RemoveAsync(AdminUserRow row)
+    {
+        _busy = true;
+        try
+        {
+            var result = await Admins.RemoveAsync(row.Guid, await AuthState.OperatorNameAsync(), await AuthState.EmailAsync());
+            switch (result)
+            {
+                case AdminChange.Ok: ShowOk(S["AdmRemoved", row.Email]); break;
+                case AdminChange.CannotRemoveSelf: ShowProblem(S["AdmCannotRemoveSelf"]); break;
+                case AdminChange.CannotRemoveSuperAdmin: ShowProblem(S["AdmCannotRemoveSuper"]); break;
+                default: ShowProblem(S["NotFound"]); break;
+            }
+            _confirm = null;
+            await LoadAsync();
+        }
+        catch (Exception ex) { ShowError(ex); }
+        finally { _busy = false; }
+    }
+}

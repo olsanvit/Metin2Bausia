@@ -174,8 +174,8 @@ else
                          ""MobType"", ""Rank"", ""ContentStatus"", ""IsEnabled"", ""SourceName""
                   FROM ""Mobs""
                   WHERE ""IsDeleted"" = FALSE
-                  ORDER BY ""IsEnabled"" DESC, ""Vnum"" ASC NULLS LAST
-                  LIMIT 5000")).ToList();
+                  ORDER BY ""IsEnabled"" DESC, ""Vnum"" ASC NULLS LAST")).ToList();
+            // Bez LIMITu — stejná past jako u itemů (LIMIT 2000 schovával část dat); stránkuje se v paměti
         }
         catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }

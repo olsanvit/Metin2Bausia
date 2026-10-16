@@ -1272,4 +1272,70 @@
   <data name="Nav2BottomMonsters" xml:space="preserve">
     <value>Monstra</value>
   </data>
+  <data name="AdmTitle" xml:space="preserve">
+    <value>Administrace</value>
+  </data>
+  <data name="AdmIntro" xml:space="preserve">
+    <value>Přehled obsahu a správa přístupu do adminu.</value>
+  </data>
+  <data name="AdmPending" xml:space="preserve">
+    <value>Čeká na schválení</value>
+  </data>
+  <data name="AdmAgentRuns" xml:space="preserve">
+    <value>Běhy agenta</value>
+  </data>
+  <data name="AdmAdmins" xml:space="preserve">
+    <value>Správci</value>
+  </data>
+  <data name="AdmAccessTitle" xml:space="preserve">
+    <value>Správci a přístup</value>
+  </data>
+  <data name="AdmAccessIntro" xml:space="preserve">
+    <value>Kdo se smí přihlásit přes Google. Hlavní správce (super-admin) nejde odebrat; každá změna se zapíše do auditu.</value>
+  </data>
+  <data name="AdmAccessUnavailable" xml:space="preserve">
+    <value>Seznam správců zatím není k dispozici (chybí migrace 08?). Přístup se zatím řídí nastavením aplikace. Detail: {0}</value>
+  </data>
+  <data name="AdmEmailPlaceholder" xml:space="preserve">
+    <value>E-mail Google účtu</value>
+  </data>
+  <data name="AdmAdd" xml:space="preserve">
+    <value>Přidat správce</value>
+  </data>
+  <data name="AdmAdded" xml:space="preserve">
+    <value>Přidán správce {0}</value>
+  </data>
+  <data name="AdmAlready" xml:space="preserve">
+    <value>Tento e-mail už správcem je.</value>
+  </data>
+  <data name="AdmInvalidEmail" xml:space="preserve">
+    <value>Zadej platný e-mail.</value>
+  </data>
+  <data name="AdmSuperAdmin" xml:space="preserve">
+    <value>super-admin</value>
+  </data>
+  <data name="AdmRemove" xml:space="preserve">
+    <value>Odebrat</value>
+  </data>
+  <data name="AdmConfirmRemove" xml:space="preserve">
+    <value>Opravdu odebrat</value>
+  </data>
+  <data name="AdmRemoved" xml:space="preserve">
+    <value>Odebrán správce {0}</value>
+  </data>
+  <data name="AdmCannotRemoveSelf" xml:space="preserve">
+    <value>Sám sebe odebrat nejde.</value>
+  </data>
+  <data name="AdmCannotRemoveSuper" xml:space="preserve">
+    <value>Super-admina nejde odebrat.</value>
+  </data>
+  <data name="Nav2Admin" xml:space="preserve">
+    <value>Administrace</value>
+  </data>
+  <data name="Nav2AdminAccess" xml:space="preserve">
+    <value>Správci a přístup</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Zrušit</value>
+  </data>
 </root>

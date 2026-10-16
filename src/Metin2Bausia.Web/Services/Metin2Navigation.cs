@@ -35,6 +35,8 @@ public sealed class Metin2Navigation(IStringLocalizer<SharedResources> S, IDbSer
 
         var admin = new AppNavSection("admin", S["Nav2SecAdmin"],
         [
+            new("admin", S["Nav2Admin"], "bi-shield-lock", "/admin", ExactMatch: true),
+            new("admin-access", S["Nav2AdminAccess"], "bi-person-lock", "/admin/access"),
             new("manage-items", S["Nav2ManageItems"], "bi-box", "/manage/items"),
             new("manage-mobs", S["Nav2ManageMobs"], "bi-bug-fill", "/manage/mobs"),
             new("manage-maps", S["Nav2ManageMaps"], "bi-map", "/manage/maps"),
@@ -62,6 +64,7 @@ public sealed class Metin2Navigation(IStringLocalizer<SharedResources> S, IDbSer
     /// <summary>Admin sekce se otevře rozbalená, když je uživatel na některé z jejích stránek.</summary>
     public static bool IsAdminPath(string path) =>
         path.StartsWith("/manage", StringComparison.OrdinalIgnoreCase)
+        || path.StartsWith("/admin", StringComparison.OrdinalIgnoreCase)
         || path is "/reports" or "/review" or "/knowledge/link";
 
     private async Task<(int Items, int Mobs, int Review)> CountsAsync()

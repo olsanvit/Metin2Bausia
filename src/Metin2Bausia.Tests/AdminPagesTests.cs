@@ -32,6 +32,8 @@ public class AdminPagesTests(AdminAppFactory factory)
     [InlineData("/knowledge/stones")]
     [InlineData("/knowledge/link")]
     [InlineData("/knowledge/link?kind=stone")]
+    [InlineData("/admin")]
+    [InlineData("/admin/access")]
     public async Task AdminPage_RendersWithoutError(string url)
     {
         var html = await GetOkHtml(url);

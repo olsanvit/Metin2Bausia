@@ -1272,4 +1272,70 @@
   <data name="Nav2BottomMonsters" xml:space="preserve">
     <value>Monster</value>
   </data>
+  <data name="AdmTitle" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="AdmIntro" xml:space="preserve">
+    <value>Inhaltsübersicht und Verwaltung des Admin-Zugangs.</value>
+  </data>
+  <data name="AdmPending" xml:space="preserve">
+    <value>Wartet auf Freigabe</value>
+  </data>
+  <data name="AdmAgentRuns" xml:space="preserve">
+    <value>Agent-Läufe</value>
+  </data>
+  <data name="AdmAdmins" xml:space="preserve">
+    <value>Admins</value>
+  </data>
+  <data name="AdmAccessTitle" xml:space="preserve">
+    <value>Admins und Zugang</value>
+  </data>
+  <data name="AdmAccessIntro" xml:space="preserve">
+    <value>Wer sich mit Google anmelden darf. Der Super-Admin kann nicht entfernt werden; jede Änderung wird protokolliert.</value>
+  </data>
+  <data name="AdmAccessUnavailable" xml:space="preserve">
+    <value>Die Admin-Liste ist noch nicht verfügbar (Migration 08 fehlt?). Der Zugang folgt vorerst den App-Einstellungen. Detail: {0}</value>
+  </data>
+  <data name="AdmEmailPlaceholder" xml:space="preserve">
+    <value>E-Mail des Google-Kontos</value>
+  </data>
+  <data name="AdmAdd" xml:space="preserve">
+    <value>Admin hinzufügen</value>
+  </data>
+  <data name="AdmAdded" xml:space="preserve">
+    <value>Admin {0} hinzugefügt</value>
+  </data>
+  <data name="AdmAlready" xml:space="preserve">
+    <value>Diese E-Mail ist bereits Admin.</value>
+  </data>
+  <data name="AdmInvalidEmail" xml:space="preserve">
+    <value>Gültige E-Mail eingeben.</value>
+  </data>
+  <data name="AdmSuperAdmin" xml:space="preserve">
+    <value>Super-Admin</value>
+  </data>
+  <data name="AdmRemove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="AdmConfirmRemove" xml:space="preserve">
+    <value>Wirklich entfernen</value>
+  </data>
+  <data name="AdmRemoved" xml:space="preserve">
+    <value>Admin {0} entfernt</value>
+  </data>
+  <data name="AdmCannotRemoveSelf" xml:space="preserve">
+    <value>Sich selbst entfernen geht nicht.</value>
+  </data>
+  <data name="AdmCannotRemoveSuper" xml:space="preserve">
+    <value>Der Super-Admin kann nicht entfernt werden.</value>
+  </data>
+  <data name="Nav2Admin" xml:space="preserve">
+    <value>Administration</value>
+  </data>
+  <data name="Nav2AdminAccess" xml:space="preserve">
+    <value>Admins und Zugang</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
 </root>

@@ -16,4 +16,8 @@ public static class AuthExtensions
         var name = state.User.Identity?.Name;
         return string.IsNullOrWhiteSpace(name) ? "admin" : name;
     }
+
+    public static async Task<string?> EmailAsync(this Task<AuthenticationState>? authState) =>
+        authState is null ? null
+            : (await authState).User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
 }

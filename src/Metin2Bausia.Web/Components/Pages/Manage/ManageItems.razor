@@ -176,8 +176,9 @@ else
                          ""ContentStatus"", ""IsEnabled"", ""SourceName"", ""SourceUrl""
                   FROM ""Items""
                   WHERE ""IsDeleted"" = FALSE
-                  ORDER BY ""IsEnabled"" DESC, ""Vnum"" ASC NULLS LAST
-                  LIMIT 2000")).ToList();
+                  ORDER BY ""IsEnabled"" DESC, ""Vnum"" ASC NULLS LAST")).ToList();
+            // Bez LIMITu: dřív LIMIT 2000 schoval 3 743 z 5 743 itemů a počítadlo ukazovalo „2000 / 2000“.
+            // Řádky jsou úzké (9 sloupců), stránkuje se v paměti po PageSize — vykreslí se jen jedna strana.
         }
         catch (Exception ex) { ShowError(ex); }
         finally { _loading = false; }

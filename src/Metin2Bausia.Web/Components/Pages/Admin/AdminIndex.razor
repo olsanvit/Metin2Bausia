@@ -1,0 +1,89 @@
+@page "/admin"
+@attribute [Authorize(Roles = "Admin")]
+@inject IDbService Db
+
+<PageTitle>@S["AdmTitle"] — Metin2Bausia</PageTitle>
+
+<h2>@S["AdmTitle"]</h2>
+<p class="text-muted mb-3">@S["AdmIntro"]</p>
+
+@if (_error != null)
+{
+    <div class="alert alert-danger">@S["DbError", _error]</div>
+}
+else if (_stats == null)
+{
+    <p>@S["Loading"]</p>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        @foreach (var (label, value, href) in Cards)
+        {
+            <div class="col-6 col-md-4 col-xl-3">
+                <a class="card h-100 text-decoration-none" href="@href">
+                    <div class="card-body">
+                        <div class="small text-muted">@label</div>
+                        <div class="fs-4 fw-semibold text-body">@value.ToString("N0")</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary btn-sm" href="/admin/access"><i class="bi bi-person-lock me-1"></i>@S["AdmAccessTitle"]</a>
+        <a class="btn btn-outline-secondary btn-sm" href="/reports"><i class="bi bi-journal-text me-1"></i>@S["Nav2Reports"]</a>
+        <a class="btn btn-outline-secondary btn-sm" href="/review"><i class="bi bi-exclamation-triangle me-1"></i>@S["Nav2Review"]</a>
+    </div>
+}
+
+@code {
+    private string? _error;
+    private AdminStats? _stats;
+
+    private sealed class AdminStats
+    {
+        public int Items { get; set; }
+        public int Mobs { get; set; }
+        public int Maps { get; set; }
+        public int Quests { get; set; }
+        public int Systems { get; set; }
+        public int Admins { get; set; }
+        public int Pending { get; set; }
+        public int AgentRuns { get; set; }
+    }
+
+    private IEnumerable<(string Label, int Value, string Href)> Cards =>
+    [
+        (S["Nav2ManageItems"], _stats!.Items, "/manage/items"),
+        (S["Nav2ManageMobs"], _stats.Mobs, "/manage/mobs"),
+        (S["Nav2ManageMaps"], _stats.Maps, "/manage/maps"),
+        (S["Nav2ManageQuests"], _stats.Quests, "/manage/quests"),
+        (S["Nav2ManageSystems"], _stats.Systems, "/manage/systems"),
+        (S["AdmPending"], _stats.Pending, "/items"),
+        (S["AdmAgentRuns"], _stats.AgentRuns, "/reports"),
+        (S["AdmAdmins"], _stats.Admins, "/admin/access"),
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Správci z tabulky AdminUsers; dokud není migrace 08, ukáže se 0 a /admin/access to vysvětlí
+            _stats = await Db.QueryFirstOrDefaultAsync<AdminStats>(
+                @"SELECT (SELECT COUNT(*)::int FROM ""Items""   WHERE NOT ""IsDeleted"") AS ""Items"",
+                         (SELECT COUNT(*)::int FROM ""Mobs""    WHERE NOT ""IsDeleted"") AS ""Mobs"",
+                         (SELECT COUNT(*)::int FROM ""Maps""    WHERE NOT ""IsDeleted"") AS ""Maps"",
+                         (SELECT COUNT(*)::int FROM ""Quests""  WHERE NOT ""IsDeleted"") AS ""Quests"",
+                         (SELECT COUNT(*)::int FROM ""Systems"" WHERE NOT ""IsDeleted"") AS ""Systems"",
+                         (SELECT COUNT(*)::int FROM ""Items"" WHERE ""ContentStatus"" = 'pending' AND NOT ""IsDeleted"")
+                       + (SELECT COUNT(*)::int FROM ""Mobs""  WHERE ""ContentStatus"" = 'pending' AND NOT ""IsDeleted"") AS ""Pending"",
+                         (SELECT COUNT(*)::int FROM ""AgentRunReports"") AS ""AgentRuns"",
+                         CASE WHEN to_regclass('""AdminUsers""') IS NULL THEN 0
+                              ELSE (SELECT COUNT(*)::int FROM ""AdminUsers"" WHERE ""RemovedAt"" IS NULL) END AS ""Admins""")
+                ?? new AdminStats();
+        }
+        catch (Exception ex) { _error = LogError(ex); }
+    }
+}
