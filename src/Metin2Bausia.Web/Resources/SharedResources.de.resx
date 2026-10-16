@@ -1353,4 +1353,7 @@
   <data name="NoTranslation" xml:space="preserve">
     <value>ohne Übersetzung</value>
   </data>
+  <data name="Unverified" xml:space="preserve">
+    <value>ungeprüft</value>
+  </data>
 </root>

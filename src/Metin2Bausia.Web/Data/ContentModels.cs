@@ -95,6 +95,8 @@ public class ManageMap
     public int? MapIndex { get; set; }
     public string Name { get; set; } = "";
     public string? LocaleName { get; set; }
+    /// <summary>Český název odvozený z interního jména — po ruční úpravě v detailu už neplatí.</summary>
+    public bool LocaleNameUnverified { get; set; }
     public int? MinLevel { get; set; }
     public int? MaxLevel { get; set; }
     public string ContentStatus { get; set; } = "";

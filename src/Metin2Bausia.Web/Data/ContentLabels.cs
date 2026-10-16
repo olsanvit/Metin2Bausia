@@ -39,13 +39,14 @@ public static class ContentLabels
         ["STONE"] = "Metin", ["WARP"] = "Portál", ["GOTO"] = "Přesun", ["DOOR"] = "Dveře", ["BUILDING"] = "Budova",
     };
 
+    // Anglické názvy jako v mob_proto a na metin2 wiki — český klient ranky nezobrazuje,
+    // oficiální český překlad neexistuje (rozhodnutí Vítka 16. 10.)
     private static readonly Dictionary<string, string> Ranks = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["pawn"] = "Pěšák",             ["super_pawn"] = "Super pěšák",
-        ["knight"] = "Rytíř",           ["super_knight"] = "Super rytíř",
-        ["boss"] = "Boss",              ["king"] = "Král",
-        // mob_proto.txt používá zkratky S_ místo super_
-        ["S_PAWN"] = "Super pěšák",     ["S_KNIGHT"] = "Super rytíř",
+        ["pawn"] = "Pawn",              ["super_pawn"] = "S_Pawn",
+        ["knight"] = "Knight",          ["super_knight"] = "S_Knight",
+        ["boss"] = "Boss",              ["king"] = "King",
+        ["S_PAWN"] = "S_Pawn",          ["S_KNIGHT"] = "S_Knight",
     };
 
     /// <summary>Neznámý kód vracíme tak, jak přišel z DB — agent může přinést hodnotu, kterou zatím neznáme.</summary>

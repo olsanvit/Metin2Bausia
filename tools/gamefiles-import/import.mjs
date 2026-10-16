@@ -126,10 +126,17 @@ const mapAllow = readMapAllow([
 const mobLevels = new Map(mobs.filter((m) => m.MobType === "MONSTER" || m.MobType === "STONE").map((m) => [m.Vnum, m.Level]));
 const mobGroups = parseGroupFile(path.join(data, "group.txt"));
 const mobGroupGroups = parseGroupFile(path.join(data, "group_group.txt"));
-const maps = parseMaps(path.join(data, "map"), mapAllow)
-  .map((m) => ({ ...m, ...mapLevelRange(m.SpawnMobs, mobLevels, mobGroups, mobGroupGroups) }));
+const mapNames = JSON.parse(fs.readFileSync(new URL("./map-names-cz.json", import.meta.url), "utf8"));
+const maps = parseMaps(path.join(data, "map"), mapAllow).map((m) => {
+  const [localeName, verified] = mapNames[m.MapIndex] ?? [null, false];
+  return {
+    ...m, ...mapLevelRange(m.SpawnMobs, mobLevels, mobGroups, mobGroupGroups),
+    LocaleName: localeName,
+    Metadata: { ...m.Metadata, localeNameVerified: localeName ? verified : null },
+  };
+});
 writeSql("03_maps.sql", "Maps z data/map", upsert("Maps", ["MapIndex"], maps.map((r) => ({ ...r, ...approvedFields(r.IsEnabled) })), PROTECTED));
-summary.maps = { rows: maps.length, mapAllowZdroj: mapAllow.size ? "compose/conf" : "prázdné", enabled: maps.filter((m) => m.IsEnabled).length, spawns: maps.reduce((a, m) => a + m.SpawnMobs.length, 0), withLevels: maps.filter((m) => m.MaxLevel > 0).length };
+summary.maps = { rows: maps.length, mapAllowZdroj: mapAllow.size ? "compose/conf" : "prázdné", enabled: maps.filter((m) => m.IsEnabled).length, spawns: maps.reduce((a, m) => a + m.SpawnMobs.length, 0), withLevels: maps.filter((m) => m.MaxLevel > 0).length, withLocaleName: maps.filter((m) => m.LocaleName).length };
 
 const quests = parseQuests(path.join(data, "quest"));
 writeSql("04_quests.sql", "Quests z data/quest", upsert("Quests", ["FileName"], quests.map((r) => ({ ...r, ...approvedFields(r.IsEnabled) })), PROTECTED));

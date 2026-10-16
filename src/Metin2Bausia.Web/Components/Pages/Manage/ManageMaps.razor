@@ -48,8 +48,9 @@ else
                             </div>
                         </td>
                         <td><code class="small">@map.MapIndex</code></td>
-                        <td><strong>@map.Name</strong>
-                            @if (map.LocaleName != null) { <small class="text-muted"> (@map.LocaleName)</small> }
+                        <td><strong>@(map.LocaleName ?? map.Name)</strong>
+                            @if (map.LocaleNameUnverified) { <span class="badge bg-warning-subtle text-warning-emphasis ms-1">@S["Unverified"]</span> }
+                            @if (map.LocaleName != null) { <div class="small text-muted">@map.Name</div> }
                         </td>
                         <td class="text-muted small">@map.MinLevel</td>
                         <td class="text-muted small">@map.MaxLevel</td>
@@ -111,6 +112,7 @@ else
         {
             _maps = (await Db.QueryAsync<ManageMap>(
                 @"SELECT ""Guid"", ""MapIndex"", ""Name"", ""LocaleName"",
+                         (""Metadata""->>'localeNameVerified' = 'false' AND ""DataOrigin"" = 'imported') IS TRUE AS ""LocaleNameUnverified"",
                          ""MinLevel"", ""MaxLevel"", ""ContentStatus"", ""IsEnabled""
                   FROM ""Maps"" WHERE ""IsDeleted"" = FALSE
                   ORDER BY ""IsEnabled"" DESC, ""MapIndex"" ASC NULLS LAST")).ToList();
