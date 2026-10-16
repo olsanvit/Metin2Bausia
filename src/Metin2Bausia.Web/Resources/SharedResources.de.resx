@@ -1338,4 +1338,13 @@
   <data name="Cancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Seite nicht gefunden</value>
+  </data>
+  <data name="NotFoundText" xml:space="preserve">
+    <value>Diese Adresse gibt es in der App nicht. Link prüfen oder auf der Startseite weitermachen.</value>
+  </data>
+  <data name="NotFoundHome" xml:space="preserve">
+    <value>Zur Startseite</value>
+  </data>
 </root>

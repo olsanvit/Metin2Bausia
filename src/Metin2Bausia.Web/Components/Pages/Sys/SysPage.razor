@@ -1,0 +1,32 @@
+@page "/sys/{Name}"
+@attribute [Authorize(Roles = "Admin")]
+@using SharedServices.Pages.Sysinfo
+
+@* Diagnostické stránky ze SharedServices se nedají zapnout přidáním celé assembly do routeru:
+   ta nese i /login, /register a /admin/access, které by kolidovaly s vlastním přihlášením a správou adminů.
+   Proto se vybrané stránky vykreslí odsud — jako komponenty, jejich @page se tu neuplatní. *@
+@if (Pages.TryGetValue(Name, out var type))
+{
+    <DynamicComponent Type="type" />
+}
+
+@code {
+    [Parameter] public string Name { get; set; } = "";
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    // Neznámá podstránka = skutečná 404 (stránka NotFound), ne prázdná 200
+    protected override void OnParametersSet()
+    {
+        if (!Pages.ContainsKey(Name)) Nav.NotFound();
+    }
+
+    private static readonly Dictionary<string, Type> Pages = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["info"] = typeof(PageSysInfo),
+        ["info-route"] = typeof(PageSysInfoRoute),
+        ["info-assemblies"] = typeof(PageSysInfoAssemblies),
+        ["info-data"] = typeof(PageSysInfoData),
+        ["oi"] = typeof(PageSysOi),
+        ["pictures"] = typeof(PageSysPictures),
+    };
+}

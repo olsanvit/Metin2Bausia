@@ -125,6 +125,31 @@ public class AdminPagesTests(AdminAppFactory factory)
         html.Should().Contain(title);
     }
 
+    [Theory]
+    [InlineData("/login", "/account/login")]
+    [InlineData("/register", "/account/login")]
+    [InlineData("/forgot-password", "/account/login")]
+    [InlineData("/access-pending", "/account/login")]
+    [InlineData("/change-password", "/account/change-password")]
+    public async Task OldAccountRoutes_RedirectToOwnLogin(string url, string target)
+    {
+        var response = await _client.GetAsync(url);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        response.Headers.Location!.OriginalString.Should().Be(target);
+    }
+
+    [Theory]
+    [InlineData("/tahle-stranka-neexistuje")]
+    [InlineData("/sys/neexistuje")]
+    public async Task UnknownRoute_Returns404WithAppPage(string url)
+    {
+        var response = await _client.GetAsync(url);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("bi-signpost-split");
+    }
+
     private async Task<string> GetOkHtml(string url, string? cookie = null)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, url);

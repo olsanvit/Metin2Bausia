@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
 using Metin2Bausia.Web.Services;
 using MercenariesAndBeasts.Infrastructure.Localization;
@@ -82,6 +83,12 @@ builder.Services.AddSingleton<ConnectionStateService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, AppCircuitHandler>();
 builder.Services.AddScoped<SharedServices.Services.UiLibraryService>();
 builder.Services.AddGlobalErrorNotifications();
+// Závislosti diagnostických stránek /sys/* (Components/Pages/Sys/SysPage.razor)
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SvgScannerService>();
+builder.Services.AddScoped<DebugSnapshotService>();
+builder.Services.TryAddSingleton<Microsoft.AspNetCore.Authentication.Cookies.ITicketStore, SharedServices.Services.Entra.MemoryTicketStore>();
+builder.Services.TryAddSingleton<SharedServices.Services.Entra.IUserProfileStore, SharedServices.Services.Entra.MemoryUserProfileStore>();
 builder.Services.AddSimpleLocalization();
 // SharedServices podporuje jen cs/en a sdílí ho víc projektů; LangSwitcher nabízí i DE,
 // proto se seznam jazyků rozšiřuje až tady (Configure běží po tom ze SharedServices)
@@ -105,6 +112,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// Neznámá adresa → 404 se stránkou aplikace místo prázdné odpovědi
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 // MapStaticAssets servíruje framework assety (_framework/blazor.web.js) — bez něj vrací 404 a circuit se nenaváže
 app.MapStaticAssets();
@@ -112,6 +121,31 @@ app.UseStaticFiles();   // kvůli vlastním souborům ve wwwroot (app.css)
 app.UseRequestLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Obvyklé adresy účtu (ze SharedServices a starých odkazů) vedou na vlastní přihlášení — jinak 404
+var accountRedirects = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+{
+    ["/login"] = "/account/login", ["/register"] = "/account/login", ["/forgot-password"] = "/account/login",
+    ["/reset-password"] = "/account/login", ["/access-pending"] = "/account/login", ["/logout"] = "/account/logout",
+    ["/change-password"] = "/account/change-password",
+};
+app.Use(async (ctx, next) =>
+{
+    var path = ctx.Request.Path.Value?.TrimEnd('/') ?? "";
+    if (accountRedirects.TryGetValue(path, out var target))
+    {
+        ctx.Response.Redirect(target + ctx.Request.QueryString);
+        return;
+    }
+    // /sys/* jen pro admina: anonym jde na přihlášení i u neexistující podstránky, aby adresa nic neprozradila
+    if (path.StartsWith("/sys", StringComparison.OrdinalIgnoreCase) && (path.Length == 4 || path[4] == '/')
+        && ctx.User.Identity?.IsAuthenticated != true)
+    {
+        await ctx.ChallengeAsync();
+        return;
+    }
+    await next();
+});
 app.UseAntiforgery();
 
 app.MapHealthChecks("/health");

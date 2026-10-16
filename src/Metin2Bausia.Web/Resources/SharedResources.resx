@@ -1338,4 +1338,13 @@
   <data name="Cancel" xml:space="preserve">
     <value>Zrušit</value>
   </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Stránka nenalezena</value>
+  </data>
+  <data name="NotFoundText" xml:space="preserve">
+    <value>Tahle adresa v aplikaci neexistuje. Zkontroluj odkaz nebo pokračuj z úvodní stránky.</value>
+  </data>
+  <data name="NotFoundHome" xml:space="preserve">
+    <value>Na úvodní stránku</value>
+  </data>
 </root>
