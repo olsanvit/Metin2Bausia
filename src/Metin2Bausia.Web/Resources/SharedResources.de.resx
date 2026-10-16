@@ -589,7 +589,7 @@
     <value>✗ Mob '{0}' abgelehnt.</value>
   </data>
   <data name="MobsByRank" xml:space="preserve">
-    <value>👹 Mobs nach Rang</value>
+    <value>👹 Monster nach Rang</value>
   </data>
   <data name="MobsPendingHeading" xml:space="preserve">
     <value>Mobs, die auf Freigabe warten</value>
@@ -1346,5 +1346,11 @@
   </data>
   <data name="NotFoundHome" xml:space="preserve">
     <value>Zur Startseite</value>
+  </data>
+  <data name="MobsOtherTypes" xml:space="preserve">
+    <value>Andere Typen (ohne Rang):</value>
+  </data>
+  <data name="NoTranslation" xml:space="preserve">
+    <value>ohne Übersetzung</value>
   </data>
 </root>

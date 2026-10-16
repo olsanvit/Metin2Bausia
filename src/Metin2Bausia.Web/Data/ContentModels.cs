@@ -261,6 +261,8 @@ public class QuestListRow
     public bool IsEnabled { get; set; }
     public int ScriptLength { get; set; }
     public string? Encoding { get; set; }
+    /// <summary>Hráč uvidí korejský text — say/notice s hangulem místo odkazu na gameforge.* z translate_cz.</summary>
+    public bool NeedsTranslation { get; set; }
 }
 
 public class QuestDetailRow : QuestListRow

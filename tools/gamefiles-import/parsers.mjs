@@ -338,6 +338,32 @@ export function parseMaps(mapDir, mapAllow) {
 
 // ── Questy ────────────────────────────────────────────────────────────────────
 
+/**
+ * Quest soubory míchají kódování i v rámci jednoho souboru (UTF-8 kód, korejské komentáře v EUC-KR,
+ * německé poznámky v CP1250) — celé souborové dekódování dávalo u 30 questů znaky „�“.
+ * Proto se dekóduje po řádcích: UTF-8, jinak EUC-KR, a když ani to nesedí, CP1250.
+ */
+export function decodeQuest(buf) {
+  try { return { text: utf8Strict.decode(buf), encoding: "utf-8" }; } catch { /* po řádcích níže */ }
+  const used = new Set();
+  const lines = [];
+  let start = 0;
+  for (let i = 0; i <= buf.length; i++) {
+    if (i < buf.length && buf[i] !== 0x0a) continue;
+    const line = buf.subarray(start, i);
+    start = i + 1;
+    let out;
+    try { out = utf8Strict.decode(line); if (/[^\x00-\x7f]/.test(out)) used.add("utf-8"); }
+    catch {
+      const kr = krDecoder.decode(line);
+      if (!kr.includes("\ufffd")) { out = kr; used.add("euc-kr"); }
+      else { out = cp1250Decoder.decode(line); used.add("cp1250"); }
+    }
+    lines.push(out);
+  }
+  return { text: lines.join("\n"), encoding: used.size === 1 ? [...used][0] : [...used].sort().join("+") || "ascii" };
+}
+
 /** .quest soubory → řádky tabulky Quests; zapnuté jsou ty, které server kompiluje (locale_list). */
 export function parseQuests(questDir) {
   const listFile = path.join(questDir, "locale_list");
@@ -346,9 +372,7 @@ export function parseQuests(questDir) {
   );
   return fs.readdirSync(questDir).filter((f) => f.endsWith(".quest")).sort().map((f) => {
     const buf = fs.readFileSync(path.join(questDir, f));
-    let text; let encoding;
-    try { text = utf8Strict.decode(buf); encoding = "utf-8"; }
-    catch { text = krDecoder.decode(buf); encoding = "euc-kr"; }
+    const { text, encoding } = decodeQuest(buf);
     const m = text.match(/^\s*quest\s+([A-Za-z0-9_]+)\s+begin/m);
     const questName = m ? m[1] : f.replace(/\.quest$/, "");
     return {

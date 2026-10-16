@@ -60,7 +60,7 @@ else
                             </div>
                         </td>
                         <td><code class="small">@q.FileName</code></td>
-                        <td>@q.QuestName</td>
+                        <td>@q.QuestName@if (q.NeedsTranslation) { <span class="badge bg-warning-subtle text-warning-emphasis ms-1">@S["NoTranslation"]</span> }</td>
                         <td class="small text-muted">@q.Encoding</td>
                         <td class="text-end small">@q.ScriptLength.ToString("N0")</td>
                         <td><span class="badge @ContentLabels.StatusBadge(q.ContentStatus)">@q.ContentStatus</span></td>
@@ -82,7 +82,7 @@ else
                            @onchange="e => ToggleAsync(q, (bool)e.Value!)" />
                 </div>
                 <a class="list-card__main" href="/manage/quests/@q.Guid">
-                    <div class="list-card__title">@q.QuestName</div>
+                    <div class="list-card__title">@q.QuestName@if (q.NeedsTranslation) { <span class="badge bg-warning-subtle text-warning-emphasis ms-1">@S["NoTranslation"]</span> }</div>
                     <div class="list-card__meta">
                         <code class="small">@q.FileName</code>
                         <span class="badge bg-light text-dark">@q.Encoding</span>
@@ -125,7 +125,8 @@ else
             _quests = (await Db.QueryAsync<QuestListRow>(
                 @"SELECT ""Guid"", ""FileName"", ""QuestName"", ""ContentStatus"", ""IsEnabled"",
                          coalesce(length(""LuaScript""), 0) AS ""ScriptLength"",
-                         ""Metadata""->>'encoding' AS ""Encoding""
+                         ""Metadata""->>'encoding' AS ""Encoding"",
+                         coalesce(""LuaScript"" ~ '(say|say_title|say_reward|notice|chat)\s*\(\s*""[^""\n]*[가-힣]', false) AS ""NeedsTranslation""
                   FROM ""Quests"" WHERE ""IsDeleted"" = FALSE
                   ORDER BY ""FileName"" NULLS LAST, ""QuestName""")).ToList();
         }

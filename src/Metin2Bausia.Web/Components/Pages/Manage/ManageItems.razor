@@ -74,9 +74,7 @@ else
                         </td>
                         <td><code class="small">@item.Vnum</code></td>
                         <td>
-                            <strong>@item.Name</strong>
-                            @if (item.LocaleName != null)
-                            { <small class="text-muted"> (@item.LocaleName)</small> }
+                            <strong>@(item.LocaleName ?? item.Name)</strong>@if (item.LocaleName == null) { <span class="badge bg-warning-subtle text-warning-emphasis ms-1">@S["NoTranslation"]</span> }@if (item.LocaleName != null && item.Name != item.LocaleName) { <div class="small text-muted">@item.Name</div> }
                         </td>
                         <td><span class="badge bg-secondary">@ContentLabels.ItemType(item.ItemType)</span></td>
                         <td>

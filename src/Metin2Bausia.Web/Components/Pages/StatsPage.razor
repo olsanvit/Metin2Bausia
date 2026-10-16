@@ -117,6 +117,14 @@ else
                             </tbody>
                         </table>
                     </div>
+                    @* NPC, kameny a warpy mají v mob_proto často rank KING — mezi ranky monster by zkreslily rozložení *@
+                    <div class="p-2 small text-muted border-top">
+                        @S["MobsOtherTypes"]
+                        @foreach (var t in _mobsByType)
+                        {
+                            <span class="badge @ContentLabels.MobTypeBadge(t.MobType) ms-1">@ContentLabels.MobType(t.MobType) @t.Count</span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -184,6 +192,8 @@ else
 
     private List<TypeCount> _itemsByType = [];
     private List<RankCount> _mobsByRank = [];
+    private record MobTypeCount(string? MobType, int Count);
+    private List<MobTypeCount> _mobsByType = [];
     private List<Band> _itemsByConf = [];
     private List<Band> _mobsByLevel = [];
 
@@ -203,7 +213,8 @@ else
             var tSysTotal     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsDeleted\"=FALSE");
             var tSysEnabled   = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Systems\" WHERE \"IsEnabled\"=TRUE AND \"IsDeleted\"=FALSE");
             var tItemsByType  = Db.QueryAsync<TypeCount>("SELECT \"ItemType\", COUNT(*)::int AS \"Count\" FROM \"Items\" WHERE \"ContentStatus\"='approved' AND \"IsDeleted\"=FALSE GROUP BY \"ItemType\" ORDER BY \"Count\" DESC LIMIT 15");
-            var tMobsByRank   = Db.QueryAsync<RankCount>("SELECT \"Rank\", COUNT(*)::int AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE GROUP BY \"Rank\" ORDER BY \"Count\" DESC");
+            var tMobsByRank   = Db.QueryAsync<RankCount>("SELECT \"Rank\", COUNT(*)::int AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE AND \"MobType\"='MONSTER' GROUP BY \"Rank\" ORDER BY \"Count\" DESC");
+            var tMobsByType   = Db.QueryAsync<MobTypeCount>("SELECT \"MobType\", COUNT(*)::int AS \"Count\" FROM \"Mobs\" WHERE \"IsDeleted\"=FALSE AND \"MobType\" IS DISTINCT FROM 'MONSTER' GROUP BY \"MobType\" ORDER BY \"Count\" DESC");
             var tHighConf     = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 80 AND \"IsDeleted\"=FALSE");
             var tMidConf      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" >= 50 AND \"ConfidenceScore\" < 80 AND \"IsDeleted\"=FALSE");
             var tLowConf      = Db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM \"Items\" WHERE \"ConfidenceScore\" < 50 AND \"ConfidenceScore\" IS NOT NULL AND \"IsDeleted\"=FALSE");
@@ -217,7 +228,7 @@ else
                 tItemTotal, tItemApproved, tItemEnabled,
                 tMobTotal, tMobApproved, tMobEnabled,
                 tMapTotal, tMapEnabled, tSysTotal, tSysEnabled,
-                tItemsByType, tMobsByRank,
+                tItemsByType, tMobsByRank, tMobsByType,
                 tHighConf, tMidConf, tLowConf, tNullConf,
                 tLvlHigh, tLvlMid, tLvlLow, tLvlNull);
 
@@ -233,6 +244,7 @@ else
             _sysEnabled   = tSysEnabled.Result;
             _itemsByType  = tItemsByType.Result.ToList();
             _mobsByRank   = tMobsByRank.Result.ToList();
+            _mobsByType   = tMobsByType.Result.ToList();
             _itemsByConf  = [new(S["ConfHigh"], tHighConf.Result, "bg-success"), new(S["ConfMid"], tMidConf.Result, "bg-warning"), new(S["ConfLow"], tLowConf.Result, "bg-danger"), new(S["ConfUnknown"], tNullConf.Result, "bg-secondary")];
             _mobsByLevel  = [new("Lv.80+ (endgame)", tLvlHigh.Result, "bg-danger"), new("Lv.40-79", tLvlMid.Result, "bg-warning"), new("Lv.1-39", tLvlLow.Result, "bg-success"), new(S["LevelUnknown"], tLvlNull.Result, "bg-secondary")];
         }

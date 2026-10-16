@@ -37,7 +37,7 @@ else
                 {
                     <tr>
                         <td><code>@mob.Vnum</code></td>
-                        <td><strong>@ContentLabels.MobName(mob.Name, mob.LocaleName)</strong>@if (mob.LocaleName != null && ContentLabels.MobName(mob.Name, mob.LocaleName) != mob.LocaleName) { <small class="text-muted"> (@mob.LocaleName)</small> }</td>
+                        <td><strong>@(mob.LocaleName ?? ContentLabels.MobName(mob.Name, mob.LocaleName))</strong>@if (mob.LocaleName == null) { <span class="badge bg-warning-subtle text-warning-emphasis ms-1">@S["NoTranslation"]</span> }@if (mob.LocaleName != null && ContentLabels.MobName(mob.Name, mob.LocaleName) != mob.LocaleName) { <div class="small text-muted">@ContentLabels.MobName(mob.Name, mob.LocaleName)</div> }</td>
                         <td>@mob.Level</td>
                         <td>@ContentLabels.Rank(mob.Rank)</td>
                         <td>@mob.SourceName</td>
@@ -64,7 +64,7 @@ else
         {
             <div class="list-card @(_processing == mob.Guid ? "opacity-60" : "")">
                 <div class="list-card__main">
-                    <div class="list-card__title">@ContentLabels.MobName(mob.Name, mob.LocaleName)</div>
+                    <div class="list-card__title">@(mob.LocaleName ?? ContentLabels.MobName(mob.Name, mob.LocaleName))</div>
                     <div class="list-card__meta">
                         <code class="small">@mob.Vnum</code>
                         <span class="badge bg-light text-dark">@S["Level"] @mob.Level</span>

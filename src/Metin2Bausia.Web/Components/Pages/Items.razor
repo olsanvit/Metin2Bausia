@@ -37,7 +37,7 @@ else
                 {
                     <tr class="@(_processing == item.Guid ? "table-secondary" : "")">
                         <td><code>@item.Vnum</code></td>
-                        <td><strong>@item.Name</strong>@if (item.LocaleName != null) { <small class="text-muted"> (@item.LocaleName)</small> }</td>
+                        <td><strong>@(item.LocaleName ?? item.Name)</strong>@if (item.LocaleName == null) { <span class="badge bg-warning-subtle text-warning-emphasis ms-1">@S["NoTranslation"]</span> }@if (item.LocaleName != null && item.Name != item.LocaleName) { <div class="small text-muted">@item.Name</div> }</td>
                         <td>@ContentLabels.ItemType(item.ItemType)</td>
                         <td>
                             @if (item.SourceUrl != null)
@@ -70,7 +70,7 @@ else
         {
             <div class="list-card @(_processing == item.Guid ? "opacity-60" : "")">
                 <div class="list-card__main">
-                    <div class="list-card__title">@item.Name</div>
+                    <div class="list-card__title">@(item.LocaleName ?? item.Name)</div>
                     <div class="list-card__meta">
                         <code class="small">@item.Vnum</code>
                         <span class="badge bg-light text-dark">@ContentLabels.ItemType(item.ItemType)</span>

@@ -589,7 +589,7 @@
     <value>✗ Mob '{0}' zamítnut.</value>
   </data>
   <data name="MobsByRank" xml:space="preserve">
-    <value>👹 Mobové podle ranku</value>
+    <value>👹 Monstra podle ranku</value>
   </data>
   <data name="MobsPendingHeading" xml:space="preserve">
     <value>Mobové čekající na schválení</value>
@@ -1346,5 +1346,11 @@
   </data>
   <data name="NotFoundHome" xml:space="preserve">
     <value>Na úvodní stránku</value>
+  </data>
+  <data name="MobsOtherTypes" xml:space="preserve">
+    <value>Ostatní typy (bez ranku):</value>
+  </data>
+  <data name="NoTranslation" xml:space="preserve">
+    <value>bez překladu</value>
   </data>
 </root>
