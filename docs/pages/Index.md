@@ -3,6 +3,10 @@ Route: /
 Popis: Dashboard admina — rychlý přehled front ke schválení a stavu AI agenta (Metin2BausiaCollector).
 
 ## Hotovo ✅
+- **17. 10.:** nadpis „Přehled“ + rychlé odkazy (itemy, mobové, mapy, statistiky)
+- **17. 10.:** dlaždice Herní server — TCP ping portů z `GameServer:Endpoints` (běží / částečně / neběží / nenasazeno, bez konfigurace = nenasazeno)
+- **17. 10.:** dlaždice Noční dávky — posledních 5 záznamů z `BatchRuns` (migrace 09), u chyby souhrn; bez tabulky se nic nerozbije
+- **17. 10.:** bez běhů agenta jen poznámka „agent zatím není nastavený“ (agent pro Metin2 neexistuje — samostatný úkol)
 - Tabulka posledních běhů má pod 768 px kartovou podobu; highlights se zalomí celé místo useknutí
 - 4 klikací karty: pending itemy, pending mobové, schválené itemy, ruční review; barva karty podle toho, jestli je co řešit
 - Banner posledního agent runu (OK/chyba, čas, počty nových entit)
