@@ -1356,4 +1356,34 @@
   <data name="Unverified" xml:space="preserve">
     <value>ungeprüft</value>
   </data>
+  <data name="OverviewTitle" xml:space="preserve">
+    <value>Übersicht</value>
+  </data>
+  <data name="GameServerTitle" xml:space="preserve">
+    <value>Spielserver</value>
+  </data>
+  <data name="GameServerNotDeployed" xml:space="preserve">
+    <value>nicht bereitgestellt</value>
+  </data>
+  <data name="GameServerRunning" xml:space="preserve">
+    <value>läuft</value>
+  </data>
+  <data name="GameServerPartial" xml:space="preserve">
+    <value>teilweise aktiv</value>
+  </data>
+  <data name="GameServerDown" xml:space="preserve">
+    <value>läuft nicht</value>
+  </data>
+  <data name="GameServerNotDeployedHint" xml:space="preserve">
+    <value>Auth/Game-Adressen sind noch nicht konfiguriert (GameServer:Endpoints) — der Server ist nicht bereitgestellt.</value>
+  </data>
+  <data name="BatchRunsTitle" xml:space="preserve">
+    <value>Nächtliche Batches</value>
+  </data>
+  <data name="BatchRunsEmpty" xml:space="preserve">
+    <value>Noch kein aufgezeichneter Batch.</value>
+  </data>
+  <data name="AgentNotConfigured" xml:space="preserve">
+    <value>Der KI-Agent zum Sammeln von Inhalten ist noch nicht eingerichtet — Läufe erscheinen hier danach.</value>
+  </data>
 </root>

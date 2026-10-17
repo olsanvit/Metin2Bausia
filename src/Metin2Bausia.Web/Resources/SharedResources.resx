@@ -1356,4 +1356,34 @@
   <data name="Unverified" xml:space="preserve">
     <value>neověřeno</value>
   </data>
+  <data name="OverviewTitle" xml:space="preserve">
+    <value>Přehled</value>
+  </data>
+  <data name="GameServerTitle" xml:space="preserve">
+    <value>Herní server</value>
+  </data>
+  <data name="GameServerNotDeployed" xml:space="preserve">
+    <value>nenasazeno</value>
+  </data>
+  <data name="GameServerRunning" xml:space="preserve">
+    <value>běží</value>
+  </data>
+  <data name="GameServerPartial" xml:space="preserve">
+    <value>běží částečně</value>
+  </data>
+  <data name="GameServerDown" xml:space="preserve">
+    <value>neběží</value>
+  </data>
+  <data name="GameServerNotDeployedHint" xml:space="preserve">
+    <value>Adresy auth/game zatím nejsou v nastavení (GameServer:Endpoints) — server ještě není nasazený.</value>
+  </data>
+  <data name="BatchRunsTitle" xml:space="preserve">
+    <value>Noční dávky</value>
+  </data>
+  <data name="BatchRunsEmpty" xml:space="preserve">
+    <value>Zatím žádná zaznamenaná dávka.</value>
+  </data>
+  <data name="AgentNotConfigured" xml:space="preserve">
+    <value>AI agent pro sběr obsahu zatím není nastavený — běhy se tu objeví po jeho zavedení.</value>
+  </data>
 </root>

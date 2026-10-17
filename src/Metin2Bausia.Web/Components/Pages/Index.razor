@@ -3,12 +3,18 @@
 @* Interaktivní režim per stránka — layout zůstává SSR; bez toho by @onclick a @bind nefungovaly *@
 @rendermode InteractiveServer
 @inject IDbService Db
+@inject GameServerStatusService GameServer
 
 <PageTitle>@S["DashboardTitle"] — Metin2Bausia</PageTitle>
 
-<div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="mb-0">@S["AdminTitle"]</h1>
-    <a href="/stats" class="btn btn-outline-secondary btn-sm">@S["NavStats"]</a>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+    <h1 class="mb-0">@S["OverviewTitle"]</h1>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="/manage/items" class="btn btn-outline-secondary btn-sm"><i class="bi bi-box-seam me-1"></i>@S["Nav2ManageItems"]</a>
+        <a href="/manage/mobs" class="btn btn-outline-secondary btn-sm"><i class="bi bi-bug me-1"></i>@S["Nav2ManageMobs"]</a>
+        <a href="/manage/maps" class="btn btn-outline-secondary btn-sm"><i class="bi bi-map me-1"></i>@S["Nav2ManageMaps"]</a>
+        <a href="/stats" class="btn btn-outline-secondary btn-sm"><i class="bi bi-bar-chart me-1"></i>@S["NavStats"]</a>
+    </div>
 </div>
 
 @if (_error != null)
@@ -66,7 +72,72 @@ else
         </div>
     </div>
 
-    @* ── Agent stav ───────────────────────────────────────── *@
+    @* ── Herní server a noční dávky ────────────────────────── *@
+    <div class="row g-3 mb-4">
+        <div class="col-md-5">
+            <div class="card h-100">
+                <div class="card-header"><i class="bi bi-hdd-network me-1"></i>@S["GameServerTitle"]</div>
+                <div class="card-body">
+                    @if (_server == null)
+                    {
+                        <span class="text-muted small">@S["Loading"]</span>
+                    }
+                    else
+                    {
+                        <span class="badge fs-6 @ServerBadge(_server.State)">@S["GameServer" + _server.State]</span>
+                        @if (_server.State == GameServerState.NotDeployed)
+                        {
+                            <p class="small text-muted mt-2 mb-0">@S["GameServerNotDeployedHint"]</p>
+                        }
+                        <ul class="list-unstyled small mt-2 mb-0">
+                            @foreach (var e in _server.Endpoints)
+                            {
+                                <li><i class="bi @(e.Open ? "bi-check-circle text-success" : "bi-x-circle text-danger") me-1"></i>@e.Name (@e.Port)</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card h-100">
+                <div class="card-header"><i class="bi bi-moon-stars me-1"></i>@S["BatchRunsTitle"]</div>
+                <div class="card-body p-0">
+                    @if (_batches.Count == 0)
+                    {
+                        <p class="small text-muted p-3 mb-0">@S["BatchRunsEmpty"]</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush small">
+                            @foreach (var b in _batches)
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                                        <span class="badge @BatchBadge(b.Result)">@b.Result</span>
+                                        <strong>@b.Name</strong>
+                                        <span class="text-muted ms-auto">@b.StartedAt.ToLocalTime().ToString("dd.MM HH:mm")@(b.FinishedAt is { } f ? $" – {f.ToLocalTime():HH:mm}" : "")</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(b.Summary) && b.Result is not "ok")
+                                    {
+                                        <div class="text-muted text-break">@b.Summary</div>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Agent stav — dokud agent neexistuje, jen poznámka místo prázdných tabulek (Vítek 17. 10.) *@
+    @if (!_recentRuns.Any())
+    {
+        <p class="text-muted small"><i class="bi bi-robot me-1"></i>@S["AgentNotConfigured"]</p>
+    }
+    else
+    {
     @if (_recentRuns.Any())
     {
         var lastRun = _recentRuns.First();
@@ -150,9 +221,6 @@ else
 
         <a href="/reports" class="btn btn-outline-secondary btn-sm mt-3">@S["ShowAllReports"]</a>
     }
-    else
-    {
-        <p class="text-muted">@S["NoAgentRuns"]</p>
     }
 }
 
@@ -161,6 +229,24 @@ else
     private string? _error;
     private int _pendingItems, _pendingMobs, _approvedItems, _manualReview;
     private List<AgentRunReport> _recentRuns = new();
+    private List<BatchRunRow> _batches = [];
+    private GameServerStatus? _server;
+
+    private static string ServerBadge(GameServerState s) => s switch
+    {
+        GameServerState.Running => "bg-success",
+        GameServerState.Partial => "bg-warning text-dark",
+        GameServerState.Down => "bg-danger",
+        _ => "bg-secondary",
+    };
+
+    private static string BatchBadge(string r) => r switch
+    {
+        "ok" => "bg-success",
+        "running" => "bg-info text-dark",
+        "check" => "bg-warning text-dark",
+        _ => "bg-danger",
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -176,8 +262,17 @@ else
                 "SELECT COUNT(*) FROM \"ManualReviewQueue\" WHERE \"Status\" = 'pending' AND \"IsDeleted\" = FALSE");
             _recentRuns = (await Db.QueryAsync<AgentRunReport>(
                 "SELECT * FROM \"AgentRunReports\" ORDER BY \"CreatedAt\" DESC LIMIT 5")).ToList();
+            // Bez migrace 09 tabulka chybí — přehled se kvůli tomu nesmí rozbít
+            if (await Db.QueryFirstOrDefaultAsync<bool>(@"SELECT to_regclass('""BatchRuns""') IS NOT NULL"))
+                _batches = (await Db.QueryAsync<BatchRunRow>(
+                    @"SELECT ""Name"", ""StartedAt"", ""FinishedAt"", ""Result"", ""Summary"" FROM ""BatchRuns""
+                      ORDER BY ""StartedAt"" DESC LIMIT 5")).ToList();
         }
         catch (Exception ex) { _error = LogError(ex); }
         finally { _loading = false; }
+
+        // Ping portů až po vykreslení čísel z DB — nedostupný server nesmí brzdit načtení přehledu
+        try { _server = await GameServer.GetAsync(); }
+        catch (Exception ex) { LogError(ex); _server = new(GameServerState.Down, []); }
     }
 }

@@ -342,3 +342,12 @@ public class NameRef
     public string? GroupType { get; set; }
     public string? Label { get; set; }
 }
+
+public class BatchRunRow
+{
+    public string Name { get; set; } = "";
+    public DateTime StartedAt { get; set; }
+    public DateTime? FinishedAt { get; set; }
+    public string Result { get; set; } = "";
+    public string? Summary { get; set; }
+}

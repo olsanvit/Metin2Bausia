@@ -74,6 +74,7 @@ builder.Services.AddSingleton<IDbService>(sp =>
     new DbService(builder.Configuration.GetConnectionString("Metin2Bausia")
         ?? throw new InvalidOperationException("Metin2Bausia connection string missing")));
 builder.Services.AddSingleton<KnowledgeLinkService>();
+builder.Services.AddSingleton<GameServerStatusService>();
 // Scoped kvůli lokalizaci — popisky menu se skládají v jazyce aktuálního požadavku
 builder.Services.AddScoped<Metin2Navigation>();
 

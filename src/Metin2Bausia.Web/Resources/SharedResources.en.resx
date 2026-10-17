@@ -1356,4 +1356,34 @@
   <data name="Unverified" xml:space="preserve">
     <value>unverified</value>
   </data>
+  <data name="OverviewTitle" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="GameServerTitle" xml:space="preserve">
+    <value>Game server</value>
+  </data>
+  <data name="GameServerNotDeployed" xml:space="preserve">
+    <value>not deployed</value>
+  </data>
+  <data name="GameServerRunning" xml:space="preserve">
+    <value>running</value>
+  </data>
+  <data name="GameServerPartial" xml:space="preserve">
+    <value>partially running</value>
+  </data>
+  <data name="GameServerDown" xml:space="preserve">
+    <value>down</value>
+  </data>
+  <data name="GameServerNotDeployedHint" xml:space="preserve">
+    <value>Auth/game addresses are not configured yet (GameServer:Endpoints) — the server is not deployed.</value>
+  </data>
+  <data name="BatchRunsTitle" xml:space="preserve">
+    <value>Night batches</value>
+  </data>
+  <data name="BatchRunsEmpty" xml:space="preserve">
+    <value>No recorded batch yet.</value>
+  </data>
+  <data name="AgentNotConfigured" xml:space="preserve">
+    <value>The content-collecting AI agent is not set up yet — runs will appear here once it is.</value>
+  </data>
 </root>
