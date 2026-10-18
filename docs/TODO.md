@@ -51,6 +51,11 @@ Ostatní položky níž jsou pod touto pětkou.
 - [ ] **Zvýraznění syntaxe Lua** ve výpisu questu.
 - [ ] **Navigace „předchozí / další"** v rámci aktuálního filtru seznamu.
 
+## Výkon (k optimalizaci)
+
+- [ ] **`/knowledge/monsters` ~8 s** (proklik 18. 10., 863 řádků) — ostatní znalosti pod 1 s; prověřit dotaz/řazení a stránkování
+- [ ] Dřívější audit 14. 10.: `/manage/mobs` 14 s, detail mapy 12,5 s, `/knowledge/stones` 10 s — po změnách 16.–17. 10. přeměřit
+
 ## Import a data
 
 - [ ] Import neplní u questů `MinLevel`, `MaxLevel` ani `StartNpcVnum` — ve `.quest` souborech
