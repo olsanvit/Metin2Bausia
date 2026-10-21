@@ -7,7 +7,7 @@ Platforma: Web
 Předměty z oficiální wiki pro kompletační rutinu IC (Trello ZRhWZajR, návrh Data Hubu `NAVRH-Metin2.md`).
 Klíč `NameUrl` (upsert), `Category`, `Level` (text), `Stats` a `Metadata` jsonb (drops, raw infobox, import revid),
 `ItemVnum` NULL — páruje Collector/operátor. Aplikace zatím jen počítá řádky na `/admin`; vlastní stránka přijde později.
-Oprávnění pro zapisující roli rutiny migrace nedává (změna oprávnění jde přes souhlas).
+Zapisuje role `metin2bausia_simulatereal` (GRANT v migraci, rozhodnutí Vítka 21. 10.).
 
 ## Proč samostatně
 Data dřív plnil worker SimulateReal do DB SportReal (`MetinServers`, `MetinMonsters`, `MetinStones`).

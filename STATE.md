@@ -5,7 +5,7 @@ Aktualizováno 21. 10. 2026 (session Metin2 Bausia).
 ## Rozdělané
 - **KnowledgeItems (Trello ZRhWZajR):** migrace `database/postgres/10_knowledge_items.sql` + počet na `/admin` v commitu 6888f71, win-build OK.
   Migrace na produkci **22. 10. v 16:00** (ROZHODNUTÍ VÍTKA 21. 10. 7:20, dávka APP): nejdřív pg_dump, pak migrace jako `SET ROLE metin2bausia`, pak deploy přes gate. Nic neimportovat — plní kompletační rutina IC.
-  Otevřené: GRANT pro zapisující roli rutiny migrace nedává (změna oprávnění → souhlas přes IC).
+  GRANT pro metin2bausia_simulatereal je v migraci (ROZHODNUTÍ VÍTKA 21. 10.).
 - **Průchod stránek (Trello eW8ZH9Sj):** dávky 1–2 nasazené a proklikané; 163f58a (ikona Statistiky) čeká na deploy APP; dávka 3 (systémy z configu serveru) až na pokyn APP.
 
 ## Poslední rozhodnutí Vítka

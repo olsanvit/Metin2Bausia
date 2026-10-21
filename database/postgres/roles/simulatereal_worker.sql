@@ -21,5 +21,5 @@ REVOKE ALL ON DATABASE "Metin2Bausia" FROM metin2bausia_simulatereal;
 GRANT CONNECT ON DATABASE "Metin2Bausia" TO metin2bausia_simulatereal;
 GRANT USAGE ON SCHEMA public TO metin2bausia_simulatereal;
 
-GRANT SELECT, INSERT, UPDATE ON "KnowledgeServers", "KnowledgeMonsters", "KnowledgeStones"
+GRANT SELECT, INSERT, UPDATE ON "KnowledgeServers", "KnowledgeMonsters", "KnowledgeStones", "KnowledgeItems"
     TO metin2bausia_simulatereal;

@@ -35,5 +35,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS "UX_KnowledgeItems_SourceGuid" ON "KnowledgeIt
 CREATE INDEX IF NOT EXISTS "IX_KnowledgeItems_ItemVnum" ON "KnowledgeItems" ("ItemVnum");
 CREATE INDEX IF NOT EXISTS "IX_KnowledgeItems_Category" ON "KnowledgeItems" ("Category");
 
--- Oprávnění pro zapisující roli rutiny se tu záměrně nedává — změna oprávnění jde přes souhlas Vítka
--- (roles/simulatereal_worker.sql nebo role, kterou IC pro kompletační rutinu určí).
+-- Zapisující role rutiny (ROZHODNUTÍ VÍTKA 21. 10.: stejná role jako u ostatních Knowledge*).
+-- Podmíněně — lokální a testovací DB roli nemají.
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'metin2bausia_simulatereal') THEN
+        GRANT SELECT, INSERT, UPDATE ON "KnowledgeItems" TO metin2bausia_simulatereal;
+    END IF;
+END $$;
