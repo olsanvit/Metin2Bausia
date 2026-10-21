@@ -1386,4 +1386,7 @@
   <data name="AgentNotConfigured" xml:space="preserve">
     <value>Der KI-Agent zum Sammeln von Inhalten ist noch nicht eingerichtet — Läufe erscheinen hier danach.</value>
   </data>
+  <data name="AdmKnowledgeItems" xml:space="preserve">
+    <value>Gegenstände (Wiki)</value>
+  </data>
 </root>

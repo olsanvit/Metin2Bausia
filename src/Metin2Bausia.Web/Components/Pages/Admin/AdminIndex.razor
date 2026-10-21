@@ -52,6 +52,7 @@ else
         public int Admins { get; set; }
         public int Pending { get; set; }
         public int AgentRuns { get; set; }
+        public int KnowledgeItems { get; set; }
     }
 
     private IEnumerable<(string Label, int Value, string Href)> Cards =>
@@ -64,13 +65,14 @@ else
         (S["AdmPending"], _stats.Pending, "/items"),
         (S["AdmAgentRuns"], _stats.AgentRuns, "/reports"),
         (S["AdmAdmins"], _stats.Admins, "/admin/access"),
+        // Vlastní stránka předmětů z wiki zatím není — karta jen ukazuje, že je rutina plní
+        (S["AdmKnowledgeItems"], _stats.KnowledgeItems, "/admin"),
     ];
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Správci z tabulky AdminUsers; dokud není migrace 08, ukáže se 0 a /admin/access to vysvětlí
             _stats = await Db.QueryFirstOrDefaultAsync<AdminStats>(
                 @"SELECT (SELECT COUNT(*)::int FROM ""Items""   WHERE NOT ""IsDeleted"") AS ""Items"",
                          (SELECT COUNT(*)::int FROM ""Mobs""    WHERE NOT ""IsDeleted"") AS ""Mobs"",
@@ -79,11 +81,19 @@ else
                          (SELECT COUNT(*)::int FROM ""Systems"" WHERE NOT ""IsDeleted"") AS ""Systems"",
                          (SELECT COUNT(*)::int FROM ""Items"" WHERE ""ContentStatus"" = 'pending' AND NOT ""IsDeleted"")
                        + (SELECT COUNT(*)::int FROM ""Mobs""  WHERE ""ContentStatus"" = 'pending' AND NOT ""IsDeleted"") AS ""Pending"",
-                         (SELECT COUNT(*)::int FROM ""AgentRunReports"") AS ""AgentRuns"",
-                         CASE WHEN to_regclass('""AdminUsers""') IS NULL THEN 0
-                              ELSE (SELECT COUNT(*)::int FROM ""AdminUsers"" WHERE ""RemovedAt"" IS NULL) END AS ""Admins""")
+                         (SELECT COUNT(*)::int FROM ""AgentRunReports"") AS ""AgentRuns""")
                 ?? new AdminStats();
+            // Tabulky z novějších migrací (08 AdminUsers, 10 KnowledgeItems) se počítají zvlášť: CASE s to_regclass
+            // nestačí, Postgres odmítne dotaz na neexistující tabulku už při parsování, i když větev neproběhne
+            _stats.Admins = await CountIfExistsAsync("AdminUsers", @"""RemovedAt"" IS NULL");
+            _stats.KnowledgeItems = await CountIfExistsAsync("KnowledgeItems", @"NOT ""IsDeleted""");
         }
         catch (Exception ex) { _error = LogError(ex); }
     }
+
+    // Jméno tabulky i podmínka jsou konstanty z kódu, ne vstup uživatele
+    private async Task<int> CountIfExistsAsync(string table, string where) =>
+        await Db.QueryFirstOrDefaultAsync<bool>("SELECT to_regclass(@t) IS NOT NULL", new { t = $"\"{table}\"" })
+            ? await Db.QueryFirstOrDefaultAsync<int>($"SELECT COUNT(*)::int FROM \"{table}\" WHERE {where}")
+            : 0;
 }

@@ -1386,4 +1386,7 @@
   <data name="AgentNotConfigured" xml:space="preserve">
     <value>AI agent pro sběr obsahu zatím není nastavený — běhy se tu objeví po jeho zavedení.</value>
   </data>
+  <data name="AdmKnowledgeItems" xml:space="preserve">
+    <value>Předměty (wiki)</value>
+  </data>
 </root>

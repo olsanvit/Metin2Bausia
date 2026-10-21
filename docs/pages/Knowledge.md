@@ -3,6 +3,12 @@ Route: `/knowledge/servers`, `/knowledge/monsters`, `/knowledge/stones` + detail
 Popis: Metin2 servery ze seznamů na webu, monstra a Metin kameny z wiki Gameforge.
 Platforma: Web
 
+## KnowledgeItems (migrace 10, 21. 10.)
+Předměty z oficiální wiki pro kompletační rutinu IC (Trello ZRhWZajR, návrh Data Hubu `NAVRH-Metin2.md`).
+Klíč `NameUrl` (upsert), `Category`, `Level` (text), `Stats` a `Metadata` jsonb (drops, raw infobox, import revid),
+`ItemVnum` NULL — páruje Collector/operátor. Aplikace zatím jen počítá řádky na `/admin`; vlastní stránka přijde později.
+Oprávnění pro zapisující roli rutiny migrace nedává (změna oprávnění jde přes souhlas).
+
 ## Proč samostatně
 Data dřív plnil worker SimulateReal do DB SportReal (`MetinServers`, `MetinMonsters`, `MetinStones`).
 Vítek 12. 10. 2026 rozhodl, že patří do Metin2Bausia. Nejsou to herní proto data (žádný vnum, anglická jména,

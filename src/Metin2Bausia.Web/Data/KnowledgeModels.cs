@@ -81,3 +81,22 @@ public static class KnowledgeText
         Uri.TryCreate(url, UriKind.Absolute, out var u) && (u.Scheme == Uri.UriSchemeHttp || u.Scheme == Uri.UriSchemeHttps)
             ? u.AbsoluteUri : null;
 }
+
+/// <summary>
+/// Předmět z oficiální Metin2 wiki (tabulka KnowledgeItems, migrace 10). Plní ho kompletační rutina IC,
+/// aplikace zatím jen čte (počet v administraci); stránka pro předměty přijde později.
+/// </summary>
+public class KnowledgeItemRow
+{
+    public Guid Guid { get; set; }
+    public string Name { get; set; } = "";
+    public string NameUrl { get; set; } = "";
+    public string Category { get; set; } = "";
+    public string Level { get; set; } = "";
+    public string Stats { get; set; } = "{}";
+    public int? ItemVnum { get; set; }
+    public string SourceName { get; set; } = "";
+    public DateTime UpdatedAt { get; set; }
+
+    public int? LevelNumber => KnowledgeText.ParseLevel(Level);
+}
