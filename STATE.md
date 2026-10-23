@@ -16,6 +16,9 @@ Aktualizováno 23. 10. 2026 (session Metin2 Bausia).
 ## Známý problém
 - Každý deploy odhlásí uživatele: DataProtection klíče jsou v `/root/.aspnet/DataProtection-Keys` uvnitř kontejneru (log warning), nový kontejner = neplatné cookie → Chrome pro proklik skončí na Google loginu. Oprava = `PersistKeysToFileSystem` do mountu `/app/data` (návrh pro APP).
 
+## Další krok (ROZHODNUTÍ VÍTKA 23. 10.)
+Po resetu usage (po 26. 10. 12:00): `PersistKeysToFileSystem` do `/app/data` + deploy → Vítek se jednou přihlásí → proklik `/admin`. Do té doby nic.
+
 ## Po restartu
 Čekat na pokyn APP. Pokud je 22. 10. po 16:00 a migrace 10 neproběhla: záloha → migrace 10 → deploy gate → proklik `/admin`.
 Noční/dávkové skripty: `database/import/generated/` (gitignored; night-lib.sh s pojistkami IC).
